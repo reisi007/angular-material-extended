@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+tmp/
+out-tsc/
+.angular/cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Test outputs
+coverage/
+test-results/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# OS
+Thumbs.db
+
+# Nx
+.nx/cache
+.nx/workspace-data
+
+# GitHub Pages build artifacts (local testing)
+.gh-pages-tmp/
