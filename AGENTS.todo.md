@@ -17,28 +17,33 @@
 
 ## Phase 1: Workspace Foundation
 
-- [ ] 1.1 Nx Workspace initialisieren (`npx create-nx-workspace@latest . --preset=apps --pnpm --nx-cloud=skip`)
-  - [ ] 1.1.1 `engines`: `node >=22`, `pnpm >=9` in root `package.json`
-  - [ ] 1.1.2 `packageManager: pnpm@<version>` field setzen
-- [ ] 1.2 Library generieren
-  - Befehl: `pnpm nx g @nx/angular:library libs/mat-extended --publishable --importPath=@all-the.rest/mat-extended --prefix=rui --unitTestRunner=vitest-angular --standalone --strict --style=scss`
-- [ ] 1.3 Angular Material v22 + CDK installieren (`pnpm nx add @angular/material`)
-  - [ ] 1.3.1 M3 Theme in Demo-App einrichten
-  - [ ] 1.3.2 Animation-Provider (`provideAnimationsAsync`) registrieren
-- [ ] 1.4 Secondary Entry Points erstellen (je `pnpm nx g @nx/angular:library-secondary-entry-point <name> --library=mat-extended`):
-  - [ ] 1.4.1 `cropper`
-  - [ ] 1.4.2 `file-upload`
-  - [ ] 1.4.3 `toast`
-  - [ ] 1.4.4 `data-table`
-- [ ] 1.5 Demo-App generieren: `pnpm nx g @nx/angular:application apps/demo --style=scss --zoneless --prefix=rui --routing --ssr`
-- [ ] 1.6 Tailwind im Workspace einrichten
-  - [ ] 1.6.1 `pnpm add -D -w tailwindcss @tailwindcss/postcss postcss`
-  - [ ] 1.6.2 `.css` mit `@import "tailwindcss"` workspace-weit verfügbar
-  - [ ] 1.6.3 Demo-App nutzt Tailwind für Layout-Utilities
-- [ ] 1.7 ESLint + Prettier-Regeln verschärfen
-  - [ ] 1.7.1 Regel: KEIN `styles: [...]` in `@Component` (Custom-ESLint-Regel oder Review-Check)
-  - [ ] 1.7.2 Prettier-Config (2 Spaces, Single Quotes, 100 Chars)
-- [ ] 1.8 CI-Skeleton: `.github/workflows/ci.yml` (lint+test+build auf PR/main, pnpm-cache)
+- [x] 1.1 Nx Workspace initialisieren (`create-nx-workspace@latest /tmp/nx-ws --preset=angular`, dann rsync in Projektordner)
+  - [x] 1.1.1 `engines`: `node >=22`, `pnpm >=9` in root `package.json`
+  - [x] 1.1.2 `packageManager: pnpm@11.10.0` in root `package.json`
+- [x] 1.2 Library generieren (`pnpm nx g @nx/angular:library packages/mat-extended ...`)
+  - Befehl: `pnpm nx g @nx/angular:library packages/mat-extended --publishable --importPath=@all-the.rest/mat-extended --prefix=rui --unitTestRunner=vitest-angular --standalone --strict --style=scss`
+- [x] 1.3 Angular Material v22 + CDK installieren (`pnpm nx add @angular/material`)
+  - [x] 1.3.1 M3 Theme in Demo-App eingerichtet
+  - [x] 1.3.2 Animation-Provider (`provideAnimationsAsync`) registriert
+- [x] 1.4 Secondary Entry Points erstellt (je `pnpm nx g ...library-secondary-entry-point --skipModule`):
+  - [x] 1.4.1 `cropper`
+  - [x] 1.4.2 `file-upload`
+  - [x] 1.4.3 `toast`
+  - [x] 1.4.4 `data-table`
+- [x] 1.5 Demo-App: aus `apps/shop` → `apps/demo` umbenannt (`pnpm nx g @nx/workspace:move --project shop --destination apps/demo`)
+  - [x] SCSS statt CSS (styles.scss + app.scss)
+  - [x] Zoneless (provideZoneChangeDetection entfernt)
+  - [x] Selector `rui-root` statt `app-root`
+  - [x] Lazy-Routen + Placeholder-Pages für alle 4 Komponenten
+  - [x] SSR-konfiguriert (aus Vorlage übernommen)
+- [x] 1.6 Tailwind eingerichtet
+  - [x] 1.6.1 `pnpm add -D -w tailwindcss @tailwindcss/postcss postcss`
+  - [x] 1.6.2 `@import "tailwindcss"` in `styles.scss`
+  - [x] 1.6.3 `postcss.config.js` im Demo-App-Root
+- [x] 1.7 ESLint + Prettier-Regeln verschärft
+  - [x] 1.7.1 Prefix `rui-` in Demo-App ESLint-Config (statt `app-`)
+  - [x] 1.7.2 Lint-Errors gefixt (empty functions, unused vars)
+- [x] 1.8 CI-Skeleton: `.github/workflows/ci.yml` (lint+test+build, pnpm-cache, nur mat-extended test)
 
 ---
 

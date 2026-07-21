@@ -1,0 +1,64 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.demo-header {
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  padding: 1rem;
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+  nav {
+    display: flex;
+    gap: 1rem;
+
+    a {
+      color: var(--mat-sys-on-primary);
+      text-decoration: none;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+
+      &:hover,
+      &.active {
+        background: rgba(255, 255, 255, 0.15);
+      }
+    }
+  }
+}
+
+.demo-main {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.demo-footer {
+  background: var(--mat-sys-surface-container);
+  padding: 1rem;
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

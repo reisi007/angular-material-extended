@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "declaration": true,
+    "declarationMap": true,
+    "inlineSources": true,
+    "types": []
+  },
+  "include": [
+    "src/**/*.ts",
+    "cropper/src/**/*.ts",
+    "data-table/src/**/*.ts",
+    "data-table/cropper/src/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "cropper/src/**/*.spec.ts",
+    "cropper/src/**/*.test.ts",
+    "data-table/src/**/*.spec.ts",
+    "data-table/src/**/*.test.ts",
+    "data-table/cropper/src/**/*.spec.ts",
+    "data-table/cropper/src/**/*.test.ts"
+  ]
+}
