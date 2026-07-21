@@ -17,7 +17,7 @@
 - [x] 7.5 Top-Level README mit Badges (CI, npm version, license, demo-link)
 - [ ] 7.6 `CONTRIBUTING.md`
 - [ ] 7.7 Erste Release `v0.1.0` (Cropper + FileUpload)
-- [ ] 7.8 Erste Demo-Deploy auf GitHub Pages
+- [~] 7.8 Erste Demo-Deploy auf GitHub Pages
 
 ---
 
@@ -47,6 +47,7 @@
 - [ ] Q1: Storybook Integration? (Aktuell: nur Demo-App)
 - [ ] Q2: i18n-Strategy (`@ngx-translate/core` vs. Angular Native i18n)?
 - [ ] Q3: E2E-Tests via Playwright für Demo?
+- [!] **E2E blockiert**: `pnpm nx serve demo` kann Projektgraphen in CI nicht auflösen ("The projects in the following directories have no name provided" für cropper/data-table/dialog/file-manager/file-upload/menu/toast). Secondary Entry Points brauchen `project.json` mit `"name"` oder `@nx/angular/plugin`-Konfiguration in `nx.json`.
 - [ ] Q4: GitHub Discussions für Q&A aktivieren?
 - [ ] Q5: `@all-the.rest` npm-Org erstellen (für Secondary Entrypoint-Publishing)?
 
