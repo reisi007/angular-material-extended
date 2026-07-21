@@ -9,9 +9,9 @@
 
 - [x] 0.1 Root-Verzeichnis: `angular-material-extended` (User benennt ggf. selbst um)
 - [x] 0.2 Plan-Dokumente (`AGENTS.md`, `AGENTS.todo.md`, `README.md`, `LICENSE`, `.gitignore`)
-- [ ] 0.3 GitHub Repo erstellen (`reisi007/angular-material-extended`, public, MIT)
-- [ ] 0.4 `git init` + Initial-Commit
-- [ ] 0.5 Push nach `origin/main`
+- [x] 0.3 GitHub Repo erstellen (`reisi007/angular-material-extended`, public, MIT, Topics gesetzt)
+- [x] 0.4 `git init` + Initial-Commit (`d8503b7`)
+- [x] 0.5 Push nach `origin/main` (https://github.com/reisi007/angular-material-extended)
 
 ---
 
