@@ -1,11 +1,13 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const isCI = !!process.env['CI'];
+
 export default defineConfig({
   testDir: './src/specs',
   fullyParallel: true,
-  forbidOnly: !!process.env['CI'],
-  retries: process.env['CI'] ? 2 : 0,
-  workers: process.env['CI'] ? 1 : undefined,
+  forbidOnly: isCI,
+  retries: isCI ? 2 : 0,
+  workers: isCI ? 1 : 8,
   reporter: [['html', { outputFolder: 'playwright-report' }]],
   use: {
     baseURL: 'http://localhost:4200',
@@ -21,10 +23,12 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'pnpm nx serve demo',
-    url: 'http://localhost:4200',
-    reuseExistingServer: !process.env['CI'],
-    timeout: 120000,
-  },
+  ...(isCI ? {
+    webServer: {
+      command: 'pnpm nx serve demo',
+      url: 'http://localhost:4200',
+      reuseExistingServer: false,
+      timeout: 120000,
+    },
+  } : {}),
 });

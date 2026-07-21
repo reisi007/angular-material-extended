@@ -4,7 +4,8 @@ export const appRoutes: Route[] = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'cropper',
+    loadComponent: () =>
+      import('./overview').then((m) => m.Overview),
   },
   {
     path: 'cropper',

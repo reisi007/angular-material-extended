@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="All Unit Tests" type="js.build_tools.nx">
+    <target name="test" project="mat-extended" />
+    <method v="2" />
+  </configuration>
+</component>
