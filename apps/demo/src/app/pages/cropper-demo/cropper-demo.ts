@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
-import { JsonPipe } from '@angular/common';
+
 import { RuiCropper } from '@all-the.rest/mat-extended/cropper';
 import { RuiCropperResult, RuiOutputFormat } from '@all-the.rest/mat-extended/cropper';
 import { MatCardModule } from '@angular/material/card';
@@ -14,7 +14,7 @@ import { MatSliderModule } from '@angular/material/slider';
   selector: 'rui-cropper-demo',
   standalone: true,
   imports: [
-    FormsModule, ReactiveFormsModule, JsonPipe,
+    FormsModule, ReactiveFormsModule,
     RuiCropper, MatCardModule, MatFormFieldModule, MatInputModule,
     MatSelectModule, MatButtonModule, MatSliderModule,
   ],
@@ -87,11 +87,11 @@ import { MatSliderModule } from '@angular/material/slider';
       </mat-form-field>
       <mat-form-field>
         <mat-label>Output Width: {{ selectedOutputWidth() || 'auto' }}</mat-label>
-        <input matInput type="number" min="0" max="4096" step="1" [value]="selectedOutputWidth()" (input)="selectedOutputWidth.set(Number(($event.target as HTMLInputElement).value))" />
+        <input matInput type="number" min="0" max="4096" step="1" [value]="selectedOutputWidth()" (input)="onOutputWidthChange($event)" />
       </mat-form-field>
       <mat-form-field>
         <mat-label>Output Height: {{ selectedOutputHeight() || 'auto' }}</mat-label>
-        <input matInput type="number" min="0" max="4096" step="1" [value]="selectedOutputHeight()" (input)="selectedOutputHeight.set(Number(($event.target as HTMLInputElement).value))" />
+        <input matInput type="number" min="0" max="4096" step="1" [value]="selectedOutputHeight()" (input)="onOutputHeightChange($event)" />
       </mat-form-field>
     </mat-card-content>
   </mat-card>
@@ -138,5 +138,15 @@ export class CropperDemo {
   onQualityChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.selectedQuality.set(Number(input.value));
+  }
+
+  onOutputWidthChange(event: Event): void {
+    const value = Number((event.target as HTMLInputElement).value);
+    this.selectedOutputWidth.set(value);
+  }
+
+  onOutputHeightChange(event: Event): void {
+    const value = Number((event.target as HTMLInputElement).value);
+    this.selectedOutputHeight.set(value);
   }
 }

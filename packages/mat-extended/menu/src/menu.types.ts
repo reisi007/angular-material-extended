@@ -3,7 +3,7 @@ export type RuiMenuPosition =
   | 'top-left' | 'top-right';
 
 export interface RuiMenuItem {
-  label: string;
+  label?: string;
   icon?: string;
   disabled?: boolean;
   separator?: boolean;

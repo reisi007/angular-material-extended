@@ -4,7 +4,7 @@ import { ComponentPortal } from '@angular/cdk/portal';
 import { RuiToastConfig, RuiToastRef, RuiToastPosition } from './toast.types';
 import { RUI_TOAST_DEFAULT_OPTIONS } from './toast.config';
 import { RuiToastComponent } from './toast.component';
-import { ensureBrowser } from '../../src/common/platform';
+import { ensureBrowser } from '@all-the.rest/mat-extended';
 
 const MAX_TOASTS = 5;
 const TOAST_GAP = 8;

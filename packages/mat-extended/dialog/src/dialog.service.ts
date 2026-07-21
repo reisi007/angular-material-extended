@@ -6,7 +6,7 @@ import { ESCAPE } from '@angular/cdk/keycodes';
 import { RuiDialogConfig, RuiDialogRef } from './dialog.types';
 import { RUI_DIALOG_DEFAULT_OPTIONS } from './dialog.config';
 import { RuiDialogComponent } from './dialog.component';
-import { ensureBrowser } from '../../src/common/platform';
+import { ensureBrowser } from '@all-the.rest/mat-extended';
 
 interface ActiveDialog {
   ref: OverlayRef;

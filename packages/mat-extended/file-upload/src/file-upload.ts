@@ -15,8 +15,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { RuiValueAccessor } from '../../src/common/control-value-accessor';
-import { ensureBrowser } from '../../src/common/platform';
+import { RuiValueAccessor, ensureBrowser } from '@all-the.rest/mat-extended';
 import { RuiFileItem, RuiUploadStatus, RuiUploadHandler, RuiValidationError } from './file-upload.types';
 import { RUI_FILE_UPLOAD_DEFAULT_OPTIONS } from './file-upload.config';
 

@@ -3,7 +3,7 @@ import { Overlay, OverlayRef, ConnectedPosition } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { RuiMenuPanel } from './menu-panel.component';
 import type { RuiMenuItem, RuiMenuConfig, RuiMenuPosition } from './menu.types';
-import { ensureBrowser } from '../../src/common/platform';
+import { ensureBrowser } from '@all-the.rest/mat-extended';
 import { RUI_MENU_DEFAULT_OPTIONS } from './menu.config';
 
 @Injectable({ providedIn: 'root' })

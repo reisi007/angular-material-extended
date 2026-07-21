@@ -33,6 +33,15 @@
       ],
       "@all-the.rest/mat-extended/dialog": [
         "./packages/mat-extended/dialog/src/index.ts"
+      ],
+      "@all-the.rest/mat-extended/file-upload": [
+        "./packages/mat-extended/file-upload/src/index.ts"
+      ],
+      "@all-the.rest/mat-extended/toast": [
+        "./packages/mat-extended/toast/src/index.ts"
+      ],
+      "@all-the.rest/mat-extended/menu": [
+        "./packages/mat-extended/menu/src/index.ts"
       ]
     }
   },

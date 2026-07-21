@@ -1,7 +1,6 @@
 import { Component, ElementRef, viewChild, input, model, output, signal, computed, effect, afterNextRender, ChangeDetectionStrategy, inject, DestroyRef, NgZone, Injector } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RuiValueAccessor } from '../../src/common/control-value-accessor';
-import { ensureBrowser } from '../../src/common/platform';
+import { RuiValueAccessor, ensureBrowser } from '@all-the.rest/mat-extended';
 import { RuiCropperCanvas } from './cropper-canvas';
 import { RuiCropperInteraction } from './cropper-interaction';
 import {
