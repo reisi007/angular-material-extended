@@ -1,62 +1,72 @@
-<div class="relative overflow-hidden rounded-lg bg-[var(--mat-sys-surface-variant)]">
+<div
+  class="relative overflow-hidden rounded-lg bg-[var(--mat-sys-surface-variant)]"
+  [class.flex]="toolbarPosition() === 'left' || toolbarPosition() === 'right'"
+  [class.flex-row]="toolbarPosition() === 'left' || toolbarPosition() === 'right'">
+  @if (toolbarPosition() === 'top' || toolbarPosition() === 'left') {
+    <rui-cropper-toolbar
+      [imageLoaded]="imageLoaded()"
+      [zoomLevel]="zoomLevel()"
+      [rotationAngle]="rotationAngle()"
+      [totalRotation]="rotation()"
+      [isAspectRatioFixed]="isAspectRatioFixed()"
+      [effectiveAspectRatio]="effectiveAspectRatio()"
+      [rotationMin]="rotationMin()"
+      [rotationMax]="rotationMax()"
+      [orientation]="toolbarPosition() === 'left' || toolbarPosition() === 'right' ? 'vertical' : 'horizontal'"
+      (zoomIn)="zoomIn()"
+      (zoomOut)="zoomOut()"
+      (rotateLeft)="rotateStep(-90)"
+      (rotateRight)="rotateStep(90)"
+      (rotationChange)="rotationAngle.set($event)"
+      (rotationStart)="onRotateSliderStart()"
+      (rotationEnd)="onRotateSliderEnd()"
+      (aspectChange)="effectiveAspectRatio.set($event)"
+    />
+  }
+
   <div
-    class="relative w-full aspect-video overflow-hidden cursor-crosshair touch-none"
+    class="relative aspect-video overflow-hidden cursor-crosshair touch-none"
+    [style.width]="widthStyle()"
     #viewport
     (pointerdown)="onPointerDown($event)"
     (pointermove)="onPointerMove($event)"
     (pointerup)="onPointerUp()"
   >
-    <div class="absolute inset-0 flex items-center justify-center">
-      <canvas #canvas class="w-full h-full block"></canvas>
-    </div>
-
-    <div class="absolute inset-0"
-      [style.--rui-crop-x.%]="cropRectStyle().x"
-      [style.--rui-crop-y.%]="cropRectStyle().y"
-      [style.--rui-crop-w.%]="cropRectStyle().width"
-      [style.--rui-crop-h.%]="cropRectStyle().height"
-      [style.--rui-rotation.deg]="rotation()">
-      <ng-content select="[ruiCropperOverlay]"></ng-content>
-    </div>
+    <canvas #canvas class="absolute inset-0 w-full h-full block"
+      [style.transform]="canvasTransform()"
+      [style.transform-origin]="'center center'"
+      [class.will-change-transform]="liveRotationDragging()"
+    ></canvas>
 
     @if (imageLoaded()) {
-      <div class="flex flex-wrap gap-4 p-3 px-4 bg-[var(--mat-sys-surface-container)] border-t border-[var(--mat-sys-outline-variant)]">
-        <div class="flex items-center gap-2">
-          <button type="button" class="inline-flex items-center justify-center w-8 h-8 border border-[var(--mat-sys-outline)] rounded bg-[var(--mat-sys-surface)] text-[var(--mat-sys-on-surface)] cursor-pointer text-base leading-none hover:bg-[var(--mat-sys-surface-container-high)]" (click)="zoomIn()" aria-label="Zoom in">+</button>
-          <button type="button" class="inline-flex items-center justify-center w-8 h-8 border border-[var(--mat-sys-outline)] rounded bg-[var(--mat-sys-surface)] text-[var(--mat-sys-on-surface)] cursor-pointer text-base leading-none hover:bg-[var(--mat-sys-surface-container-high)]" (click)="zoomOut()" aria-label="Zoom out">-</button>
-          <span class="min-w-[3ch] text-xs text-[var(--mat-sys-on-surface-variant)] tabular-nums">{{ zoomLevel() }}%</span>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <button type="button" class="inline-flex items-center justify-center w-8 h-8 border border-[var(--mat-sys-outline)] rounded bg-[var(--mat-sys-surface)] text-[var(--mat-sys-on-surface)] cursor-pointer text-base leading-none hover:bg-[var(--mat-sys-surface-container-high)]" (click)="rotate(-90)" aria-label="Rotate left">↺</button>
-          <button type="button" class="inline-flex items-center justify-center w-8 h-8 border border-[var(--mat-sys-outline)] rounded bg-[var(--mat-sys-surface)] text-[var(--mat-sys-on-surface)] cursor-pointer text-base leading-none hover:bg-[var(--mat-sys-surface-container-high)]" (click)="rotate(90)" aria-label="Rotate right">↻</button>
-          <input
-            type="range"
-            class="w-24 accent-[var(--mat-sys-primary)]"
-            [min]="0"
-            [max]="360"
-            [step]="1"
-            [value]="rotation()"
-            (input)="onRotateSlider($event)"
-            aria-label="Free rotation"
-          />
-          <span class="min-w-[3ch] text-xs text-[var(--mat-sys-on-surface-variant)] tabular-nums">{{ rotation() }}°</span>
-        </div>
-
-        @if (!isAspectRatioFixed()) {
-          <div class="flex items-center gap-2">
-            <label>
-              Aspect:
-              <select (change)="onAspectChange($event)" aria-label="Aspect ratio">
-                <option value="free" [selected]="effectiveAspectRatio() === 'free'">Free</option>
-                <option value="1:1" [selected]="effectiveAspectRatio() === '1:1'">1:1</option>
-                <option value="4:3" [selected]="effectiveAspectRatio() === '4:3'">4:3</option>
-                <option value="16:9" [selected]="effectiveAspectRatio() === '16:9'">16:9</option>
-              </select>
-            </label>
-          </div>
-        }
+      <div class="absolute overflow-hidden z-10"
+        [style]="cropRectStyle()">
+        <ng-content select="[ruiCropperOverlay]">
+          <rui-cropper-grid-overlay />
+        </ng-content>
       </div>
     }
   </div>
+
+  @if (toolbarPosition() === 'bottom' || toolbarPosition() === 'right') {
+    <rui-cropper-toolbar
+      [imageLoaded]="imageLoaded()"
+      [zoomLevel]="zoomLevel()"
+      [rotationAngle]="rotationAngle()"
+      [totalRotation]="rotation()"
+      [isAspectRatioFixed]="isAspectRatioFixed()"
+      [effectiveAspectRatio]="effectiveAspectRatio()"
+      [rotationMin]="rotationMin()"
+      [rotationMax]="rotationMax()"
+      [orientation]="toolbarPosition() === 'left' || toolbarPosition() === 'right' ? 'vertical' : 'horizontal'"
+      (zoomIn)="zoomIn()"
+      (zoomOut)="zoomOut()"
+      (rotateLeft)="rotateStep(-90)"
+      (rotateRight)="rotateStep(90)"
+      (rotationChange)="rotationAngle.set($event)"
+      (rotationStart)="onRotateSliderStart()"
+      (rotationEnd)="onRotateSliderEnd()"
+      (aspectChange)="effectiveAspectRatio.set($event)"
+    />
+  }
 </div>

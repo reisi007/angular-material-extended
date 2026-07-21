@@ -8,6 +8,7 @@ export interface RuiMenuItem {
   disabled?: boolean;
   separator?: boolean;
   handler?: () => void;
+  routerLink?: string | readonly (string | number)[];
   children?: RuiMenuItem[];
 }
 
@@ -16,4 +17,5 @@ export interface RuiMenuConfig {
   position?: RuiMenuPosition;
   closeOnSelect?: boolean;
   closeOnClickOutside?: boolean;
+  onClose?: () => void;
 }

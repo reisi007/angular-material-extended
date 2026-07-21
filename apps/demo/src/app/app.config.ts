@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withFetch } from '@angular/common/http';
+import { MAT_ICON_DEFAULT_OPTIONS } from '@angular/material/icon';
 import { appRoutes } from './app.routes';
 import {
   provideClientHydration,
@@ -18,5 +19,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideHttpClient(withFetch()),
     provideAnimationsAsync(),
+    { provide: MAT_ICON_DEFAULT_OPTIONS, useValue: { fontSet: 'material-symbols-outlined' } },
   ],
 };

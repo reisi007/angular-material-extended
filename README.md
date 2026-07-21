@@ -10,22 +10,20 @@
 
 ## Demo
 
-The live demo is hosted on GitHub Pages:
+Live demo hosted on GitHub Pages:
 
-> https://reisi007.github.io/angular-material-extended/
+**[reisi007.github.io/angular-material-extended](https://reisi007.github.io/angular-material-extended/)**
 
-## Status: Construction
-
-This library is currently in active development. The first release (`v0.1.0`) will include the **Image Cropper** component.
-
-## Components (planned)
+## Components
 
 | Component | Status | Package |
 |---|---|---|
-| Image Cropper | Phase 3 | `@all-the.rest/mat-extended/cropper` |
-| File Upload | Phase 4 | `@all-the.rest/mat-extended/file-upload` |
-| Toast / Notification | Phase 5 | `@all-the.rest/mat-extended/toast` |
-| Data Table | Phase 6 | `@all-the.rest/mat-extended/data-table` |
+| Image Cropper | Done | `@all-the.rest/mat-extended/cropper` |
+| File Upload | Done | `@all-the.rest/mat-extended/file-upload` |
+| Toast / Notification | Done | `@all-the.rest/mat-extended/toast` |
+| Data Table | Done | `@all-the.rest/mat-extended/data-table` |
+| Dialog | Done | `@all-the.rest/mat-extended/dialog` |
+| Menu | Done | `@all-the.rest/mat-extended/menu` |
 
 See [`AGENTS.todo.md`](./AGENTS.todo.md) for the full roadmap.
 

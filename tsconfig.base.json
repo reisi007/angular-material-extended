@@ -42,6 +42,9 @@
       ],
       "@all-the.rest/mat-extended/menu": [
         "./packages/mat-extended/menu/src/index.ts"
+      ],
+      "@all-the.rest/mat-extended/file-manager": [
+        "./packages/mat-extended/file-manager/src/index.ts"
       ]
     }
   },

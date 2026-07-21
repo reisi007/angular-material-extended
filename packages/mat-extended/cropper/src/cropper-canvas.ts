@@ -12,6 +12,13 @@ export class RuiCropperCanvas {
   private _imageWidth = 0;
   private _imageHeight = 0;
 
+  displayWidth = 0;
+  displayHeight = 0;
+
+  private _imgOffsetX = 0;
+  private _imgOffsetY = 0;
+  private _imageCache: HTMLCanvasElement | null = null;
+
   get imageWidth(): number { return this._imageWidth; }
   get imageHeight(): number { return this._imageHeight; }
 
@@ -20,20 +27,35 @@ export class RuiCropperCanvas {
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Could not get 2D context');
     this.ctx = ctx;
-    this.cropRect = { x: 0, y: 0, width: 1, height: 1 };
+    this.cropRect = { x: 0.25, y: 0.25, width: 0.5, height: 0.5 };
   }
 
   async loadImage(src: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       const img = new Image();
+      if (src.startsWith('http')) {
+        img.crossOrigin = 'anonymous';
+      }
       img.onload = () => {
         this.image = img;
         this._imageWidth = img.naturalWidth;
         this._imageHeight = img.naturalHeight;
-        const scaleX = this.canvas.width / img.naturalWidth;
-        const scaleY = this.canvas.height / img.naturalHeight;
-        this.zoom = Math.min(scaleX, scaleY);
-        this.cropRect = { x: 0, y: 0, width: 1, height: 1 };
+        const cache = document.createElement('canvas');
+        cache.width = img.naturalWidth;
+        cache.height = img.naturalHeight;
+        const cacheCtx = cache.getContext('2d');
+        if (cacheCtx) {
+          cacheCtx.drawImage(img, 0, 0);
+        }
+        this._imageCache = cache;
+        const w = this.displayWidth || this.canvas.width;
+        const h = this.displayHeight || this.canvas.height;
+        const scaleX = w / img.naturalWidth;
+        const scaleY = h / img.naturalHeight;
+        const fitZoom = Math.min(scaleX, scaleY);
+        this.zoom = fitZoom;
+        this.cropRect = { x: 0.25, y: 0.25, width: 0.5, height: 0.5 };
+        this._updateOffsets();
         this.render();
         resolve();
       };
@@ -42,8 +64,16 @@ export class RuiCropperCanvas {
     });
   }
 
+  clearImage(): void {
+    this.image = null;
+    this._imageWidth = 0;
+    this._imageHeight = 0;
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
   setZoom(zoom: number): void {
     this.zoom = Math.min(10, Math.max(0.1, zoom));
+    this._updateOffsets();
   }
 
   getZoom(): number {
@@ -58,6 +88,10 @@ export class RuiCropperCanvas {
     return this.rotation;
   }
 
+  getRotationFitScale(rotation?: number): number {
+    return this._computeRotationFitScale(rotation ?? this.rotation);
+  }
+
   setCropRect(rect: RuiCropRect): void {
     this.cropRect = { ...rect };
   }
@@ -66,59 +100,88 @@ export class RuiCropperCanvas {
     return { ...this.cropRect };
   }
 
-  setAspectRatio(ratio: number | null): void {
-    this.aspectRatio = ratio;
-    if (ratio === null) return;
+  setAspectRatio(physicalRatio: number | null): void {
+    this.aspectRatio = physicalRatio;
+    if (physicalRatio === null) return;
+
+    const vw = this.displayWidth || this.canvas.width;
+    const vh = this.displayHeight || this.canvas.height;
+    if (vw <= 0 || vh <= 0) return;
+
+    const normalizedRatio = physicalRatio * vh / vw;
     const currentRatio = this.cropRect.width / this.cropRect.height;
-    if (Math.abs(currentRatio - ratio) < 0.0001) return;
-    if (currentRatio > ratio) {
-      const newWidth = this.cropRect.height * ratio;
+    if (Math.abs(currentRatio - normalizedRatio) < 0.0001) return;
+
+    if (currentRatio > normalizedRatio) {
+      const newWidth = this.cropRect.height * normalizedRatio;
       const dx = (this.cropRect.width - newWidth) / 2;
       this.cropRect.x += dx;
       this.cropRect.width = newWidth;
     } else {
-      const newHeight = this.cropRect.width / ratio;
+      const newHeight = this.cropRect.width / normalizedRatio;
       const dy = (this.cropRect.height - newHeight) / 2;
       this.cropRect.y += dy;
       this.cropRect.height = newHeight;
     }
+
+    this._clampCropRect();
   }
 
   getAspectRatio(): number | null {
     return this.aspectRatio;
   }
 
+  getDisplayWidth(): number {
+    return this.displayWidth || this.canvas.width;
+  }
+
+  getDisplayHeight(): number {
+    return this.displayHeight || this.canvas.height;
+  }
+
   render(): void {
+    const w = this.getDisplayWidth();
+    const h = this.getDisplayHeight();
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (!this.image) return;
 
-    const displayW = this.imageWidth * this.zoom;
-    const displayH = this.imageHeight * this.zoom;
-    const cx = this.canvas.width / 2;
-    const cy = this.canvas.height / 2;
+    const rotationFitScale = this._computeRotationFitScale(this.rotation);
+    const effectiveZoom = this.zoom * rotationFitScale;
+    const displayW = this.imageWidth * effectiveZoom;
+    const displayH = this.imageHeight * effectiveZoom;
+    const cx = w / 2;
+    const cy = h / 2;
+    const imgX = cx - displayW / 2;
+    const imgY = cy - displayH / 2;
 
     this.ctx.save();
     this.ctx.translate(cx, cy);
     this.ctx.rotate((this.rotation * Math.PI) / 180);
     this.ctx.translate(-cx, -cy);
 
-    const imgX = cx - displayW / 2;
-    const imgY = cy - displayH / 2;
-    this.ctx.drawImage(this.image, imgX, imgY, displayW, displayH);
+    if (this._imageCache) {
+      this.ctx.drawImage(this._imageCache, imgX, imgY, displayW, displayH);
+    } else if (this.image) {
+      this.ctx.drawImage(this.image, imgX, imgY, displayW, displayH);
+    }
     this.ctx.restore();
 
+    this._renderOverlay(w, h);
+  }
+
+  private _renderOverlay(w: number, h: number): void {
     const cropPixels = {
-      x: this.cropRect.x * displayW + imgX,
-      y: this.cropRect.y * displayH + imgY,
-      w: this.cropRect.width * displayW,
-      h: this.cropRect.height * displayH,
+      x: this.cropRect.x * w,
+      y: this.cropRect.y * h,
+      w: this.cropRect.width * w,
+      h: this.cropRect.height * h,
     };
 
     this.ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    this.ctx.fillRect(0, 0, this.canvas.width, cropPixels.y);
-    this.ctx.fillRect(0, cropPixels.y + cropPixels.h, this.canvas.width, this.canvas.height - cropPixels.y - cropPixels.h);
+    this.ctx.fillRect(0, 0, w, cropPixels.y);
+    this.ctx.fillRect(0, cropPixels.y + cropPixels.h, w, h - cropPixels.y - cropPixels.h);
     this.ctx.fillRect(0, cropPixels.y, cropPixels.x, cropPixels.h);
-    this.ctx.fillRect(cropPixels.x + cropPixels.w, cropPixels.y, this.canvas.width - cropPixels.x - cropPixels.w, cropPixels.h);
+    this.ctx.fillRect(cropPixels.x + cropPixels.w, cropPixels.y, w - cropPixels.x - cropPixels.w, cropPixels.h);
 
     this.ctx.strokeStyle = 'white';
     this.ctx.lineWidth = 2;
@@ -126,7 +189,7 @@ export class RuiCropperCanvas {
     this.ctx.strokeRect(cropPixels.x, cropPixels.y, cropPixels.w, cropPixels.h);
     this.ctx.setLineDash([]);
 
-    const handleSize = 8;
+    const handleSize = 12;
     const handles = [
       { x: cropPixels.x, y: cropPixels.y },
       { x: cropPixels.x + cropPixels.w, y: cropPixels.y },
@@ -153,10 +216,62 @@ export class RuiCropperCanvas {
     });
   }
 
+  getImageOffsetX(): number { return this._imgOffsetX; }
+  getImageOffsetY(): number { return this._imgOffsetY; }
+
+  getCropPixelSize(): { width: number; height: number } {
+    const vw = this.displayWidth || this.canvas.width;
+    const vh = this.displayHeight || this.canvas.height;
+
+    const imageCropW = Math.min(
+      this.imageWidth,
+      this.cropRect.width * vw / this.zoom,
+    );
+    const imageCropH = Math.min(
+      this.imageHeight,
+      this.cropRect.height * vh / this.zoom,
+    );
+
+    return {
+      width: Math.round(Math.max(0, imageCropW)),
+      height: Math.round(Math.max(0, imageCropH)),
+    };
+  }
+
+  private _computeRotationFitScale(rotationDeg: number): number {
+    if (rotationDeg === 0 || rotationDeg === 180 || rotationDeg === 360) return 1;
+    const rad = (Math.abs(rotationDeg % 180) * Math.PI) / 180;
+    if (rad < 0.001) return 1;
+    if (this.aspectRatio !== null) {
+      const alpha = Math.atan(1 / this.aspectRatio);
+      return Math.cos(rad - alpha) / Math.cos(rad);
+    }
+    const s = Math.abs(Math.sin(rad)) + Math.abs(Math.cos(rad));
+    return Math.max(1, s);
+  }
+
+  private _updateOffsets(): void {
+    const w = this.displayWidth || this.canvas.width;
+    const h = this.displayHeight || this.canvas.height;
+    this._imgOffsetX = (w - this.imageWidth * this.zoom) / 2;
+    this._imgOffsetY = (h - this.imageHeight * this.zoom) / 2;
+  }
+
   private _resolveOutputSize(outputWidth?: number, outputHeight?: number): { width: number; height: number } {
-    const pixelWidth = this.cropRect.width * this.imageWidth;
-    const pixelHeight = this.cropRect.height * this.imageHeight;
-    const aspect = pixelWidth / pixelHeight;
+    const vw = this.displayWidth || this.canvas.width;
+    const vh = this.displayHeight || this.canvas.height;
+
+    const imgX = this._imgOffsetX;
+    const imgY = this._imgOffsetY;
+
+    const imageCropX = Math.max(0, (this.cropRect.x * vw - imgX) / this.zoom);
+    const imageCropY = Math.max(0, (this.cropRect.y * vh - imgY) / this.zoom);
+    const imageCropW = Math.min(this.imageWidth - imageCropX, this.cropRect.width * vw / this.zoom);
+    const imageCropH = Math.min(this.imageHeight - imageCropY, this.cropRect.height * vh / this.zoom);
+
+    const pixelWidth = Math.round(imageCropW);
+    const pixelHeight = Math.round(imageCropH);
+    const aspect = pixelWidth / Math.max(pixelHeight, 1);
 
     if (outputWidth && outputWidth > 0 && outputHeight && outputHeight > 0) {
       return { width: outputWidth, height: outputHeight };
@@ -175,30 +290,49 @@ export class RuiCropperCanvas {
     offscreen.width = width;
     offscreen.height = height;
     const offCtx = offscreen.getContext('2d');
-    if (!offCtx) throw new Error('Could not get offscreen 2D context');
+    if (!offCtx || !this.image) throw new Error('Could not get offscreen 2D context');
 
-    const cropPixelX = this.cropRect.x * this.imageWidth;
-    const cropPixelY = this.cropRect.y * this.imageHeight;
-    const srcWidth = this.cropRect.width * this.imageWidth;
-    const srcHeight = this.cropRect.height * this.imageHeight;
+    const vw = this.displayWidth || this.canvas.width;
+    const vh = this.displayHeight || this.canvas.height;
 
-    offCtx.save();
+    const imgX = this._imgOffsetX;
+    const imgY = this._imgOffsetY;
+
+    const imageCropX = (this.cropRect.x * vw - imgX) / this.zoom;
+    const imageCropY = (this.cropRect.y * vh - imgY) / this.zoom;
+    const srcWidth = this.cropRect.width * vw / this.zoom;
+    const srcHeight = this.cropRect.height * vh / this.zoom;
+
+    const sx = Math.round(Math.max(0, imageCropX));
+    const sy = Math.round(Math.max(0, imageCropY));
+    const sw = Math.round(Math.min(srcWidth, this.imageWidth - sx));
+    const sh = Math.round(Math.min(srcHeight, this.imageHeight - sy));
+
     offCtx.translate(width / 2, height / 2);
     offCtx.rotate((this.rotation * Math.PI) / 180);
-    offCtx.translate(-width / 2, -height / 2);
     offCtx.drawImage(
-      this.image!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-      cropPixelX,
-      cropPixelY,
-      srcWidth,
-      srcHeight,
-      0,
-      0,
+      this.image,
+      sx,
+      sy,
+      sw,
+      sh,
+      -width / 2,
+      -height / 2,
       width,
       height,
     );
-    offCtx.restore();
 
     return offscreen;
+  }
+
+  private _clampCropRect(): void {
+    if (this.cropRect.x < 0) this.cropRect.x = 0;
+    if (this.cropRect.y < 0) this.cropRect.y = 0;
+    if (this.cropRect.x + this.cropRect.width > 1) {
+      this.cropRect.x = 1 - this.cropRect.width;
+    }
+    if (this.cropRect.y + this.cropRect.height > 1) {
+      this.cropRect.y = 1 - this.cropRect.height;
+    }
   }
 }

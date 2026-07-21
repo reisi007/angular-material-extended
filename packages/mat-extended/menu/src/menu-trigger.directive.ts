@@ -34,7 +34,11 @@ export class RuiMenuTrigger {
   open(): void {
     const items = this.ruiMenuTrigger();
     if (!items) return;
-    this._menuService.open(items, { ...this._defaults, ...this.ruiMenuConfig() }, this._elementRef.nativeElement);
+    this._menuService.open(items, {
+      ...this._defaults,
+      ...this.ruiMenuConfig(),
+      onClose: () => this.isOpen.set(false),
+    }, this._elementRef.nativeElement);
     this.isOpen.set(true);
   }
 

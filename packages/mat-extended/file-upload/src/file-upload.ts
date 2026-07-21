@@ -5,28 +5,32 @@ import {
   output,
   signal,
   computed,
+  booleanAttribute,
   ChangeDetectionStrategy,
   DestroyRef,
   inject,
   afterNextRender,
   viewChild,
   ElementRef,
-  booleanAttribute,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { RuiValueAccessor, ensureBrowser } from '@all-the.rest/mat-extended';
+import { RuiValueAccessor } from '@all-the.rest/mat-extended';
 import { RuiFileItem, RuiUploadStatus, RuiUploadHandler, RuiValidationError } from './file-upload.types';
 import { RUI_FILE_UPLOAD_DEFAULT_OPTIONS } from './file-upload.config';
+import { RuiFileUploadDropzone } from './file-upload-dropzone.component';
+import { RuiFileUploadItem } from './file-upload-item.component';
+import { RuiFileUploadProgress } from './file-upload-progress.component';
 
 @Component({
   selector: 'rui-file-upload',
   standalone: true,
-  imports: [FormsModule, DragDropModule],
+  imports: [FormsModule, DragDropModule, RuiFileUploadDropzone, RuiFileUploadItem, RuiFileUploadProgress],
   templateUrl: './file-upload.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'block',
+    '(dragenter)': 'onDragEnter($event)',
     '(dragover)': 'onDragOver($event)',
     '(dragleave)': 'onDragLeave($event)',
     '(drop)': 'onDrop($event)',
@@ -40,14 +44,16 @@ import { RUI_FILE_UPLOAD_DEFAULT_OPTIONS } from './file-upload.config';
 export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
   readonly multiple = input<boolean>(true);
   readonly accept = input<string>('*/*');
-  readonly maxSize = input<number>(10 * 1024 * 1024);
+  readonly maxSize = input<number>(Infinity);
   readonly maxFiles = input<number>(10);
   readonly uploadHandler = input<RuiUploadHandler | undefined>(undefined);
-  readonly sortable = input<boolean, boolean>(false, { transform: booleanAttribute });
   readonly autoUpload = input<boolean, boolean>(false, { transform: booleanAttribute });
-  readonly editable = input<boolean, boolean>(false, { transform: booleanAttribute });
-  readonly fileManagement = input<boolean, boolean>(true, { transform: booleanAttribute });
   readonly initialFiles = input<RuiFileItem[]>([]);
+  readonly sortable = input<boolean, boolean>(false, { transform: booleanAttribute });
+  readonly dragStartDelay = input<number>(0);
+  readonly editable = input<boolean, boolean>(false, { transform: booleanAttribute });
+  readonly editableExtension = input<boolean, boolean>(true, { transform: booleanAttribute });
+  readonly fileManagement = input<boolean, boolean>(true, { transform: booleanAttribute });
 
   readonly dropzoneText = input('Drag & drop files here or click to browse');
   readonly browseText = input('Select files to upload');
@@ -57,11 +63,12 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
   readonly files = model<RuiFileItem[]>([]);
   readonly uploadStart = output<RuiFileItem[]>();
   readonly validationErrors = output<RuiValidationError[]>();
-  readonly rename = output<RuiFileItem>();
-  readonly deleteFile = output<RuiFileItem>();
 
   readonly status = signal<RuiUploadStatus>('idle');
   readonly isDragOver = signal(false);
+  readonly displayErrors = signal<RuiValidationError[]>([]);
+  readonly editingItemId = signal<string | null>(null);
+  readonly editInputValue = signal('');
   readonly totalProgress = computed(() => {
     const fileList = this.files();
     if (fileList.length === 0) return 0;
@@ -71,17 +78,12 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
   readonly hasFiles = computed(() => this.files().length > 0);
   readonly isUploading = computed(() => this.status() === 'uploading');
 
-  readonly editingItemId = signal<string | null>(null);
-  readonly editInputValue = signal('');
-
-  protected Math = Math;
-
   private readonly defaults = inject(RUI_FILE_UPLOAD_DEFAULT_OPTIONS, { optional: true });
   private readonly destroyRef = inject(DestroyRef);
   private abortControllers = new Map<string, AbortController>();
+  private nextId = 0;
 
-  readonly dropzoneRef = viewChild<ElementRef<HTMLElement>>('dropzone');
-  readonly renameInputRef = viewChild<ElementRef<HTMLInputElement>>('renameInput');
+  readonly fileInputRef = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
   constructor() {
     super();
@@ -102,21 +104,23 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
   }
 
   openFilePicker(): void {
-    if (!ensureBrowser()) return;
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = this.multiple();
-    input.accept = this.accept();
-    input.addEventListener('change', (event: Event) => this.onFilesSelected(event));
-    input.click();
+    this.fileInputRef()?.nativeElement.click();
   }
 
   onFilesSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
-      this.processFiles(target.files);
+      this.processFiles(Array.from(target.files));
     }
     target.value = '';
+  }
+
+  onDragEnter(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.disabled()) {
+      this.isDragOver.set(true);
+    }
   }
 
   onDragOver(event: DragEvent): void {
@@ -139,11 +143,12 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
     this.isDragOver.set(false);
     if (this.disabled()) return;
     if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
-      this.processFiles(event.dataTransfer.files);
+      this.processFiles(Array.from(event.dataTransfer.files));
     }
   }
 
   processFiles(fileList: FileList | File[]): void {
+    this.displayErrors.set([]);
     const currentFiles = this.files();
     const maxFiles = this.maxFiles();
     const maxSize = this.maxSize();
@@ -153,6 +158,7 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
     if (remaining <= 0) {
       validationErrors.push({ type: 'count', message: `Maximum ${maxFiles} files allowed` });
       this.validationErrors.emit(validationErrors);
+      this.displayErrors.set(validationErrors);
       return;
     }
 
@@ -161,6 +167,7 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
 
     for (let i = 0; i < filesToProcess; i++) {
       const file = fileList[i];
+      if (!file) continue;
 
       if (file.size > maxSize) {
         validationErrors.push({
@@ -185,7 +192,7 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
       }
 
       newItems.push({
-        id: this.generateId(),
+        id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`,
         file,
         preview,
         status: 'selected',
@@ -196,6 +203,9 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
 
     if (validationErrors.length > 0) {
       this.validationErrors.emit(validationErrors);
+      this.displayErrors.set(validationErrors);
+    } else {
+      this.displayErrors.set([]);
     }
 
     if (newItems.length > 0) {
@@ -225,10 +235,6 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
     });
   }
 
-  private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
-  }
-
   removeFile(id: string): void {
     const currentFiles = this.files();
     const item = currentFiles.find(f => f.id === id);
@@ -236,13 +242,10 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
 
     const updated = currentFiles.filter(f => f.id !== id);
     this.updateFiles(updated);
-    if (item) this.deleteFile.emit(item);
 
     if (updated.length === 0) {
       this.status.set('idle');
     }
-
-    this.dropzoneRef()?.nativeElement.focus();
   }
 
   async startUpload(): Promise<void> {
@@ -309,66 +312,6 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
     );
   }
 
-  retryFile(id: string): void {
-    this.files.update(files =>
-      files.map(f =>
-        f.id === id
-          ? { ...f, status: 'selected' as const, progress: 0, error: undefined }
-          : f,
-      ),
-    );
-    this.startUpload();
-  }
-
-  clearAll(): void {
-    for (const item of this.files()) {
-      if (item.preview) URL.revokeObjectURL(item.preview);
-    }
-    this.updateFiles([]);
-    this.status.set('idle');
-  }
-
-  startRename(id: string): void {
-    const item = this.files().find(f => f.id === id);
-    if (item) {
-      this.editingItemId.set(id);
-      this.editInputValue.set(item.editName ?? item.file.name);
-      requestAnimationFrame(() => {
-        const inputEl = this.renameInputRef()?.nativeElement;
-        inputEl?.focus();
-        inputEl?.select();
-      });
-    }
-  }
-
-  confirmRename(id: string): void {
-    const newName = this.editInputValue().trim() || this.files().find(f => f.id === id)?.file.name || '';
-    this.files.update(files =>
-      files.map(f =>
-        f.id === id
-          ? { ...f, editName: newName }
-          : f,
-      ),
-    );
-    const updated = this.files().find(f => f.id === id);
-    if (updated) {
-      this.rename.emit(updated);
-    }
-    this.editingItemId.set(null);
-    this.editInputValue.set('');
-  }
-
-  cancelRename(): void {
-    this.editingItemId.set(null);
-    this.editInputValue.set('');
-  }
-
-  onDropListDropped(event: CdkDragDrop<RuiFileItem[]>): void {
-    const current = [...this.files()];
-    moveItemInArray(current, event.previousIndex, event.currentIndex);
-    this.updateFiles(current);
-  }
-
   formatSize(bytes: number): string {
     if (bytes === 0) return '0 B';
     const units = ['B', 'KB', 'MB', 'GB', 'TB'];
@@ -376,6 +319,116 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     const size = parseFloat((bytes / Math.pow(k, i)).toFixed(1));
     return `${size} ${units[i]}`;
+  }
+
+  onDropListDropped(event: CdkDragDrop<RuiFileItem[]>): void {
+    if (event.previousIndex === event.currentIndex) return;
+    const current = [...this.files()];
+    moveItemInArray(current, event.previousIndex, event.currentIndex);
+    this.updateFiles(current);
+  }
+
+  onItemRemove(id: string): void {
+    this.removeFile(id);
+  }
+
+  onItemCancelUpload(id: string): void {
+    this.cancelUpload(id);
+  }
+
+  onItemRetry(id: string, item: RuiFileItem): void {
+    const handler = this.uploadHandler();
+    if (!handler) return;
+    this.status.set('uploading');
+    const controller = new AbortController();
+    this.abortControllers.set(id, controller);
+    this.files.update(files =>
+      files.map(f => f.id === id ? { ...f, status: 'uploading' as const, progress: 0 } : f),
+    );
+    handler(item, controller.signal)
+      .then(() => {
+        if (!controller.signal.aborted) {
+          this.files.update(files =>
+            files.map(f => f.id === id ? { ...f, status: 'done' as const, progress: 100 } : f),
+          );
+        }
+      })
+      .catch((e: unknown) => {
+        if (!controller.signal.aborted) {
+          this.files.update(files =>
+            files.map(f =>
+              f.id === id
+                ? { ...f, status: 'error' as const, error: e instanceof Error ? e.message : 'Upload failed' }
+                : f,
+            ),
+          );
+        }
+      })
+      .finally(() => {
+        this.abortControllers.delete(id);
+        if (this.abortControllers.size === 0) {
+          this.status.set('idle');
+        }
+      });
+  }
+
+  onItemStartRename(item: RuiFileItem): void {
+    this.editingItemId.set(item.id);
+    const fullName = item.editName ?? item.file.name;
+    if (!this.editableExtension()) {
+      const lastDot = fullName.lastIndexOf('.');
+      this.editInputValue.set(lastDot > 0 ? fullName.slice(0, lastDot) : fullName);
+    } else {
+      this.editInputValue.set(fullName);
+    }
+  }
+
+  onItemConfirmRename(item: RuiFileItem): void {
+    let newName = this.editInputValue().trim();
+    if (!newName) return;
+    if (!this.editableExtension()) {
+      const fullName = item.editName ?? item.file.name;
+      const lastDot = fullName.lastIndexOf('.');
+      if (lastDot > 0) {
+        newName = newName + fullName.slice(lastDot);
+      }
+    }
+    this.files.update(files =>
+      files.map(f => f.id === item.id ? { ...f, editName: newName } : f),
+    );
+    this.editingItemId.set(null);
+    this.editInputValue.set('');
+  }
+
+  onItemCancelRename(): void {
+    this.editingItemId.set(null);
+    this.editInputValue.set('');
+  }
+
+  onItemEditInputChange(value: string): void {
+    this.editInputValue.set(value);
+  }
+
+  onItemMoveUp(index: number): void {
+    if (index <= 0) return;
+    const current = [...this.files()];
+    const temp = current[index];
+    const prev = current[index - 1];
+    if (temp === undefined || prev === undefined) return;
+    current[index] = prev;
+    current[index - 1] = temp;
+    this.updateFiles(current);
+  }
+
+  onItemMoveDown(index: number): void {
+    const current = [...this.files()];
+    if (index >= current.length - 1) return;
+    const temp = current[index];
+    const next = current[index + 1];
+    if (temp === undefined || next === undefined) return;
+    current[index] = next;
+    current[index + 1] = temp;
+    this.updateFiles(current);
   }
 
   override writeValue(value: RuiFileItem[] | undefined): void {

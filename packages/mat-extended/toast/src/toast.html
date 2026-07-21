@@ -6,10 +6,10 @@
   [attr.role]="config().kind === 'error' ? 'alert' : 'status'"
   [attr.aria-live]="config().ariaLive || (config().kind === 'error' ? 'assertive' : 'polite')"
 >
-  <span class="shrink-0 text-xl" [innerHTML]="icon()"></span>
+  <rui-toast-icon [kind]="config().kind ?? 'info'" />
   <span class="flex-1 text-sm">{{ config().message }}</span>
   @if (config().action) {
-    <button class="px-3 py-1 border-none rounded bg-[var(--mat-sys-primary-container)] text-[var(--mat-sys-on-primary-container)] cursor-pointer text-xs font-medium" (click)="onAction()">{{ config().action!.label }}</button>
+    <rui-toast-action [action]="config().action!" (actionClick)="config().action!.onClick()" />
   }
   @if (config().dismissible) {
     <button class="flex items-center justify-center w-6 h-6 border-none bg-transparent cursor-pointer text-[var(--mat-sys-on-surface-variant)] rounded-full hover:bg-[var(--mat-sys-surface-container-high)]" (click)="dismiss.emit()" aria-label="Dismiss">&times;</button>

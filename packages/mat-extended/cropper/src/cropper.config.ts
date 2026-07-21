@@ -10,7 +10,7 @@ export const RUI_CROPPER_DEFAULT_OPTIONS = new InjectionToken<RuiCropperOptions>
 );
 
 export const RUI_CROPPER_DEFAULTS: RuiCropperOptions = {
-  aspectRatio: 'free',
+  aspectRatio: '16:9',
   outputFormat: 'image/png',
   outputQuality: 0.92,
   maintainAspectRatio: true,
@@ -20,4 +20,6 @@ export const RUI_CROPPER_DEFAULTS: RuiCropperOptions = {
   outputHeight: 0,
   zoomStep: 0.1,
   rotateStep: 90,
+  rotationMin: -45,
+  rotationMax: 45,
 };

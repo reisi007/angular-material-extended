@@ -12,6 +12,14 @@ export interface RuiDataColumn<T> {
   headerTemplate?: TemplateRef<void>;
 }
 
+export interface RuiDataAction<T> {
+  label: string;
+  icon?: string;
+  action: (row: T) => void;
+  disabled?: (row: T) => boolean;
+  divider?: boolean;
+}
+
 export interface RuiDataTableConfig {
   pageSize?: number;
   pageSizeOptions?: number[];
@@ -19,6 +27,7 @@ export interface RuiDataTableConfig {
   filterable?: boolean;
   selectable?: boolean;
   stickyHeader?: boolean;
+  expandable?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   trackBy?: (index: number, item: any) => any;
 }

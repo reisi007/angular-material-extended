@@ -28,7 +28,7 @@ export class RuiDialogService {
       return this._createDummyRef<T>();
     }
 
-    const merged: RuiDialogConfig<T> = { ...this._defaults, ...config };
+    const merged = { ...this._defaults, ...config } as RuiDialogConfig<T>;
     return this._createDialog<T>(merged);
   }
 
@@ -44,14 +44,30 @@ export class RuiDialogService {
 
     const portal = new ComponentPortal(RuiDialogComponent);
     const componentRef = overlayRef.attach(portal);
-    componentRef.setInput('config', config);
 
-    let resolveClosed:
-      | ((result?: T) => void)
-      | undefined;
+    let resolveClosed: ((result?: T) => void) | undefined;
     let resolveDismissed: (() => void) | undefined;
     const afterClosed = new Promise<T | undefined>((resolve) => { resolveClosed = resolve; });
     const afterDismissed = new Promise<void>((resolve) => { resolveDismissed = resolve; });
+
+    const ref: RuiDialogRef<T> = {
+      id,
+      close: (result?: T) => {
+        this._destroy(id);
+        if (resolveClosed) resolveClosed(result);
+      },
+      dismiss: () => {
+        if (config.disableClose) return;
+        this._destroy(id);
+        if (resolveDismissed) resolveDismissed();
+        if (resolveClosed) resolveClosed(undefined);
+      },
+      afterClosed,
+      afterDismissed,
+    };
+
+    const ctx = { ...(config.context ?? {}), $implicit: ref, dialogRef: ref };
+    componentRef.setInput('config', { ...config, context: ctx });
 
     componentRef.instance.dismiss.subscribe(() => {
       if (config.disableClose) return;
@@ -81,22 +97,6 @@ export class RuiDialogService {
       ref: overlayRef,
       componentRef,
     });
-
-    const ref: RuiDialogRef<T> = {
-      id,
-      close: (result?: T) => {
-        this._destroy(id);
-        if (resolveClosed) resolveClosed(result);
-      },
-      dismiss: () => {
-        if (config.disableClose) return;
-        this._destroy(id);
-        if (resolveDismissed) resolveDismissed();
-        if (resolveClosed) resolveClosed(undefined);
-      },
-      afterClosed,
-      afterDismissed,
-    };
 
     return ref;
   }

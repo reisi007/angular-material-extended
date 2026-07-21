@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FocusTrapFactory, FocusTrap } from '@angular/cdk/a11y';
 import { RuiDialogConfig } from './dialog.types';
+import { RuiDialogHeaderComponent } from './dialog-header.component';
+import { RuiDialogFooterComponent } from './dialog-footer.component';
 
 @Component({
   selector: 'rui-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RuiDialogHeaderComponent, RuiDialogFooterComponent],
   templateUrl: './dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

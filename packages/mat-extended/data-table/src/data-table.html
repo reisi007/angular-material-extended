@@ -1,25 +1,29 @@
 <div>
-  @if (mergedConfig().filterable) {
-    <mat-form-field class="w-full mb-2">
-      <mat-label>Filter</mat-label>
-      <input matInput (input)="onFilterInput($any($event).target.value)" [value]="filterValue()" placeholder="Search..." />
-    </mat-form-field>
-  }
+  <rui-data-table-filter [filterValue]="filterValue()" [filterable]="mergedConfig().filterable" (filterChange)="onFilterInput($event)" />
 
-  @if (loading()) {
-    <div class="flex justify-center p-6"><mat-spinner diameter="32" /></div>
-  }
+  <rui-data-table-loading [loading]="loading()" />
 
   <div class="overflow-x-auto">
-    <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange($event)" class="w-full">
+    <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange($event)" class="w-full" [multiTemplateDataRows]="!!expandedRowTemplate()">
 
       @if (mergedConfig().selectable) {
         <ng-container matColumnDef="_select">
-          <th mat-header-cell *matHeaderCellDef>
+          <th mat-header-cell *matHeaderCellDef class="w-[48px]">
             <mat-checkbox (change)="toggleAllRows()" [checked]="isAllSelected()" [indeterminate]="selectedItems().length > 0 && !isAllSelected()" [aria-label]="checkboxLabel()"></mat-checkbox>
           </th>
-          <td mat-cell *matCellDef="let row">
+          <td mat-cell *matCellDef="let row" class="w-[48px]">
             <mat-checkbox (click)="$event.stopPropagation()" (change)="toggleRow(row)" [checked]="selectedItems().includes(row)" [aria-label]="checkboxLabel(row)"></mat-checkbox>
+          </td>
+        </ng-container>
+      }
+
+      @if (expandedRowTemplate()) {
+        <ng-container matColumnDef="_expand">
+          <th mat-header-cell *matHeaderCellDef class="w-[48px]"></th>
+          <td mat-cell *matCellDef="let row" class="w-[48px]">
+            <button mat-icon-button (click)="toggleRowExpansion(row); $event.stopPropagation()" [attr.aria-label]="isRowExpanded(row) ? 'Collapse row' : 'Expand row'">
+              <mat-icon>{{ isRowExpanded(row) ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
           </td>
         </ng-container>
       }
@@ -43,20 +47,58 @@
         </ng-container>
       }
 
+      @if (hasActions()) {
+        <ng-container matColumnDef="_actions">
+          <th mat-header-cell *matHeaderCellDef class="w-[56px]"></th>
+          <td mat-cell *matCellDef="let row" class="w-[56px]">
+            <button mat-icon-button [matMenuTriggerFor]="rowMenu" (click)="$event.stopPropagation()" aria-label="Row actions">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #rowMenu="matMenu">
+              @for (action of actions(); track action.label) {
+                @if (action.divider) {
+                  <mat-divider />
+                } @else {
+                  <button mat-menu-item (click)="action.action(row)" [disabled]="action.disabled?.(row)">
+                    @if (action.icon) {
+                      <mat-icon>{{ action.icon }}</mat-icon>
+                    }
+                    <span>{{ action.label }}</span>
+                  </button>
+                }
+              }
+            </mat-menu>
+          </td>
+        </ng-container>
+      }
+
+      @if (expandedRowTemplate()) {
+        <ng-container matColumnDef="_expandedDetail">
+          <td mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns().length">
+            @if (isRowExpanded(row)) {
+              <div class="p-4">
+                <ng-container *ngTemplateOutlet="expandedRowTemplate()!; context: { $implicit: row }" />
+              </div>
+            }
+          </td>
+        </ng-container>
+      }
+
       <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns();"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns();" [class.cursor-pointer]="!!expandedRowTemplate()" (click)="expandedRowTemplate() ? toggleRowExpansion(row) : undefined"></tr>
+
+      @if (expandedRowTemplate()) {
+        <tr mat-row *matRowDef="let row; columns: ['_expandedDetail']"
+            [style.display]="isRowExpanded(row) ? '' : 'none'"></tr>
+      }
 
       <tr mat-row *matNoDataRow>
-        <td [attr.colspan]="displayedColumns().length">{{ emptyMessage() }}</td>
+        <td [attr.colspan]="displayedColumns().length">
+          <rui-data-table-empty-state [message]="emptyMessage()" />
+        </td>
       </tr>
     </table>
   </div>
 
-  <mat-paginator
-    [pageSize]="mergedConfig().pageSize"
-    [pageSizeOptions]="mergedConfig().pageSizeOptions"
-    (page)="pageChange.emit($event)"
-    showFirstLastButtons
-    aria-label="Select page">
-  </mat-paginator>
+  <rui-data-table-paginator [pageSize]="mergedConfig().pageSize" [pageSizeOptions]="mergedConfig().pageSizeOptions" (pageChange)="pageChange.emit($event)" />
 </div>

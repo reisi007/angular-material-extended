@@ -1,4 +1,5 @@
 import { Injectable, Injector, inject, ComponentRef, DestroyRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { Overlay, OverlayRef, ConnectedPosition } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { RuiMenuPanel } from './menu-panel.component';
@@ -10,11 +11,13 @@ import { RUI_MENU_DEFAULT_OPTIONS } from './menu.config';
 export class RuiMenuService {
   private _overlay = inject(Overlay);
   private _injector = inject(Injector);
+  private _router = inject(Router);
   private _defaults = inject(RUI_MENU_DEFAULT_OPTIONS);
   private _destroyRef = inject(DestroyRef);
 
   private _activeOverlay: OverlayRef | null = null;
   private _activeComponentRef: ComponentRef<RuiMenuPanel> | null = null;
+  private _onClose: (() => void) | null = null;
 
   open(items: RuiMenuItem[], config: RuiMenuConfig, origin: HTMLElement): void {
     this.close();
@@ -45,7 +48,15 @@ export class RuiMenuService {
       if (config.closeOnSelect ?? this._defaults.closeOnSelect ?? true) {
         this.close();
       }
-      item.handler?.();
+      if (item.routerLink) {
+        if (typeof item.routerLink === 'string') {
+          this._router.navigateByUrl(item.routerLink);
+        } else {
+          this._router.navigate(item.routerLink);
+        }
+      } else {
+        item.handler?.();
+      }
     });
 
     const closeSub = componentRef.instance.closePanel.subscribe(() => {
@@ -83,6 +94,7 @@ export class RuiMenuService {
       this._activeComponentRef = null;
     });
 
+    this._onClose = config.onClose ?? null;
     this._activeOverlay = overlayRef;
     this._activeComponentRef = componentRef;
 
@@ -90,6 +102,8 @@ export class RuiMenuService {
   }
 
   close(): void {
+    this._onClose?.();
+    this._onClose = null;
     const overlay = this._activeOverlay;
     if (overlay) {
       this._activeOverlay = null;

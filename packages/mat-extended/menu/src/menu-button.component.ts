@@ -29,7 +29,11 @@ export class RuiMenuButton {
       this._menuService.close();
       this.isOpen.set(false);
     } else {
-      this._menuService.open(menuItems, { ...this._defaults, ...this.config() }, this._elementRef.nativeElement);
+      this._menuService.open(menuItems, {
+        ...this._defaults,
+        ...this.config(),
+        onClose: () => this.isOpen.set(false),
+      }, this._elementRef.nativeElement);
       this.isOpen.set(true);
     }
   }

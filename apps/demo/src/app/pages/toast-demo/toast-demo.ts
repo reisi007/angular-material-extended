@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { RuiToastService, RuiToastPosition } from '@all-the.rest/mat-extended/toast';
+import { ShowcaseCode } from '../../shared/showcase-code';
 
 @Component({
   selector: 'rui-toast-demo',
@@ -17,25 +18,33 @@ import { RuiToastService, RuiToastPosition } from '@all-the.rest/mat-extended/to
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    ShowcaseCode,
   ],
   template: `
-    <div class="max-w-4xl mx-auto space-y-8 p-4">
-      <h1 class="text-2xl font-bold">Toast / Notification</h1>
+<div class="max-w-4xl mx-auto space-y-8 p-4">
+  <h1 class="font-bold">Toast / Notification</h1>
 
-      <mat-card>
-        <mat-card-header><mat-card-title>Trigger Toasts</mat-card-title></mat-card-header>
-        <mat-card-content class="flex gap-4 flex-wrap">
+  <div class="pt-4 space-y-6">
+    <h2 id="toast-types" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Toast Types</h2>
+    <mat-card>
+      <mat-card-header><mat-card-title>Toast Types</mat-card-title></mat-card-header>
+      <mat-card-content class="space-y-3">
+        <div class="flex gap-4 flex-wrap">
           <button mat-raised-button color="primary" (click)="showSuccess()">Success</button>
           <button mat-raised-button color="warn" (click)="showError()">Error</button>
           <button mat-raised-button (click)="showInfo()">Info</button>
           <button mat-raised-button (click)="showWarning()">Warning</button>
           <button mat-raised-button (click)="dismissAll()">Dismiss All</button>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="toastTypesHtml" [ts]="toastTypesTs" />
 
-      <mat-card>
-        <mat-card-header><mat-card-title>Custom Toast</mat-card-title></mat-card-header>
-        <mat-card-content class="flex gap-4 items-end">
+    <h2 id="toast-custom-duration" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Custom Duration</h2>
+    <mat-card>
+      <mat-card-header><mat-card-title>Custom Duration</mat-card-title></mat-card-header>
+      <mat-card-content class="space-y-3">
+        <div class="flex gap-4 items-end">
           <mat-form-field>
             <mat-label>Message</mat-label>
             <input matInput [(ngModel)]="customMessage" />
@@ -45,18 +54,36 @@ import { RuiToastService, RuiToastPosition } from '@all-the.rest/mat-extended/to
             <input matInput type="number" [(ngModel)]="customDuration" />
           </mat-form-field>
           <button mat-raised-button (click)="showCustom()">Show Custom</button>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="customDurationHtml" [ts]="customDurationTs" />
 
-      <mat-card>
-        <mat-card-header><mat-card-title>Position</mat-card-title></mat-card-header>
-        <mat-card-content class="flex gap-4 flex-wrap">
+    <h2 id="toast-default-config" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Default Configuration</h2>
+    <mat-card>
+      <mat-card-header><mat-card-title>Default Configuration</mat-card-title></mat-card-header>
+      <mat-card-content class="space-y-3">
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
+          Override global toast defaults via the <code>RUI_TOAST_DEFAULT_OPTIONS</code> injection token in your app config.
+        </p>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="defaultConfigHtml" [ts]="defaultConfigTs" />
+
+    <h2 id="toast-position" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Position</h2>
+    <mat-card>
+      <mat-card-header><mat-card-title>Position</mat-card-title></mat-card-header>
+      <mat-card-content class="space-y-3">
+        <div class="flex gap-4 flex-wrap">
           @for (pos of positions; track pos) {
             <button mat-stroked-button (click)="showAtPosition(pos)">{{ pos }}</button>
           }
-        </mat-card-content>
-      </mat-card>
-    </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="positionsHtml" [ts]="positionsTs" />
+  </div>
+</div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -73,6 +100,75 @@ export class ToastDemo {
     'bottom-center',
     'bottom-end',
   ];
+
+  protected toastTypesHtml = `<button mat-raised-button color="primary" (click)="showSuccess()">Success</button>
+<button mat-raised-button color="warn" (click)="showError()">Error</button>
+<button mat-raised-button (click)="showInfo()">Info</button>
+<button mat-raised-button (click)="showWarning()">Warning</button>`;
+
+  protected toastTypesTs = [
+    `import { RuiToastService } from '@all-the.rest/mat-extended/toast';`,
+    ``,
+    `const toast = inject(RuiToastService);`,
+    ``,
+    `toast.success('Operation completed!', {`,
+    `  action: { label: 'Undo', onClick: () => ... }`,
+    `});`,
+    `toast.error('Something went wrong!');`,
+    `toast.info('You have new messages.');`,
+    `toast.warning('Session expiring soon.');`,
+  ].join('\n');
+
+  protected customDurationHtml = `<mat-form-field>
+  <mat-label>Message</mat-label>
+  <input matInput [(ngModel)]="message" />
+</mat-form-field>
+<mat-form-field>
+  <mat-label>Duration (ms)</mat-label>
+  <input matInput type="number" [(ngModel)]="duration" />
+</mat-form-field>
+<button mat-raised-button (click)="showCustom()">Show Custom</button>`;
+
+  protected customDurationTs = [
+    `toast.show({`,
+    `  message: 'Custom message',`,
+    `  duration: 5000,`,
+    `  kind: 'info',`,
+    `});`,
+  ].join('\n');
+
+  protected positionsHtml = `@for (pos of positions; track pos) {
+  <button mat-stroked-button (click)="showAtPosition(pos)">{{ pos }}</button>
+}`;
+
+  protected positionsTs = [
+    `toast.show({`,
+    `  message: 'Toast message',`,
+    `  position: 'top-end',`,
+    `  duration: 3000,`,
+    `});`,
+  ].join('\n');
+
+  protected defaultConfigHtml = `<!-- Default config is set via provider -->`;
+
+  protected defaultConfigTs = [
+    `import { ApplicationConfig } from '@angular/core';`,
+    `import { RUI_TOAST_DEFAULT_OPTIONS }`,
+    `  from '@all-the.rest/mat-extended/toast';`,
+    ``,
+    `export const appConfig: ApplicationConfig = {`,
+    `  providers: [`,
+    `    {`,
+    `      provide: RUI_TOAST_DEFAULT_OPTIONS,`,
+    `      useValue: {`,
+    `        duration: 3000,`,
+    `        position: 'bottom-start',`,
+    `        kind: 'info',`,
+    `      },`,
+    `    },`,
+    `  ],`,
+    `};`,
+  ].join('\n');
 
   showSuccess(): void {
     this.toastService.success('Operation completed successfully!', {

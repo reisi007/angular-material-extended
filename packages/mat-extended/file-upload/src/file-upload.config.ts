@@ -9,7 +9,7 @@ export const RUI_FILE_UPLOAD_DEFAULT_OPTIONS = new InjectionToken<RuiFileUploadO
 export const RUI_FILE_UPLOAD_DEFAULTS: RuiFileUploadOptions = {
   multiple: true,
   accept: '*/*',
-  maxSize: 10 * 1024 * 1024,
+  maxSize: Infinity,
   maxFiles: 10,
   sortable: false,
   autoUpload: false,

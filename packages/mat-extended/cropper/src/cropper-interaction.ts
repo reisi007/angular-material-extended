@@ -30,8 +30,8 @@ export class RuiCropperInteraction {
   updateRect(
     x: number,
     y: number,
-    _canvasWidth: number,
-    _canvasHeight: number,
+    canvasWidth: number,
+    canvasHeight: number,
     aspectRatio: number | null,
     minWidth = 0.005,
     minHeight = 0.005,
@@ -125,19 +125,19 @@ export class RuiCropperInteraction {
 
     switch (this.mode) {
       case 'resize-se':
-        return { x: start.x, y: start.y, width: w, height: h };
+        return { ...rect, width: w, height: h };
       case 'resize-nw': {
         const ax = start.x + start.width;
         const ay = start.y + start.height;
-        return { x: ax - w, y: ay - h, width: w, height: h };
+        return { ...rect, x: ax - w, y: ay - h, width: w, height: h };
       }
       case 'resize-ne': {
         const ay = start.y + start.height;
-        return { x: start.x, y: ay - h, width: w, height: h };
+        return { ...rect, y: ay - h, width: w, height: h };
       }
       case 'resize-sw': {
         const ax = start.x + start.width;
-        return { x: ax - w, y: start.y, width: w, height: h };
+        return { ...rect, x: ax - w, width: w, height: h };
       }
       default:
         return rect;

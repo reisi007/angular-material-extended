@@ -10,5 +10,5 @@ export const RUI_TOAST_DEFAULTS: Partial<RuiToastConfig> = {
   kind: 'info',
   duration: 5000,
   dismissible: true,
-  position: 'bottom-center',
+  position: 'top-end',
 };

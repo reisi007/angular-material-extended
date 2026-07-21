@@ -4,6 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { RuiMenuButton } from '@all-the.rest/mat-extended/menu';
 import type { RuiMenuItem } from '@all-the.rest/mat-extended/menu';
+import { ShowcaseCode } from '../../shared/showcase-code';
 
 @Component({
   selector: 'rui-menu-demo',
@@ -13,32 +14,59 @@ import type { RuiMenuItem } from '@all-the.rest/mat-extended/menu';
     MatCardModule,
     MatButtonModule,
     RuiMenuButton,
+    ShowcaseCode,
   ],
   template: `
-    <div class="max-w-4xl mx-auto space-y-8 p-4">
-      <h1 class="text-2xl font-bold">Menu / Hamburger</h1>
+<div class="max-w-4xl mx-auto space-y-8 p-4">
+  <h1 class="font-bold">Menu / Hamburger</h1>
 
-      <mat-card>
-        <mat-card-header><mat-card-title>Hamburger Menu</mat-card-title></mat-card-header>
-        <mat-card-content>
-          <rui-menu-button [items]="menuItems" />
-        </mat-card-content>
-      </mat-card>
+  <div class="pt-4 space-y-6">
+    <h2 id="menu-basic" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Basic Hamburger Menu</h2>
+    <mat-card>
+      <mat-card-header><mat-card-title>Basic Hamburger Menu</mat-card-title></mat-card-header>
+      <mat-card-content class="space-y-3">
+        <rui-menu-button [items]="menuItems" />
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="basicHtml" [ts]="basicTs" />
 
-      <mat-card>
-        <mat-card-header><mat-card-title>Menu with Icons</mat-card-title></mat-card-header>
-        <mat-card-content>
-          <rui-menu-button [items]="iconMenuItems" />
-        </mat-card-content>
-      </mat-card>
+    <h2 id="menu-icons" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Menu with Icons</h2>
+    <mat-card>
+      <mat-card-header><mat-card-title>Menu with Icons</mat-card-title></mat-card-header>
+      <mat-card-content class="space-y-3">
+        <rui-menu-button [items]="iconMenuItems" />
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="iconHtml" [ts]="iconTs" />
 
-      <mat-card>
-        <mat-card-header><mat-card-title>Menu with Separator and Disabled Items</mat-card-title></mat-card-header>
-        <mat-card-content>
-          <rui-menu-button [items]="advancedMenuItems" />
-        </mat-card-content>
-      </mat-card>
-    </div>
+    <h2 id="menu-disabled" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Menu with Disabled Items</h2>
+    <mat-card>
+      <mat-card-header><mat-card-title>Menu with Disabled Items</mat-card-title></mat-card-header>
+      <mat-card-content class="space-y-3">
+        <rui-menu-button [items]="disabledMenuItems" />
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="disabledHtml" [ts]="disabledTs" />
+
+     <h2 id="menu-divider" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Menu with Divider / Separator</h2>
+     <mat-card>
+       <mat-card-header><mat-card-title>Menu with Divider / Separator</mat-card-title></mat-card-header>
+       <mat-card-content class="space-y-3">
+         <rui-menu-button [items]="advancedMenuItems" />
+       </mat-card-content>
+     </mat-card>
+     <rui-showcase-code [html]="advancedHtml" [ts]="advancedTs" />
+
+     <h2 id="menu-router-links" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Menu with Router Links</h2>
+     <mat-card>
+       <mat-card-header><mat-card-title>Menu with Router Links</mat-card-title></mat-card-header>
+       <mat-card-content class="space-y-3">
+         <rui-menu-button [items]="routerMenuItems" />
+       </mat-card-content>
+     </mat-card>
+     <rui-showcase-code [html]="routerHtml" [ts]="routerTs" />
+  </div>
+</div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -52,19 +80,141 @@ export class MenuDemo {
   ];
 
   iconMenuItems: RuiMenuItem[] = [
-    { label: 'Edit', icon: '✎', handler: () => alert('Edit') },
-    { label: 'Copy', icon: '📋', handler: () => alert('Copy') },
-    { label: 'Delete', icon: '🗑', handler: () => alert('Delete') },
+    { label: 'Edit', icon: 'edit', handler: () => alert('Edit') },
+    { label: 'Copy', icon: 'content_copy', handler: () => alert('Copy') },
+    { label: 'Delete', icon: 'delete', handler: () => alert('Delete') },
   ];
 
-  advancedMenuItems: RuiMenuItem[] = [
-    { label: 'New File', icon: '📄', handler: () => alert('New File') },
-    { label: 'Open', icon: '📁', handler: () => alert('Open') },
+  disabledMenuItems: RuiMenuItem[] = [
+    { label: 'New File', icon: 'description', handler: () => alert('New File') },
+    { label: 'Open', icon: 'folder_open', handler: () => alert('Open') },
     { separator: true },
-    { label: 'Save', icon: '💾', handler: () => alert('Save') },
-    { label: 'Save As...', icon: '💿', handler: () => alert('Save As...'), disabled: true },
-    { separator: true },
-    { label: 'Export', icon: '📤', children: [{ label: 'PDF' }, { label: 'CSV' }] },
-    { label: 'Print', icon: '🖨', handler: () => alert('Print') },
+    { label: 'Save', icon: 'save', handler: () => alert('Save') },
+    { label: 'Save As...', icon: 'save_as', handler: () => alert('Save As...'), disabled: true },
   ];
+
+   advancedMenuItems: RuiMenuItem[] = [
+    { label: 'New File', icon: 'description', handler: () => alert('New File') },
+    { label: 'Open', icon: 'folder_open', handler: () => alert('Open') },
+    { separator: true },
+    { label: 'Save', icon: 'save', handler: () => alert('Save') },
+    { label: 'Save As...', icon: 'save_as', handler: () => alert('Save As...'), disabled: true },
+    { separator: true },
+    { label: 'Export', icon: 'file_upload', children: [
+      { label: 'PDF', handler: () => alert('Export PDF') },
+      { label: 'CSV', handler: () => alert('Export CSV') },
+    ]},
+    { label: 'Print', icon: 'print', handler: () => alert('Print') },
+  ];
+
+  routerMenuItems: RuiMenuItem[] = [
+    { label: 'Dashboard', icon: 'dashboard', routerLink: '/dashboard' },
+    { label: 'Settings', icon: 'settings', routerLink: '/settings' },
+    { separator: true },
+    { label: 'User Profile', icon: 'person', routerLink: ['/users', '123'] },
+    { label: 'Logout', icon: 'logout', handler: () => alert('Logout') },
+  ];
+
+  protected basicHtml = `<rui-menu-button [items]="menuItems" />`;
+
+  protected basicTs = [
+    `import { RuiMenuButton } from '@all-the.rest/mat-extended/menu';`,
+    `import type { RuiMenuItem } from '@all-the.rest/mat-extended/menu';`,
+    ``,
+    `@Component({`,
+    `  imports: [RuiMenuButton],`,
+    `})`,
+    `export class MyComponent {`,
+    `  menuItems: RuiMenuItem[] = [`,
+    `    { label: 'Profile', handler: () => ... },`,
+    `    { label: 'Settings', handler: () => ... },`,
+    `    { separator: true },`,
+    `    { label: 'Logout', handler: () => ... },`,
+    `  ];`,
+    `}`,
+  ].join('\n');
+
+  protected iconHtml = `<rui-menu-button [items]="iconMenuItems" />`;
+
+  protected iconTs = [
+    `import { RuiMenuButton } from '@all-the.rest/mat-extended/menu';`,
+    `import type { RuiMenuItem } from '@all-the.rest/mat-extended/menu';`,
+    ``,
+    `@Component({`,
+    `  imports: [RuiMenuButton],`,
+    `})`,
+    `export class MyComponent {`,
+    `  iconMenuItems: RuiMenuItem[] = [`,
+    `    { label: 'Edit', icon: 'edit', handler: () => ... },`,
+    `    { label: 'Copy', icon: 'content_copy', handler: () => ... },`,
+    `    { label: 'Delete', icon: 'delete', handler: () => ... },`,
+    `  ];`,
+    `}`,
+  ].join('\n');
+
+  protected disabledHtml = `<rui-menu-button [items]="disabledMenuItems" />`;
+
+  protected disabledTs = [
+    `import { RuiMenuButton } from '@all-the.rest/mat-extended/menu';`,
+    `import type { RuiMenuItem } from '@all-the.rest/mat-extended/menu';`,
+    ``,
+    `@Component({`,
+    `  imports: [RuiMenuButton],`,
+    `})`,
+    `export class MyComponent {`,
+    `  disabledMenuItems: RuiMenuItem[] = [`,
+    `    { label: 'New File', icon: 'description', handler: () => ... },`,
+    `    { label: 'Open', icon: 'folder_open', handler: () => ... },`,
+    `    { separator: true },`,
+    `    { label: 'Save', icon: 'save', handler: () => ... },`,
+    `    { label: 'Save As...', icon: 'save_as', handler: () => ..., disabled: true },`,
+    `  ];`,
+    `}`,
+  ].join('\n');
+
+   protected advancedHtml = `<rui-menu-button [items]="advancedMenuItems" />`;
+
+   protected advancedTs = [
+    `import { RuiMenuButton } from '@all-the.rest/mat-extended/menu';`,
+    `import type { RuiMenuItem } from '@all-the.rest/mat-extended/menu';`,
+    ``,
+    `@Component({`,
+    `  imports: [RuiMenuButton],`,
+    `})`,
+    `export class MyComponent {`,
+    `  advancedMenuItems: RuiMenuItem[] = [`,
+    `    { label: 'New File', icon: 'description', handler: () => ... },`,
+    `    { label: 'Open', icon: 'folder_open', handler: () => ... },`,
+    `    { separator: true },`,
+    `    { label: 'Save', icon: 'save', handler: () => ... },`,
+    `    { label: 'Save As...', icon: 'save_as', handler: () => ..., disabled: true },`,
+    `    { separator: true },`,
+    `    { label: 'Export', icon: 'file_upload', children: [`,
+    `      { label: 'PDF', handler: () => ... },`,
+    `      { label: 'CSV', handler: () => ... },`,
+    `    ]},`,
+    `    { label: 'Print', icon: 'print', handler: () => ... },`,
+    `  ];`,
+    `}`,
+  ].join('\n');
+
+  protected routerHtml = `<rui-menu-button [items]="routerMenuItems" />`;
+
+  protected routerTs = [
+    `import { RuiMenuButton } from '@all-the.rest/mat-extended/menu';`,
+    `import type { RuiMenuItem } from '@all-the.rest/mat-extended/menu';`,
+    ``,
+    `@Component({`,
+    `  imports: [RuiMenuButton],`,
+    `})`,
+    `export class MyComponent {`,
+    `  routerMenuItems: RuiMenuItem[] = [`,
+    `    { label: 'Dashboard', icon: 'dashboard', routerLink: '/dashboard' },`,
+    `    { label: 'Settings', icon: 'settings', routerLink: '/settings' },`,
+    `    { separator: true },`,
+    `    { label: 'User Profile', icon: 'person', routerLink: ['/users', '123'] },`,
+    `    { label: 'Logout', icon: 'logout', handler: () => ... },`,
+    `  ];`,
+    `}`,
+  ].join('\n');
 }

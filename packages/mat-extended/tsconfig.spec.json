@@ -9,6 +9,7 @@
     "src/**/*.d.ts",
     "cropper/src/**/*.ts",
     "file-upload/src/**/*.ts",
+    "file-manager/src/**/*.ts",
     "data-table/src/**/*.ts",
     "toast/src/**/*.ts",
     "dialog/src/**/*.ts",

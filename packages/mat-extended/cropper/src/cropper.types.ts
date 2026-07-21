@@ -13,6 +13,8 @@ export interface RuiCropperOptions {
   outputHeight?: number;
   zoomStep?: number;
   rotateStep?: number;
+  rotationMin?: number;
+  rotationMax?: number;
 }
 
 export interface RuiCropRect {

@@ -59,7 +59,8 @@ export class RuiToastService {
     this._enforceMaxToasts();
 
     const id = `rui-toast-${++this._counter}`;
-    const position = this._buildPosition(config.position ?? 'bottom-center');
+    const pos = config.position ?? this._defaults.position ?? 'top-end';
+    const position = this._buildPosition(pos);
 
     const overlayRef = this._overlay.create({
       positionStrategy: position,
@@ -69,7 +70,7 @@ export class RuiToastService {
 
     const portal = new ComponentPortal(RuiToastComponent);
     const componentRef = overlayRef.attach(portal);
-    componentRef.setInput('config', config);
+    componentRef.setInput('config', { ...config, position: pos });
 
     componentRef.instance.dismiss.subscribe(() => {
       this._dismiss(id);
@@ -88,6 +89,7 @@ export class RuiToastService {
     };
 
     this._activeToasts.set(id, { ref: overlayRef, componentRef });
+    this._repositionAll();
 
     if (config.duration && config.duration > 0) {
       setTimeout(() => this._dismiss(id), config.duration);
@@ -129,20 +131,28 @@ export class RuiToastService {
 
   private _repositionAll(): void {
     const entries = Array.from(this._activeToasts.entries());
-    for (let i = 0; i < entries.length; i++) {
-      const [, active] = entries[i];
-      const position = active.componentRef.instance.config().position ?? 'bottom-center';
-      const strategy = this._buildPosition(position);
-      const isTop = position.startsWith('top');
+    const groups = new Map<string, { index: number; active: ActiveToast }[]>();
 
-      if (isTop) {
-        strategy.top(`${16 + i * (TOAST_GAP + 56)}px`);
-      } else {
-        strategy.bottom(`${16 + i * (TOAST_GAP + 56)}px`);
+    for (const [key, active] of entries) {
+      const pos = active.componentRef.instance.config().position ?? this._defaults.position ?? 'top-end';
+      const group = groups.get(pos) ?? [];
+      group.push({ index: parseInt(key.split('-').pop() ?? '0', 10), active });
+      if (!groups.has(pos)) groups.set(pos, group);
+    }
+
+    for (const [pos, groupEntries] of groups) {
+      const isTop = pos.startsWith('top');
+      for (let i = 0; i < groupEntries.length; i++) {
+        const { active } = groupEntries[i];
+        const strategy = this._buildPosition(pos as RuiToastPosition);
+        if (isTop) {
+          strategy.top(`${16 + i * (TOAST_GAP + 56)}px`);
+        } else {
+          strategy.bottom(`${16 + i * (TOAST_GAP + 56)}px`);
+        }
+        active.ref.updatePositionStrategy(strategy);
+        active.ref.updatePosition();
       }
-
-      active.ref.updatePositionStrategy(strategy);
-      active.ref.updatePosition();
     }
   }
 

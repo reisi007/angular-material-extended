@@ -1,12 +1,12 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, TemplateRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { RuiDialogService, RuiDialogSize } from '@all-the.rest/mat-extended/dialog';
+import { ShowcaseCode } from '../../shared/showcase-code';
 
 @Component({
   selector: 'rui-dialog-demo',
@@ -18,48 +18,127 @@ import { RuiDialogService, RuiDialogSize } from '@all-the.rest/mat-extended/dial
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
+    ShowcaseCode,
   ],
   template: `
-    <div class="max-w-4xl mx-auto space-y-8 p-4">
-      <h1 class="text-2xl font-bold">Dialog / Modal</h1>
+<div class="max-w-4xl mx-auto p-4">
+  <h1 class="font-bold mb-6">Dialog / Modal</h1>
 
-      <mat-card>
-        <mat-card-header><mat-card-title>Dialog Sizes</mat-card-title></mat-card-header>
-        <mat-card-content class="flex gap-4 flex-wrap">
+  <div class="space-y-6">
+    <h2 id="dialog-sizes" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Dialog Sizes</h2>
+    <mat-card>
+      <mat-card-header><mat-card-title>Dialog Sizes</mat-card-title></mat-card-header>
+      <mat-card-content class="space-y-3">
+        <ng-template #sizeDialog let-dialogRef="dialogRef">
+          <p class="text-[var(--mat-sys-on-surface-variant)]">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <div class="flex justify-end gap-2 mt-4">
+            <button mat-button (click)="dialogRef.close('closed')">Close</button>
+          </div>
+        </ng-template>
+        <div class="flex gap-4 flex-wrap">
           @for (size of sizes; track size) {
-            <button mat-raised-button (click)="openDialog(size)">{{ size }}</button>
+            <button mat-raised-button (click)="openWithTemplate(sizeDialog, size)">
+              {{ size }}
+            </button>
           }
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="sizesHtml" [ts]="sizesTs" />
 
-      <mat-card>
-        <mat-card-header><mat-card-title>Custom Dialog</mat-card-title></mat-card-header>
-        <mat-card-content class="flex gap-4 items-end">
-          <mat-form-field>
+    <h2 id="dialog-custom" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Custom Content</h2>
+    <mat-card>
+      <mat-card-header><mat-card-title>Custom Content</mat-card-title></mat-card-header>
+      <mat-card-content class="space-y-3">
+        <ng-template #customContent let-dialogRef="dialogRef">
+          <p class="text-[var(--mat-sys-on-surface-variant)]">{{ dialogMessage }}</p>
+        </ng-template>
+        <ng-template #customFooter let-dialogRef="dialogRef">
+          <div class="flex justify-end items-center gap-2 px-6 py-4 border-t border-[var(--mat-sys-outline-variant)]">
+            <button mat-button (click)="dialogRef.close('custom closed')">Ok</button>
+          </div>
+        </ng-template>
+        <div class="flex gap-4 items-end flex-nowrap">
+          <mat-form-field class="flex-1 min-w-0">
             <mat-label>Title</mat-label>
             <input matInput [(ngModel)]="dialogTitle" />
           </mat-form-field>
-          <mat-form-field>
+          <mat-form-field class="flex-1 min-w-0">
             <mat-label>Message</mat-label>
             <input matInput [(ngModel)]="dialogMessage" />
           </mat-form-field>
-          <button mat-raised-button (click)="openCustomDialog()">Open Custom</button>
-        </mat-card-content>
-      </mat-card>
+          <button class="shrink-0 mb-5" mat-raised-button (click)="openWithSlots(customContent, customFooter, dialogTitle)">
+            Open Custom
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="customHtml" [ts]="customTs" />
 
+    <h2 id="dialog-options" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Options</h2>
+    <mat-card>
+      <mat-card-header><mat-card-title>Options</mat-card-title></mat-card-header>
+      <mat-card-content class="space-y-4">
+        <div class="flex gap-4 flex-wrap">
+          <ng-template #blockingDialog let-dialogRef="dialogRef">
+            <p class="text-[var(--mat-sys-on-surface-variant)]">
+              This dialog cannot be closed by pressing Escape or clicking the backdrop.
+              Use the button below to close it.
+            </p>
+            <div class="flex justify-end gap-2 mt-4">
+              <button mat-raised-button color="primary" (click)="dialogRef.close('confirmed')">
+                Confirm & Close
+              </button>
+            </div>
+          </ng-template>
+          <button mat-stroked-button (click)="openBlocking(blockingDialog)">
+            Non-dismissible
+          </button>
+
+          <ng-template #confirmContent let-dialogRef="dialogRef">
+            <p class="text-[var(--mat-sys-on-surface)]">Are you sure you want to delete this item? This action cannot be undone.</p>
+          </ng-template>
+          <ng-template #confirmFooter let-dialogRef="dialogRef">
+            <div class="flex justify-end items-center gap-2 px-6 py-4 border-t border-[var(--mat-sys-outline-variant)]">
+              <button mat-stroked-button (click)="dialogRef.dismiss()">Abort</button>
+              <button mat-raised-button color="warn" (click)="dialogRef.close('confirmed')">Delete</button>
+            </div>
+          </ng-template>
+
+          <ng-template #fullscreenDialog let-dialogRef="dialogRef">
+            <p class="text-[var(--mat-sys-on-surface-variant)]">
+              Fullscreen dialog content. Scroll freely.
+            </p>
+            <p class="text-[var(--mat-sys-on-surface-variant)] mt-4">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </p>
+            <div class="flex justify-end gap-2 mt-4">
+              <button mat-button (click)="dialogRef.close('fullscreen closed')">Close</button>
+            </div>
+          </ng-template>
+          <button mat-stroked-button (click)="openWithTemplate(fullscreenDialog, 'fullscreen', 'Fullscreen')">
+            Fullscreen
+          </button>
+          <button mat-raised-button color="warn" (click)="openDeleteConfirm(confirmContent, confirmFooter)">
+            Delete Confirmation
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code label="Non-dismissible" [html]="blockingHtml" [ts]="blockingTs" />
+    <rui-showcase-code label="Fullscreen" [html]="fullscreenHtml" [ts]="fullscreenTs" />
+    <rui-showcase-code label="Confirm Dialog" [html]="confirmHtml" [ts]="confirmTs" />
+
+    @if (lastResult(); as result) {
       <mat-card>
-        <mat-card-header><mat-card-title>Options</mat-card-title></mat-card-header>
-        <mat-card-content class="flex gap-4 flex-wrap">
-          <button mat-stroked-button (click)="openNonDismissibleDialog()">Non-dismissible</button>
-          <button mat-stroked-button (click)="openFullscreenDialog()">Fullscreen</button>
-        </mat-card-content>
+        <mat-card-content>Dialog closed with: {{ result | json }}</mat-card-content>
       </mat-card>
-
-      @if (lastResult(); as result) {
-        <mat-card><mat-card-content>Dialog closed with: {{ result | json }}</mat-card-content></mat-card>
-      }
-    </div>
+    }
+  </div>
+</div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -69,22 +148,127 @@ export class DialogDemo {
   sizes: RuiDialogSize[] = ['sm', 'md', 'lg', 'xl'];
   dialogTitle = 'Custom Dialog';
   dialogMessage = 'This is a custom dialog message.';
-  lastResult = signal<any>(undefined);
+  lastResult = signal<unknown>(undefined);
 
-  openDialog(size: string): void {
+  protected sizesHtml = `<ng-template #myDialog let-dialogRef="dialogRef">
+  <p>Content here</p>
+  <button mat-button (click)="dialogRef.close()">Close</button>
+</ng-template>
+
+<button mat-raised-button (click)="open(myDialog)">Open Dialog</button>`;
+
+  protected sizesTs = [
+    `const ref = dialogService.open({`,
+    `  header: 'My Dialog',`,
+    `  template: myTemplate,`,
+    `  size: 'md', // sm | md | lg | xl`,
+    `});`,
+  ].join('\n');
+
+  protected customHtml = `<ng-template #dialogContent let-dialogRef="dialogRef">
+  <p>{{ dialogMessage }}</p>
+</ng-template>
+<ng-template #dialogFooter let-dialogRef="dialogRef">
+  <div class="flex justify-end items-center gap-2 px-6 py-4 border-t border-[var(--mat-sys-outline-variant)]">
+    <button mat-button (click)="dialogRef.close()">Ok</button>
+  </div>
+</ng-template>
+<button mat-raised-button (click)="open(dialogContent, dialogFooter, title)">
+  Open Custom
+</button>`;
+
+  protected customTs = [
+    `const ref = dialogService.open({`,
+    `  header: 'Custom Title',`,
+    `  contentTemplate: contentTpl,`,
+    `  footerTemplate: footerTpl,`,
+    `  size: 'md',`,
+    `});`,
+    `ref.afterClosed.then(result => {`,
+    `  console.log(result);`,
+    `});`,
+  ].join('\n');
+
+  protected blockingHtml = `<ng-template #blockingDialog let-dialogRef="dialogRef">
+  <p>Important content</p>
+  <button mat-raised-button (click)="dialogRef.close()">Confirm</button>
+</ng-template>
+
+<button mat-stroked-button (click)="openBlocking(blockingDialog)">
+  Non-dismissible
+</button>`;
+
+  protected blockingTs = [
+    `const ref = dialogService.open({`,
+    `  header: 'Important',`,
+    `  template: blockingTemplate,`,
+    `  disableClose: true,`,
+    `  size: 'sm',`,
+    `});`,
+  ].join('\n');
+
+  protected fullscreenHtml = `<!-- Same template pattern as above -->
+<button mat-stroked-button (click)="openFullscreen(myDialog)">
+  Fullscreen
+</button>`;
+
+  protected fullscreenTs = [
+    `const ref = dialogService.open({`,
+    `  header: 'Fullscreen',`,
+    `  template: fullscreenTemplate,`,
+    `  size: 'fullscreen',`,
+    `});`,
+  ].join('\n');
+
+  protected confirmHtml = `<ng-template #confirmContent let-dialogRef="dialogRef">
+  <p>Are you sure?</p>
+</ng-template>
+<ng-template #confirmFooter let-dialogRef="dialogRef">
+  <div class="flex justify-end items-center gap-2 px-6 py-4 border-t border-[var(--mat-sys-outline-variant)]">
+    <button mat-stroked-button (click)="dialogRef.dismiss()">Abort</button>
+    <button mat-raised-button color="warn" (click)="dialogRef.close('confirmed')">Delete</button>
+  </div>
+</ng-template>
+
+<button mat-raised-button color="warn" (click)="openConfirm(confirmContent, confirmFooter)">
+  Delete Confirmation
+</button>`;
+
+  protected confirmTs = [
+    `const ref = dialogService.open({`,
+    `  header: 'Confirm Delete',`,
+    `  contentTemplate: contentTpl,`,
+    `  footerTemplate: footerTpl,`,
+    `  size: 'sm',`,
+    `});`,
+    `ref.afterClosed.then(result => {`,
+    `  if (result === 'confirmed') {`,
+    `    // proceed with deletion`,
+    `  }`,
+    `});`,
+  ].join('\n');
+
+  openWithTemplate(tpl: TemplateRef<unknown>, size: RuiDialogSize | 'fullscreen' = 'md', header?: string): void {
     const ref = this.dialogService.open({
-      header: `${size.toUpperCase()} Dialog`,
+      header: header ?? `${size.toUpperCase()} Dialog`,
+      template: tpl,
       size: size as RuiDialogSize,
     });
 
     ref.afterClosed.then((result) => {
-      console.log('Dialog closed with:', result);
+      this.lastResult.set(result);
     });
   }
 
-  openCustomDialog(): void {
+  openWithSlots(
+    contentTpl: TemplateRef<unknown>,
+    footerTpl: TemplateRef<unknown>,
+    header?: string,
+  ): void {
     const ref = this.dialogService.open({
-      header: this.dialogTitle,
+      header: header ?? 'Custom Dialog',
+      contentTemplate: contentTpl,
+      footerTemplate: footerTpl,
       size: 'md',
     });
 
@@ -93,26 +277,29 @@ export class DialogDemo {
     });
   }
 
-  openNonDismissibleDialog(): void {
+  openBlocking(tpl: TemplateRef<unknown>): void {
     const ref = this.dialogService.open({
       header: 'Important',
+      template: tpl,
       disableClose: true,
       size: 'sm',
     });
 
-    setTimeout(() => {
-      ref.close('auto-closed after 3s');
-    }, 3000);
+    ref.afterClosed.then((result) => {
+      this.lastResult.set(result);
+    });
   }
 
-  openFullscreenDialog(): void {
+  openDeleteConfirm(contentTpl: TemplateRef<unknown>, footerTpl: TemplateRef<unknown>): void {
     const ref = this.dialogService.open({
-      header: 'Fullscreen Dialog',
-      size: 'fullscreen',
+      header: 'Confirm Delete',
+      contentTemplate: contentTpl,
+      footerTemplate: footerTpl,
+      size: 'sm',
     });
 
-    ref.afterClosed.then(() => {
-      this.lastResult.set('fullscreen closed');
+    ref.afterClosed.then((result) => {
+      this.lastResult.set(result);
     });
   }
 }

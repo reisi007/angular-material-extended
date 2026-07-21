@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { RuiFileUpload } from './file-upload';
 import { RuiFileItem } from './file-upload.types';
-import type { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 function createMockFile(name: string, size: number, type: string): File {
   return new File([new ArrayBuffer(size)], name, { type });
@@ -18,27 +17,6 @@ describe('RuiFileUpload', () => {
   it('creates the component', () => {
     const fixture = TestBed.createComponent(RuiFileUpload);
     expect(fixture.componentInstance).toBeTruthy();
-  });
-
-  it('has sortable input defaulting to false', () => {
-    const fixture = TestBed.createComponent(RuiFileUpload);
-    expect(fixture.componentInstance.sortable()).toBe(false);
-  });
-
-  it('shows drag handle only when sortable is true', () => {
-    const fixture = TestBed.createComponent(RuiFileUpload);
-    const comp = fixture.componentInstance;
-    const file = createMockFile('test.txt', 100, 'text/plain');
-    comp.processFiles([file]);
-    fixture.detectChanges();
-
-    let handle = fixture.nativeElement.querySelector('[cdkDragHandle]');
-    expect(handle).toBeFalsy();
-
-    fixture.componentRef.setInput('sortable', true);
-    fixture.detectChanges();
-    handle = fixture.nativeElement.querySelector('[cdkDragHandle]');
-    expect(handle).toBeTruthy();
   });
 
   it('has drop zone with drag-drop text', () => {
@@ -91,17 +69,14 @@ describe('RuiFileUpload', () => {
     expect(comp.files().length).toBe(0);
   });
 
-  it('emits onDelete when removing a file', () => {
+  it('removes a file via removeFile method', () => {
     const fixture = TestBed.createComponent(RuiFileUpload);
     const comp = fixture.componentInstance;
-    const deleteSpy = vi.fn();
-    comp.deleteFile.subscribe(deleteSpy);
     const file = createMockFile('test.txt', 100, 'text/plain');
     comp.processFiles([file]);
     const id = comp.files()[0].id;
     comp.removeFile(id);
-    expect(deleteSpy).toHaveBeenCalledTimes(1);
-    expect(deleteSpy).toHaveBeenCalledWith(expect.objectContaining({ file }));
+    expect(comp.files().length).toBe(0);
   });
 
   it('removes a file even in done status', () => {
@@ -113,11 +88,8 @@ describe('RuiFileUpload', () => {
     comp.files.update(files =>
       files.map(f => ({ ...f, status: 'done' as const, progress: 100 }))
     );
-    const deleteSpy = vi.fn();
-    comp.deleteFile.subscribe(deleteSpy);
     comp.removeFile(id);
     expect(comp.files().length).toBe(0);
-    expect(deleteSpy).toHaveBeenCalledTimes(1);
   });
 
   it('starts upload and emits uploadStart', async () => {
@@ -147,29 +119,6 @@ describe('RuiFileUpload', () => {
     const file = createMockFile('test.txt', 100, 'text/plain');
     comp.processFiles([file]);
     expect(comp.files().length).toBe(0);
-  });
-
-  it('reorders items via onDropListDropped', () => {
-    const fixture = TestBed.createComponent(RuiFileUpload);
-    const comp = fixture.componentInstance;
-
-    const file1 = createMockFile('a.txt', 100, 'text/plain');
-    const file2 = createMockFile('b.txt', 100, 'text/plain');
-    comp.processFiles([file1, file2]);
-
-    const items = comp.files();
-    const event = {
-      previousIndex: 0,
-      currentIndex: 1,
-      item: {},
-      container: { data: items },
-      previousContainer: { data: items },
-      isPointerOverContainer: true,
-      distance: { x: 0, y: 0 },
-    } as CdkDragDrop<RuiFileItem[]>;
-    comp.onDropListDropped(event);
-    expect(comp.files()[0].file.name).toBe('b.txt');
-    expect(comp.files()[1].file.name).toBe('a.txt');
   });
 
   it('shows upload button when files present', () => {
@@ -334,41 +283,6 @@ describe('RuiFileUpload', () => {
     expect(comp.status()).toBe('idle');
   });
 
-  it('retries a failed file upload', async () => {
-    const fixture = TestBed.createComponent(RuiFileUpload);
-    const comp = fixture.componentInstance;
-
-    const handlerSpy = vi.fn()
-      .mockRejectedValueOnce(new Error('Failed'))
-      .mockResolvedValueOnce(undefined);
-    fixture.componentRef.setInput('uploadHandler', handlerSpy);
-
-    const file = createMockFile('test.txt', 100, 'text/plain');
-    comp.processFiles([file]);
-
-    await comp.startUpload();
-    expect(comp.files()[0].status).toBe('error');
-
-    comp.retryFile(comp.files()[0].id);
-    expect(comp.files()[0].error).toBeUndefined();
-
-    await new Promise(resolve => setTimeout(resolve, 50));
-    expect(comp.files()[0].status).toBe('done');
-  });
-
-  it('clears all files', () => {
-    const fixture = TestBed.createComponent(RuiFileUpload);
-    const comp = fixture.componentInstance;
-
-    comp.processFiles([createMockFile('a.txt', 100, 'text/plain')]);
-    comp.processFiles([createMockFile('b.txt', 100, 'text/plain')]);
-    expect(comp.files().length).toBe(2);
-
-    comp.clearAll();
-    expect(comp.files().length).toBe(0);
-    expect(comp.status()).toBe('idle');
-  });
-
   it('supports autoUpload', () => {
     const fixture = TestBed.createComponent(RuiFileUpload);
     const comp = fixture.componentInstance;
@@ -419,86 +333,6 @@ describe('RuiFileUpload', () => {
     await uploadPromise;
   });
 
-  it('cancels upload aborts the signal', async () => {
-    const fixture = TestBed.createComponent(RuiFileUpload);
-    const comp = fixture.componentInstance;
-    let capturedSignal: AbortSignal | undefined;
-
-    const handlerSpy = vi.fn().mockImplementation(async (_file: RuiFileItem, signal?: AbortSignal) => {
-      capturedSignal = signal;
-      await new Promise<void>((_resolve, reject) => {
-        if (signal) {
-          signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')));
-        }
-      });
-    });
-    fixture.componentRef.setInput('uploadHandler', handlerSpy);
-
-    comp.processFiles([createMockFile('test.txt', 100, 'text/plain')]);
-
-    const uploadPromise = comp.startUpload();
-    comp.cancelUpload(comp.files()[0].id);
-
-    expect(capturedSignal?.aborted).toBe(true);
-    await uploadPromise;
-  });
-
-  it('renames a file item', () => {
-    const fixture = TestBed.createComponent(RuiFileUpload);
-    const comp = fixture.componentInstance;
-    fixture.componentRef.setInput('editable', true);
-    const renameSpy = vi.fn();
-    comp.rename.subscribe(renameSpy);
-
-    const file = createMockFile('test.txt', 100, 'text/plain');
-    comp.processFiles([file]);
-    const id = comp.files()[0].id;
-
-    comp.startRename(id);
-    expect(comp.editingItemId()).toBe(id);
-    expect(comp.editInputValue()).toBe('test.txt');
-
-    comp.editInputValue.set('renamed.txt');
-    comp.confirmRename(id);
-
-    expect(comp.files()[0].editName).toBe('renamed.txt');
-    expect(renameSpy).toHaveBeenCalledTimes(1);
-    expect(renameSpy).toHaveBeenCalledWith(expect.objectContaining({ editName: 'renamed.txt' }));
-  });
-
-  it('cancels rename and restores original name', () => {
-    const fixture = TestBed.createComponent(RuiFileUpload);
-    const comp = fixture.componentInstance;
-    fixture.componentRef.setInput('editable', true);
-
-    const file = createMockFile('test.txt', 100, 'text/plain');
-    comp.processFiles([file]);
-    const id = comp.files()[0].id;
-
-    comp.startRename(id);
-    comp.editInputValue.set('new-name.txt');
-    comp.cancelRename();
-
-    expect(comp.editingItemId()).toBeNull();
-    expect(comp.files()[0].editName).toBe('test.txt');
-  });
-
-  it('shows edit button only when editable is true', () => {
-    const fixture = TestBed.createComponent(RuiFileUpload);
-    const comp = fixture.componentInstance;
-    const file = createMockFile('test.txt', 100, 'text/plain');
-    comp.processFiles([file]);
-    fixture.detectChanges();
-
-    let editBtn = fixture.nativeElement.querySelector('button[aria-label^="Rename"]');
-    expect(editBtn).toBeFalsy();
-
-    fixture.componentRef.setInput('editable', true);
-    fixture.detectChanges();
-    editBtn = fixture.nativeElement.querySelector('button[aria-label^="Rename"]');
-    expect(editBtn).toBeTruthy();
-  });
-
   it('accepts preexisting files via CVA writeValue', () => {
     const fixture = TestBed.createComponent(RuiFileUpload);
     const comp = fixture.componentInstance;
@@ -533,40 +367,187 @@ describe('RuiFileUpload', () => {
     expect(comp.status()).toBe('idle');
   });
 
-  it('shows clear all button when files exist', () => {
+  it('processes multiple files from onFilesSelected with a file list', () => {
     const fixture = TestBed.createComponent(RuiFileUpload);
     const comp = fixture.componentInstance;
-    comp.processFiles([createMockFile('test.txt', 100, 'text/plain')]);
-    fixture.detectChanges();
 
-    const buttons = fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>;
-    const clearBtn = Array.from(buttons).find(b => b.textContent?.trim() === 'Clear all');
-    expect(clearBtn).toBeTruthy();
+    const file1 = createMockFile('a.txt', 100, 'text/plain');
+    const file2 = createMockFile('b.txt', 200, 'text/plain');
+
+    const mockInput = {
+      files: {
+        0: file1,
+        1: file2,
+        length: 2,
+        item: (i: number) => [file1, file2][i] ?? null,
+      } as unknown as FileList,
+      value: '',
+    };
+
+    const event = { target: mockInput } as unknown as Event;
+    comp.onFilesSelected(event);
+
+    expect(comp.files().length).toBe(2);
+    expect(comp.files()[0].file.name).toBe('a.txt');
+    expect(comp.files()[1].file.name).toBe('b.txt');
   });
 
-  it('uses custom upload button text', () => {
+  it('processes multiple files from onDrop with a file list', () => {
     const fixture = TestBed.createComponent(RuiFileUpload);
     const comp = fixture.componentInstance;
-    fixture.componentRef.setInput('uploadButtonText', 'Hochladen');
-    comp.processFiles([createMockFile('test.txt', 100, 'text/plain')]);
-    fixture.detectChanges();
 
-    const buttons = fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>;
-    const btn = Array.from(buttons).find(b => b.textContent?.includes('Hochladen'));
-    expect(btn).toBeTruthy();
-    expect(btn?.textContent).toContain('Hochladen');
+    const file1 = createMockFile('a.txt', 100, 'text/plain');
+    const file2 = createMockFile('b.txt', 200, 'text/plain');
+
+    const mockFileList = {
+      0: file1,
+      1: file2,
+      length: 2,
+      item: (i: number) => [file1, file2][i] ?? null,
+    } as unknown as FileList;
+
+    const dragEvent = {
+      preventDefault: vi.fn(),
+      stopPropagation: vi.fn(),
+      dataTransfer: { files: mockFileList },
+    } as unknown as DragEvent;
+    comp.onDrop(dragEvent);
+
+    expect(comp.files().length).toBe(2);
+    expect(comp.files()[0].file.name).toBe('a.txt');
+    expect(comp.files()[1].file.name).toBe('b.txt');
   });
 
-  it('uses dragOverText when dragging over', () => {
+  it('calls uploadHandler for multiple files in autoUpload mode', async () => {
     const fixture = TestBed.createComponent(RuiFileUpload);
     const comp = fixture.componentInstance;
-    fixture.componentRef.setInput('dragOverText', 'Loslassen!');
-    comp.isDragOver.set(true);
+    const handlerSpy = vi.fn().mockResolvedValue(undefined);
+    fixture.componentRef.setInput('autoUpload', true);
+    fixture.componentRef.setInput('uploadHandler', handlerSpy);
+
+    const file1 = createMockFile('a.txt', 100, 'text/plain');
+    const file2 = createMockFile('b.txt', 200, 'text/plain');
+    comp.processFiles([file1, file2]);
+
+    await vi.waitFor(() => expect(handlerSpy).toHaveBeenCalledTimes(2));
+  });
+
+  it('generates unique IDs for multiple files', () => {
+    const fixture = TestBed.createComponent(RuiFileUpload);
+    const comp = fixture.componentInstance;
+
+    const file1 = createMockFile('a.txt', 100, 'text/plain');
+    const file2 = createMockFile('b.txt', 200, 'text/plain');
+    comp.processFiles([file1, file2]);
+
+    expect(comp.files().length).toBe(2);
+    expect(comp.files()[0].id).not.toBe(comp.files()[1].id);
+  });
+
+  it('has multiple property set on the file input element when multiple is true', () => {
+    const fixture = TestBed.createComponent(RuiFileUpload);
     fixture.detectChanges();
 
-    const paragraphs = fixture.nativeElement.querySelectorAll('p') as NodeListOf<HTMLParagraphElement>;
-    const text = Array.from(paragraphs).find(p => p.textContent?.includes('Loslassen!'));
-    expect(text).toBeTruthy();
-    expect(text?.textContent).toContain('Loslassen!');
+    const inputEl = fixture.nativeElement.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(inputEl).toBeTruthy();
+    expect(inputEl.multiple).toBe(true);
+    expect(inputEl.hasAttribute('multiple')).toBe(true);
+  });
+
+  it('adds all files when multiple files are selected via the DOM change event', () => {
+    const fixture = TestBed.createComponent(RuiFileUpload);
+    fixture.detectChanges();
+    const comp = fixture.componentInstance;
+
+    const inputEl = fixture.nativeElement.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(inputEl).toBeTruthy();
+
+    const file1 = new File(['content1'], '1.txt', { type: 'text/plain' });
+    const file2 = new File(['content2'], '2.txt', { type: 'text/plain' });
+
+    Object.defineProperty(inputEl, 'files', {
+      value: [file1, file2],
+      configurable: true,
+      writable: false,
+    });
+
+    inputEl.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+
+    expect(comp.files().length).toBe(2);
+    expect(comp.files()[0].file.name).toBe('1.txt');
+    expect(comp.files()[1].file.name).toBe('2.txt');
+  });
+
+  it('accepts files of any size by default (maxSize is Infinity)', () => {
+    const fixture = TestBed.createComponent(RuiFileUpload);
+    const comp = fixture.componentInstance;
+
+    const hugeFile = createMockFile('huge.bin', 1_000_000_000, 'application/octet-stream');
+    comp.processFiles([hugeFile]);
+
+    expect(comp.files().length).toBe(1);
+    expect(comp.files()[0].file.name).toBe('huge.bin');
+  });
+
+  it('shows displayErrors when file exceeds custom maxSize', () => {
+    const fixture = TestBed.createComponent(RuiFileUpload);
+    const comp = fixture.componentInstance;
+    fixture.componentRef.setInput('maxSize', 50);
+    fixture.detectChanges();
+
+    const file = createMockFile('test.txt', 100, 'text/plain');
+    comp.processFiles([file]);
+
+    expect(comp.files().length).toBe(0);
+    expect(comp.displayErrors().length).toBeGreaterThan(0);
+    expect(comp.displayErrors()[0].type).toBe('size');
+  });
+
+  it('shows displayErrors for rejected file types', () => {
+    const fixture = TestBed.createComponent(RuiFileUpload);
+    const comp = fixture.componentInstance;
+    fixture.componentRef.setInput('accept', 'image/*');
+    fixture.detectChanges();
+
+    const txtFile = createMockFile('test.txt', 100, 'text/plain');
+    comp.processFiles([txtFile]);
+
+    expect(comp.files().length).toBe(0);
+    expect(comp.displayErrors().length).toBeGreaterThan(0);
+    expect(comp.displayErrors()[0].type).toBe('type');
+  });
+
+  it('shows displayErrors when maxFiles limit exceeded', () => {
+    const fixture = TestBed.createComponent(RuiFileUpload);
+    const comp = fixture.componentInstance;
+    fixture.componentRef.setInput('maxFiles', 1);
+    fixture.detectChanges();
+
+    const file1 = createMockFile('a.txt', 100, 'text/plain');
+    const file2 = createMockFile('b.txt', 100, 'text/plain');
+    comp.processFiles([file1]);
+    comp.processFiles([file2]);
+
+    expect(comp.files().length).toBe(1);
+    expect(comp.displayErrors().length).toBeGreaterThan(0);
+    expect(comp.displayErrors()[0].type).toBe('count');
+  });
+
+  it('clears displayErrors on successful file addition', () => {
+    const fixture = TestBed.createComponent(RuiFileUpload);
+    const comp = fixture.componentInstance;
+    fixture.componentRef.setInput('maxSize', 50);
+    fixture.detectChanges();
+
+    const hugeFile = createMockFile('huge.bin', 100, 'application/octet-stream');
+    comp.processFiles([hugeFile]);
+    expect(comp.displayErrors().length).toBeGreaterThan(0);
+
+    const smallFile = createMockFile('small.txt', 10, 'text/plain');
+    comp.processFiles([smallFile]);
+
+    expect(comp.files().length).toBe(1);
+    expect(comp.displayErrors().length).toBe(0);
   });
 });

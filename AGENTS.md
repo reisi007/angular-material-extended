@@ -133,6 +133,7 @@ export class RuiCropper extends RuiValueAccessor<string> implements ControlValue
 - **Keine Ausnahmen**: Auch scheinbar "triviale" Funktionen (Getters, Helper) bekommen Tests.
 - VOR jedem Commit: `pnpm nx run-many -t test` MUSS grün sein.
 - Sub-Agents, die Code erstellen, MUSSEN immer auch die dazugehörigen Tests erstellen. Ohne Tests wird kein Code akzeptiert.
+- **Bug-Fix-Regel**: Für JEDEN gefixten Bug MUSS ein spezifischer, reproduzierender Test geschrieben werden, der den Bug vor dem Fix nachweist und nach dem Fix grün wird. Kein Bug-Fix ohne Regression-Test.
 
 ## 12. Accessibility (A11y)
 
@@ -176,6 +177,16 @@ export class RuiCropper extends RuiValueAccessor<string> implements ControlValue
 - JEDE Komponente MUSS eine Demo-Seite in `apps/demo/src/app/pages/` haben.
 - JEDE Demo-Seite zeigt die wichtigsten Use-Cases: Forms-Integration, Custom-Theming, A11y, Edge-Cases.
 - Demo wird automatisch auf GitHub Pages deployt (auf `main`).
+
+### Demo-Page-Struktur (pro Feature)
+
+Jede Demo-Seite folgt dem Muster `# heading` → `<ui example>` → `<demo code>`:
+
+1. **`<h2 id="...">`** — Heading mit eindeutiger `id`. Wird vom rechten TOC-Sidebar (`app.ts:buildToc`) automatisch erfasst (`document.querySelectorAll('main h2[id]')`) und für Schnell-Navigation per URL-Hash (`#id`) angeboten.
+2. **`<ui example>`** — Live-Demo des Features (z.B. `<mat-card>` mit dem tatsächlichen UI).
+3. **`<rui-showcase-code [html]="..." [ts]="...">`** — Code-Tabs (HTML | TS) via `ShowcaseCode`-Komponente. Code wird IMMER als Tab dargestellt, nie als raw `<pre ruiCodeHighlight>`.
+
+Jedes Feature bekommt seine eigene Sektion mit Heading + UI + Code — nicht nur ein globales Code-Block am Ende.
 
 ## 15. CI/CD
 

@@ -181,4 +181,41 @@ describe('RuiDataTable', () => {
       expect(component.checkboxLabel(testData[0])).toBe('deselect row');
     });
   });
+
+  describe('expandable rows', () => {
+    it('should toggle row expansion', () => {
+      component.toggleRowExpansion(testData[0]);
+      expect(component.isRowExpanded(testData[0])).toBe(true);
+
+      component.toggleRowExpansion(testData[0]);
+      expect(component.isRowExpanded(testData[0])).toBe(false);
+    });
+
+    it('should start with no rows expanded', () => {
+      expect(component.isRowExpanded(testData[0])).toBe(false);
+      expect(component.isRowExpanded(testData[1])).toBe(false);
+    });
+
+    it('should support multiple expanded rows independently', () => {
+      component.toggleRowExpansion(testData[0]);
+      component.toggleRowExpansion(testData[1]);
+
+      expect(component.isRowExpanded(testData[0])).toBe(true);
+      expect(component.isRowExpanded(testData[1])).toBe(true);
+
+      component.toggleRowExpansion(testData[0]);
+
+      expect(component.isRowExpanded(testData[0])).toBe(false);
+      expect(component.isRowExpanded(testData[1])).toBe(true);
+    });
+
+    it('should use Set for expandedRows tracking', () => {
+      expect(component.expandedRows()).toBeInstanceOf(Set);
+      expect(component.expandedRows().size).toBe(0);
+
+      component.toggleRowExpansion(testData[0]);
+
+      expect(component.expandedRows().size).toBe(1);
+    });
+  });
 });

@@ -1,24 +1,110 @@
-<header class="demo-header">
-  <div class="container">
-    <h1>{{ title }}</h1>
-    <nav>
-      <a routerLink="/">Home</a>
-      <a routerLink="/cropper">Cropper</a>
-      <a routerLink="/file-upload">File Upload</a>
-      <a routerLink="/toast">Toast</a>
-      <a routerLink="/data-table">Data Table</a>
-      <a routerLink="/menu">Menu</a>
-      <a routerLink="/dialog">Dialog</a>
+<div class="flex h-screen bg-[var(--mat-sys-surface)] text-[var(--mat-sys-on-surface)]">
+  @if (sidebarOpen()) {
+    <div
+      class="fixed inset-0 z-20 bg-black/50 md:hidden"
+      (click)="sidebarOpen.set(false)"
+      (keydown.escape)="sidebarOpen.set(false)"
+      tabindex="-1"
+      role="presentation"
+    ></div>
+  }
+
+  <aside
+    class="sidebar fixed md:static inset-y-0 left-0 z-30 w-60
+           bg-[var(--mat-sys-surface-container)]
+           border-r border-[var(--mat-sys-outline-variant)]
+           flex flex-col"
+    [class.sidebar--open]="sidebarOpen()"
+  >
+    <a routerLink="/" class="flex items-center gap-3 px-5 h-16 border-b border-[var(--mat-sys-outline-variant)] no-underline hover:bg-[var(--mat-sys-surface-container-high)] transition-colors cursor-pointer">
+      <span class="text-lg font-bold tracking-tight text-[var(--mat-sys-on-surface)]">Angular Material</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-[var(--mat-sys-primary)] text-[var(--mat-sys-on-primary)]">Extended</span>
+    </a>
+
+    <nav class="flex-1 overflow-y-auto p-3">
+      @for (group of navGroups; track group.label) {
+        <div class="px-3 pt-3 pb-1 text-xs font-semibold text-[var(--mat-sys-on-surface-variant)] uppercase tracking-wide">{{ group.label }}</div>
+        <div class="space-y-1">
+          @for (item of group.items; track item.route) {
+            <a
+              [routerLink]="item.route"
+              routerLinkActive #rla="routerLinkActive"
+              [routerLinkActiveOptions]="{ exact: false }"
+              [class]="rla.isActive
+                ? 'flex items-center gap-3 px-4 py-2.5 rounded-lg no-underline text-sm font-medium bg-[var(--mat-sys-secondary-container)] text-[var(--mat-sys-on-secondary-container)]'
+                : 'flex items-center gap-3 px-4 py-2.5 rounded-lg no-underline text-sm text-[var(--mat-sys-on-surface-variant)] hover:bg-[var(--mat-sys-surface-container-high)] hover:text-[var(--mat-sys-on-surface)] transition-colors'"
+              (click)="sidebarOpen.set(false)"
+            >
+              @if (item.icon) {
+                <mat-icon class="text-lg shrink-0">{{ item.icon }}</mat-icon>
+              } @else {
+                <span class="w-1.5 h-1.5 rounded-full shrink-0" [class.bg-[var(--mat-sys-primary)]]="rla.isActive"></span>
+              }
+              <span class="flex-1 min-w-0 truncate">{{ item.label }}</span>
+            </a>
+          }
+        </div>
+      }
     </nav>
-  </div>
-</header>
 
-<main class="demo-main">
-  <router-outlet></router-outlet>
-</main>
+    <div class="p-4 border-t border-[var(--mat-sys-outline-variant)]">
+      <p class="text-xs text-[var(--mat-sys-on-surface-variant)]">
+        v0.1.0 &middot; MIT
+      </p>
+    </div>
+  </aside>
 
-<footer class="demo-footer">
-  <div class="container">
-    <p>Angular Material Extended — Demo App</p>
+  <div class="flex flex-col flex-1 min-w-0">
+    <header class="h-16 border-b border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface)] flex items-center px-4 md:px-6 gap-4">
+      <button
+        class="md:hidden p-2 rounded-lg text-[var(--mat-sys-on-surface-variant)] hover:bg-[var(--mat-sys-surface-container-high)] transition-colors"
+        (click)="sidebarOpen.set(!sidebarOpen())"
+        aria-label="Toggle navigation"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+
+      @if (currentPage(); as page) {
+        <div class="flex items-center gap-2 text-sm">
+          <span class="text-[var(--mat-sys-on-surface-variant)]">Demo</span>
+          <span class="text-[var(--mat-sys-outline)]">/</span>
+          <span class="font-medium">{{ page }}</span>
+        </div>
+      }
+    </header>
+
+    <div class="flex flex-1 min-h-0">
+      <main class="flex-1 overflow-auto bg-[var(--mat-sys-surface-container-low)]">
+        <router-outlet></router-outlet>
+      </main>
+
+      <div class="hidden xl:block w-48 shrink-0 border-l border-[var(--mat-sys-outline-variant)] overflow-y-auto">
+        <div class="p-3">
+          <div class="text-xs font-semibold text-[var(--mat-sys-on-surface-variant)] uppercase tracking-wide mb-2">On this page</div>
+          <nav class="flex flex-col gap-1">
+            @for (item of tocItems(); track item.id) {
+              <a
+                (click)="scrollTo(item.id)"
+                (keydown.enter)="scrollTo(item.id)"
+                tabindex="0"
+                class="text-xs text-[var(--mat-sys-on-surface-variant)] hover:text-[var(--mat-sys-primary)] no-underline transition-colors py-0.5 truncate cursor-pointer"
+              >{{ item.text }}</a>
+            }
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <footer class="py-3 px-6 border-t border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface)]">
+      <div class="flex items-center justify-between text-xs text-[var(--mat-sys-on-surface-variant)]">
+        <p>Angular Material Extended &mdash; nicht offiziell mit Google oder Angular-Team affiliiert.</p>
+        <div class="flex items-center gap-4">
+          <a href="https://github.com/reisi007/angular-material-extended" target="_blank" class="hover:text-[var(--mat-sys-primary)] transition-colors no-underline">GitHub</a>
+          <a href="https://npmjs.com/package/@all-the.rest/mat-extended" target="_blank" class="hover:text-[var(--mat-sys-primary)] transition-colors no-underline">npm</a>
+        </div>
+      </div>
+    </footer>
   </div>
-</footer>
+</div>

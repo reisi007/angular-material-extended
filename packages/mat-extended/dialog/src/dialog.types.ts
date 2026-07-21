@@ -1,12 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TemplateRef } from '@angular/core';
 
 export type RuiDialogSize = 'sm' | 'md' | 'lg' | 'xl' | 'fullscreen';
 
-export interface RuiDialogConfig<T = any> {
+export interface RuiDialogConfig<T = unknown> {
   header?: string;
+  headerTemplate?: TemplateRef<T>;
   template?: TemplateRef<T>;
-  context?: T;
+  contentTemplate?: TemplateRef<T>;
+  footerTemplate?: TemplateRef<T>;
+  context?: Record<string, unknown>;
   size?: RuiDialogSize;
   width?: string;
   height?: string;
@@ -17,7 +19,7 @@ export interface RuiDialogConfig<T = any> {
   data?: T;
 }
 
-export interface RuiDialogRef<T = any> {
+export interface RuiDialogRef<T = unknown> {
   id: string;
   close: (result?: T) => void;
   dismiss: () => void;

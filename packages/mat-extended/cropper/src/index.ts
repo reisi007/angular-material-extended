@@ -4,3 +4,4 @@ export { RuiCropperCanvas } from './cropper-canvas';
 export type { RuiCropperDragMode } from './cropper-interaction';
 export { RuiCropperInteraction } from './cropper-interaction';
 export { RuiCropper } from './cropper';
+export { RuiCropperGridOverlay } from './cropper-grid-overlay.component';

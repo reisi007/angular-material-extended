@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideRouter, Router } from '@angular/router';
 import { RuiMenuService } from './menu.service';
 import { OverlayModule } from '@angular/cdk/overlay';
 import type { RuiMenuItem } from './menu.types';
@@ -11,6 +12,7 @@ describe('RuiMenuService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [OverlayModule, NoopAnimationsModule],
+      providers: [provideRouter([])],
     });
     service = TestBed.inject(RuiMenuService);
   });
@@ -165,6 +167,66 @@ describe('RuiMenuService', () => {
     service.open(items, { position: 'bottom-left' }, origin);
     const buttons = findMenuItems();
     expect(buttons[0].textContent).toContain('›');
+    document.body.removeChild(origin);
+    service.close();
+  });
+
+  it('navigates via routerLink when provided', () => {
+    const origin = document.createElement('button');
+    document.body.appendChild(origin);
+    const router = TestBed.inject(Router);
+    const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    const items: RuiMenuItem[] = [{ label: 'Home', routerLink: '/home' }];
+    service.open(items, { position: 'bottom-left' }, origin);
+    const button = findMenuItems()[0];
+    button?.click();
+    expect(navigateSpy).toHaveBeenCalledWith('/home');
+    navigateSpy.mockRestore();
+    document.body.removeChild(origin);
+    service.close();
+  });
+
+  it('navigates via routerLink array when provided', () => {
+    const origin = document.createElement('button');
+    document.body.appendChild(origin);
+    const router = TestBed.inject(Router);
+    const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    const items: RuiMenuItem[] = [{ label: 'User', routerLink: ['/users', '123'] }];
+    service.open(items, { position: 'bottom-left' }, origin);
+    const button = findMenuItems()[0];
+    button?.click();
+    expect(navigateSpy).toHaveBeenCalledWith(['/users', '123']);
+    navigateSpy.mockRestore();
+    document.body.removeChild(origin);
+    service.close();
+  });
+
+  it('calls handler when routerLink is not provided', () => {
+    const origin = document.createElement('button');
+    document.body.appendChild(origin);
+    const handler = vi.fn();
+    const items: RuiMenuItem[] = [{ label: 'Test', handler }];
+    service.open(items, { position: 'bottom-left' }, origin);
+    const button = findMenuItems()[0];
+    button?.click();
+    expect(handler).toHaveBeenCalled();
+    document.body.removeChild(origin);
+    service.close();
+  });
+
+  it('does not call handler when routerLink is provided', () => {
+    const origin = document.createElement('button');
+    document.body.appendChild(origin);
+    const handler = vi.fn();
+    const router = TestBed.inject(Router);
+    const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    const items: RuiMenuItem[] = [{ label: 'Home', routerLink: '/home', handler }];
+    service.open(items, { position: 'bottom-left' }, origin);
+    const button = findMenuItems()[0];
+    button?.click();
+    expect(navigateSpy).toHaveBeenCalledWith('/home');
+    expect(handler).not.toHaveBeenCalled();
+    navigateSpy.mockRestore();
     document.body.removeChild(origin);
     service.close();
   });

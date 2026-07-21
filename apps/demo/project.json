@@ -22,6 +22,11 @@
           }
         ],
         "styles": ["apps/demo/src/styles.scss"],
+        "stylePreprocessorOptions": {
+          "sass": {
+            "silenceDeprecations": ["import"]
+          }
+        },
         "server": "apps/demo/src/main.server.ts",
         "ssr": {
           "entry": "apps/demo/src/server.ts"

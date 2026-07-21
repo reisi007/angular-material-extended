@@ -1,9 +1,11 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { RuiDataTable } from '@all-the.rest/mat-extended/data-table';
-import { RuiDataColumn, RuiDataSortEvent, RuiDataSelectionEvent } from '@all-the.rest/mat-extended/data-table';
+import { RuiDataColumn, RuiDataAction, RuiDataSortEvent, RuiDataSelectionEvent } from '@all-the.rest/mat-extended/data-table';
+import { ShowcaseCode } from '../../shared/showcase-code';
 
 interface User {
   id: number;
@@ -11,49 +13,136 @@ interface User {
   email: string;
   role: string;
   active: boolean;
+  department?: string;
+  joined?: string;
+  phone?: string;
 }
 
 @Component({
   selector: 'rui-data-table-demo',
   standalone: true,
-  imports: [JsonPipe, MatCardModule, MatSlideToggleModule, RuiDataTable],
+  imports: [JsonPipe, MatCardModule, MatIconModule, MatButtonModule, RuiDataTable, ShowcaseCode],
   template: `
-    <div class="max-w-6xl mx-auto space-y-8 p-4">
-      <h1 class="text-2xl font-bold">Data Table</h1>
+<div class="p-4 md:p-6 space-y-6">
+  <h1 class="font-bold">Data Table</h1>
 
-      <mat-card>
-        <mat-card-header><mat-card-title>Configuration</mat-card-title></mat-card-header>
-        <mat-card-content class="flex gap-4 items-center">
-          <mat-slide-toggle [checked]="sortable()" (change)="sortable.set($event.checked)">Sortable</mat-slide-toggle>
-          <mat-slide-toggle [checked]="filterable()" (change)="filterable.set($event.checked)">Filter</mat-slide-toggle>
-          <mat-slide-toggle [checked]="selectable()" (change)="selectable.set($event.checked)">Select</mat-slide-toggle>
-        </mat-card-content>
-      </mat-card>
-
+  <h2 id="data-table-select-no-sort" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Multi-select without sorting</h2>
+  <mat-card>
+    <mat-card-header><mat-card-title>Multi-select without sorting</mat-card-title></mat-card-header>
+    <mat-card-content class="space-y-4">
       <rui-data-table
         [data]="users()"
         [columns]="columns"
-        [config]="{ sortable: sortable(), filterable: filterable(), selectable: selectable() }"
-        (sortChange)="onSortChange($event)"
+        [config]="{ selectable: true, sortable: false }"
         (selectionChange)="onSelectionChange($event)"
-        [(selectedItems)]="selectedItems"
+        [(selectedItems)]="selectedItemsNoSort"
       />
 
-      <mat-card>
-        <mat-card-header><mat-card-title>Selection</mat-card-title></mat-card-header>
-        <mat-card-content>
-          <pre class="bg-gray-100 p-2 rounded text-sm">{{ selectedItems() | json }}</pre>
-        </mat-card-content>
-      </mat-card>
-    </div>
+      <rui-showcase-code [html]="selectNoSortCode" [ts]="selectNoSortTs" />
+    </mat-card-content>
+  </mat-card>
+
+  <h2 id="data-table-select-sort" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Multi-select with sorting</h2>
+  <mat-card>
+    <mat-card-header><mat-card-title>Multi-select with sorting</mat-card-title></mat-card-header>
+    <mat-card-content class="space-y-4">
+      <rui-data-table
+        [data]="users()"
+        [columns]="columns"
+        [config]="{ selectable: true, sortable: true }"
+        (selectionChange)="onSelectionChangeSort($event)"
+        (sortChange)="onSortChange($event)"
+        [(selectedItems)]="selectedItemsWithSort"
+      />
+
+      <rui-showcase-code [html]="selectSortCode" [ts]="selectSortTs" />
+    </mat-card-content>
+  </mat-card>
+
+  <h2 id="data-table-filter" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Filter</h2>
+  <mat-card>
+    <mat-card-header><mat-card-title>Filter</mat-card-title></mat-card-header>
+    <mat-card-content class="space-y-4">
+      <rui-data-table
+        [data]="users()"
+        [columns]="columns"
+        [config]="{ filterable: true }"
+      />
+
+      <rui-showcase-code [html]="filterCode" [ts]="filterTs" />
+    </mat-card-content>
+  </mat-card>
+
+  <h2 id="data-table-selection" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Selection output</h2>
+  <mat-card>
+    <mat-card-header><mat-card-title>Selection output</mat-card-title></mat-card-header>
+    <mat-card-content class="space-y-4">
+      <div>
+        <p class="text-sm font-medium text-[var(--mat-sys-on-surface)]">No sorting table:</p>
+        <pre class="bg-[var(--mat-sys-surface-container-high)] p-3 rounded text-xs overflow-auto max-h-40">{{ selectedItemsNoSort() | json }}</pre>
+      </div>
+      <div>
+        <p class="text-sm font-medium text-[var(--mat-sys-on-surface)]">With sorting table:</p>
+        <pre class="bg-[var(--mat-sys-surface-container-high)] p-3 rounded text-xs overflow-auto max-h-40">{{ selectedItemsWithSort() | json }}</pre>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <h2 id="data-table-actions" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Row Actions Menu</h2>
+  <mat-card>
+    <mat-card-header><mat-card-title>Row Actions Menu</mat-card-title></mat-card-header>
+    <mat-card-content class="space-y-4">
+      <rui-data-table
+        [data]="users()"
+        [columns]="columns"
+        [actions]="rowActions()"
+        [config]="{ sortable: true }"
+      />
+
+      <rui-showcase-code [html]="actionsCode" [ts]="actionsTs" />
+    </mat-card-content>
+  </mat-card>
+
+  <h2 id="data-table-expandable" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Expandable Rows</h2>
+  <mat-card>
+    <mat-card-header><mat-card-title>Expandable Rows</mat-card-title></mat-card-header>
+    <mat-card-content class="space-y-4">
+      <ng-template #expandedRow let-user>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+          <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Department:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.department }}</span></div>
+          <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Joined:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.joined }}</span></div>
+          <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Phone:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.phone }}</span></div>
+          <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Email:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.email }}</span></div>
+          <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Role:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.role }}</span></div>
+          <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Active:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.active ? 'Yes' : 'No' }}</span></div>
+        </div>
+      </ng-template>
+
+      <rui-data-table
+        [data]="usersWithDetails()"
+        [columns]="columns"
+        [expandedRowTemplate]="expandedRow"
+        [config]="{ sortable: true }"
+      />
+
+      <rui-showcase-code [html]="expandableCode" [ts]="expandableTs" />
+    </mat-card-content>
+  </mat-card>
+
+  <h2 id="data-table-usage" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Usage</h2>
+  <mat-card>
+    <mat-card-header><mat-card-title>Usage</mat-card-title></mat-card-header>
+    <mat-card-content class="space-y-3">
+      <rui-showcase-code label="Usage" [html]="htmlCode" [ts]="tsCode" />
+    </mat-card-content>
+  </mat-card>
+</div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataTableDemo {
-  sortable = signal(true);
-  filterable = signal(true);
-  selectable = signal(true);
-  selectedItems = signal<User[]>([]);
+  selectedItemsNoSort = signal<User[]>([]);
+  selectedItemsWithSort = signal<User[]>([]);
 
   users = signal<User[]>([
     { id: 1, name: 'Alice', email: 'alice@example.com', role: 'Admin', active: true },
@@ -70,19 +159,192 @@ export class DataTableDemo {
     { id: 12, name: 'Linda', email: 'linda@example.com', role: 'Editor', active: false },
   ]);
 
+  usersWithDetails = signal<User[]>([
+    { id: 1, name: 'Alice', email: 'alice@example.com', role: 'Admin', active: true, department: 'Engineering', joined: '2023-01-15', phone: '+1-555-0101' },
+    { id: 2, name: 'Bob', email: 'bob@example.com', role: 'User', active: true, department: 'Marketing', joined: '2023-03-22', phone: '+1-555-0102' },
+    { id: 3, name: 'Charlie', email: 'charlie@example.com', role: 'Editor', active: false, department: 'Design', joined: '2022-11-08', phone: '+1-555-0103' },
+    { id: 4, name: 'Diana', email: 'diana@example.com', role: 'User', active: true, department: 'Engineering', joined: '2024-02-01', phone: '+1-555-0104' },
+    { id: 5, name: 'Eve', email: 'eve@example.com', role: 'Viewer', active: false, department: 'HR', joined: '2023-06-14', phone: '+1-555-0105' },
+    { id: 6, name: 'Frank', email: 'frank@example.com', role: 'Admin', active: true, department: 'Engineering', joined: '2022-09-30', phone: '+1-555-0106' },
+  ]);
+
   columns: RuiDataColumn<User>[] = [
     { key: 'id', header: 'ID', sortable: true, width: '60px' },
     { key: 'name', header: 'Name', sortable: true },
     { key: 'email', header: 'Email', sortable: true },
     { key: 'role', header: 'Role', sortable: true, filterable: true },
-    { key: 'active', header: 'Active', sortable: true, cell: (row) => row.active ? '✓' : '✕' },
+    { key: 'active', header: 'Active', sortable: true, cell: (row) => row.active ? 'Yes' : 'No' },
   ];
 
-  onSortChange(_event: RuiDataSortEvent): void {
-    // handled by table
-  }
+  rowActions = signal<RuiDataAction<User>[]>([
+    { label: 'Edit', icon: 'edit', action: (row) => alert(`Edit user ${row.name}`) },
+    { label: 'Delete', icon: 'delete', action: (row) => alert(`Delete user ${row.name}`), disabled: (row) => row.role === 'Admin' },
+    { divider: true, label: '', action: () => void 0 },
+    { label: 'Duplicate', icon: 'content_copy', action: (row) => alert(`Duplicate user ${row.name}`) },
+  ]);
 
-  onSelectionChange(_event: RuiDataSelectionEvent<User>): void {
-    // handled by selectedItems model
+  protected selectNoSortCode = `<rui-data-table
+  [data]="users"
+  [columns]="columns"
+  [config]="{ selectable: true, sortable: false }"
+  [(selectedItems)]="selectedItems"
+/>`;
+
+  protected selectNoSortTs = `import { RuiDataTable } from '@all-the.rest/mat-extended/data-table';
+import { RuiDataColumn } from '@all-the.rest/mat-extended/data-table';
+
+@Component({
+  imports: [RuiDataTable],
+})
+export class MyComponent {
+  users = signal<User[]>([]);
+  columns: RuiDataColumn<User>[] = [
+    { key: 'name', header: 'Name' },
+    { key: 'email', header: 'Email' },
+  ];
+  selectedItems = signal<User[]>([]);
+}`;
+
+  protected selectSortCode = `<rui-data-table
+  [data]="users"
+  [columns]="columns"
+  [config]="{ selectable: true, sortable: true }"
+  (sortChange)="onSortChange($event)"
+  [(selectedItems)]="selectedItems"
+/>`;
+
+  protected selectSortTs = `import { RuiDataTable } from '@all-the.rest/mat-extended/data-table';
+import { RuiDataColumn, RuiDataSortEvent } from '@all-the.rest/mat-extended/data-table';
+
+@Component({
+  imports: [RuiDataTable],
+})
+export class MyComponent {
+  users = signal<User[]>([]);
+  columns: RuiDataColumn<User>[] = [
+    { key: 'name', header: 'Name', sortable: true },
+    { key: 'email', header: 'Email', sortable: true },
+  ];
+  selectedItems = signal<User[]>([]);
+
+  onSortChange(event: RuiDataSortEvent): void {
+    console.log('Sort changed:', event);
+  }
+}`;
+
+  protected filterCode = `<rui-data-table
+  [data]="users"
+  [columns]="columns"
+  [config]="{ filterable: true }"
+/>`;
+
+  protected filterTs = `import { RuiDataTable } from '@all-the.rest/mat-extended/data-table';
+import { RuiDataColumn } from '@all-the.rest/mat-extended/data-table';
+
+@Component({
+  imports: [RuiDataTable],
+})
+export class MyComponent {
+  users = signal<User[]>([]);
+  columns: RuiDataColumn<User>[] = [
+    { key: 'name', header: 'Name' },
+    { key: 'email', header: 'Email' },
+    { key: 'role', header: 'Role', filterable: true },
+  ];
+}`;
+
+  protected actionsCode = `<rui-data-table
+  [data]="users"
+  [columns]="columns"
+  [actions]="rowActions"
+  [config]="{ sortable: true }"
+/>`;
+
+  protected actionsTs = `import { RuiDataTable } from '@all-the.rest/mat-extended/data-table';
+import { RuiDataColumn, RuiDataAction } from '@all-the.rest/mat-extended/data-table';
+
+@Component({
+  imports: [RuiDataTable],
+})
+export class MyComponent {
+  users = signal<User[]>([]);
+  columns: RuiDataColumn<User>[] = [
+    { key: 'name', header: 'Name', sortable: true },
+    { key: 'email', header: 'Email' },
+  ];
+  rowActions = signal<RuiDataAction<User>[]>([
+    { label: 'Edit', icon: 'edit', action: (row) => console.log(row) },
+  ]);
+}`;
+
+  protected expandableCode = `<ng-template #expandedRow let-user>
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+    <div>Department: {{ user.department }}</div>
+    ...
+  </div>
+</ng-template>
+
+<rui-data-table
+  [data]="usersWithDetails"
+  [columns]="columns"
+  [expandedRowTemplate]="expandedRow"
+  [config]="{ sortable: true }"
+/>`;
+
+  protected expandableTs = `import { RuiDataTable } from '@all-the.rest/mat-extended/data-table';
+import { RuiDataColumn } from '@all-the.rest/mat-extended/data-table';
+
+@Component({
+  imports: [RuiDataTable],
+})
+export class MyComponent {
+  usersWithDetails = signal<User[]>([]);
+  columns: RuiDataColumn<User>[] = [
+    { key: 'name', header: 'Name', sortable: true },
+    { key: 'email', header: 'Email' },
+  ];
+}`;
+
+  protected htmlCode = `<rui-data-table
+  [data]="users"
+  [columns]="columns"
+  [actions]="rowActions"
+  [expandedRowTemplate]="expandedRow"
+  [config]="{ sortable: true, selectable: true, filterable: true }"
+  (sortChange)="onSortChange($event)"
+  (selectionChange)="onSelectionChange($event)"
+  [(selectedItems)]="selectedItems"
+/>`;
+
+  protected tsCode = `import { RuiDataTable } from '@all-the.rest/mat-extended/data-table';
+import { RuiDataColumn, RuiDataAction, RuiDataSortEvent, RuiDataSelectionEvent } from '@all-the.rest/mat-extended/data-table';
+
+@Component({
+  imports: [RuiDataTable],
+})
+export class MyComponent {
+  users = signal<User[]>([]);
+  columns: RuiDataColumn<User>[] = [
+    { key: 'name', header: 'Name', sortable: true },
+    { key: 'email', header: 'Email' },
+    { key: 'role', header: 'Role', filterable: true },
+  ];
+  rowActions = signal<RuiDataAction<User>[]>([
+    { label: 'Edit', icon: 'edit', action: (row) => console.log(row) },
+  ]);
+  selectedItems = signal<User[]>([]);
+
+  onSortChange(_event: RuiDataSortEvent): void {}
+  onSelectionChange(_event: RuiDataSelectionEvent<User>): void {}
+}`;
+
+  onSortChange(_sortEvent: RuiDataSortEvent): void {
+    void _sortEvent;
+  }
+  onSelectionChange(_selEvent: RuiDataSelectionEvent<User>): void {
+    void _selEvent;
+  }
+  onSelectionChangeSort(_selEvent: RuiDataSelectionEvent<User>): void {
+    void _selEvent;
   }
 }

@@ -21,20 +21,20 @@ describe('RuiCropperCanvas', () => {
     vi.unstubAllGlobals();
   });
 
-  function createCanvasEl(): HTMLCanvasElement {
+  function createCanvasEl(w = 800, h = 600): HTMLCanvasElement {
     const c = document.createElement('canvas');
-    c.width = 800;
-    c.height = 600;
+    c.width = w;
+    c.height = h;
     return c;
   }
 
-  it('constructor sets default cropRect to full image', () => {
+  it('constructor sets centered default cropRect', () => {
     const cropper = new RuiCropperCanvas(createCanvasEl());
     const rect = cropper.getCropRect();
-    expect(rect.x).toBe(0);
-    expect(rect.y).toBe(0);
-    expect(rect.width).toBe(1);
-    expect(rect.height).toBe(1);
+    expect(rect.x).toBe(0.25);
+    expect(rect.y).toBe(0.25);
+    expect(rect.width).toBe(0.5);
+    expect(rect.height).toBe(0.5);
   });
 
   it('loadImage resolves and sets image dimensions', async () => {
@@ -45,10 +45,10 @@ describe('RuiCropperCanvas', () => {
     expect(cropper.imageHeight).toBe(600);
     expect(cropper.getZoom()).toBeGreaterThan(0);
     const rect = cropper.getCropRect();
-    expect(rect.x).toBe(0);
-    expect(rect.y).toBe(0);
-    expect(rect.width).toBe(1);
-    expect(rect.height).toBe(1);
+    expect(rect.x).toBe(0.25);
+    expect(rect.y).toBe(0.25);
+    expect(rect.width).toBe(0.5);
+    expect(rect.height).toBe(0.5);
   });
 
   it('setZoom/getZoom work correctly', () => {
@@ -103,15 +103,17 @@ describe('RuiCropperCanvas', () => {
     expect(result).not.toBe(rect);
   });
 
-  it('setAspectRatio adjusts cropRect', () => {
-    const cropper = new RuiCropperCanvas(createCanvasEl());
+  it('setAspectRatio adjusts cropRect accounting for viewport', () => {
+    const cropper = new RuiCropperCanvas(createCanvasEl(800, 600));
+    cropper.displayWidth = 800;
+    cropper.displayHeight = 600;
     cropper.setCropRect({ x: 0, y: 0, width: 0.8, height: 0.6 });
     cropper.setAspectRatio(1);
 
     const rect = cropper.getCropRect();
-    expect(rect.width).toBeCloseTo(0.6);
+    expect(rect.width).toBeCloseTo(0.45);
     expect(rect.height).toBeCloseTo(0.6);
-    expect(rect.x).toBeCloseTo(0.1);
+    expect(rect.x).toBeCloseTo(0.175);
     expect(rect.y).toBe(0);
     expect(cropper.getAspectRatio()).toBe(1);
   });
@@ -123,9 +125,31 @@ describe('RuiCropperCanvas', () => {
   });
 
   it('getOutput returns a data URL string', async () => {
-    const cropper = new RuiCropperCanvas(createCanvasEl());
+    const cropper = new RuiCropperCanvas(createCanvasEl(800, 600));
+    cropper.displayWidth = 800;
+    cropper.displayHeight = 600;
     await cropper.loadImage(generateTestImageDataUrl(100, 100));
     const result = cropper.getOutput('image/png', 0.92);
     expect(result).toContain('data:image/png;base64,');
+  });
+
+  it('getCropPixelSize returns correct pixel dimensions', async () => {
+    const cropper = new RuiCropperCanvas(createCanvasEl(800, 600));
+    cropper.displayWidth = 800;
+    cropper.displayHeight = 600;
+    await cropper.loadImage(generateTestImageDataUrl(200, 150));
+    cropper.setCropRect({ x: 0.25, y: 0.25, width: 0.5, height: 0.5 });
+
+    const size = cropper.getCropPixelSize();
+    expect(size.width).toBeGreaterThan(0);
+    expect(size.height).toBeGreaterThan(0);
+  });
+
+  it('getDisplayWidth/Height return viewport dimensions', () => {
+    const cropper = new RuiCropperCanvas(createCanvasEl(800, 600));
+    cropper.displayWidth = 800;
+    cropper.displayHeight = 600;
+    expect(cropper.getDisplayWidth()).toBe(800);
+    expect(cropper.getDisplayHeight()).toBe(600);
   });
 });
