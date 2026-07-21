@@ -1,6 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="E2E Tests" type="js.build_tools.nx">
-    <target name="e2e" project="demo-e2e" />
-    <method v="2" />
-  </configuration>
-</component>

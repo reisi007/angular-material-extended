@@ -1,6 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Build Library" type="js.build_tools.nx">
-    <target name="build" project="mat-extended" />
-    <method v="2" />
-  </configuration>
-</component>

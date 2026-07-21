@@ -1,6 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Dev Server" type="js.build_tools.nx">
-    <target name="serve" project="demo" />
-    <method v="2" />
-  </configuration>
-</component>
