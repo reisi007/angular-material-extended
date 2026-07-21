@@ -11,7 +11,8 @@
     "src/**/*.ts",
     "cropper/src/**/*.ts",
     "data-table/src/**/*.ts",
-    "data-table/cropper/src/**/*.ts"
+    "file-upload/src/**/*.ts",
+    "toast/src/**/*.ts"
   ],
   "exclude": [
     "src/**/*.spec.ts",
@@ -20,7 +21,9 @@
     "cropper/src/**/*.test.ts",
     "data-table/src/**/*.spec.ts",
     "data-table/src/**/*.test.ts",
-    "data-table/cropper/src/**/*.spec.ts",
-    "data-table/cropper/src/**/*.test.ts"
+    "file-upload/src/**/*.spec.ts",
+    "file-upload/src/**/*.test.ts",
+    "toast/src/**/*.spec.ts",
+    "toast/src/**/*.test.ts"
   ]
 }

@@ -1,0 +1,62 @@
+<div class="rui-cropper">
+  <div
+    class="rui-cropper__viewport"
+    #viewport
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+  >
+    <div class="rui-cropper__image-layer">
+      <canvas #canvas></canvas>
+    </div>
+
+    <div class="rui-cropper__overlay"
+      [style.--rui-crop-x.px]="cropRectStyle().x"
+      [style.--rui-crop-y.px]="cropRectStyle().y"
+      [style.--rui-crop-w.px]="cropRectStyle().width"
+      [style.--rui-crop-h.px]="cropRectStyle().height"
+      [style.--rui-rotation.deg]="rotation()">
+      <ng-content select="[ruiCropperOverlay]"></ng-content>
+    </div>
+
+    @if (imageLoaded()) {
+      <div class="rui-cropper__controls">
+        <div class="rui-cropper__controls-group">
+          <button type="button" class="rui-cropper__btn" (click)="zoomIn()" aria-label="Zoom in">+</button>
+          <button type="button" class="rui-cropper__btn" (click)="zoomOut()" aria-label="Zoom out">-</button>
+          <span class="rui-cropper__zoom-level">{{ zoomLevel() }}%</span>
+        </div>
+
+        <div class="rui-cropper__controls-group">
+          <button type="button" class="rui-cropper__btn rotate" (click)="rotate(-90)" aria-label="Rotate left">↺</button>
+          <button type="button" class="rui-cropper__btn rotate" (click)="rotate(90)" aria-label="Rotate right">↻</button>
+          <input
+            type="range"
+            class="rui-cropper__slider"
+            [min]="0"
+            [max]="360"
+            [step]="1"
+            [value]="rotation()"
+            (input)="onRotateSlider($event)"
+            aria-label="Free rotation"
+          />
+          <span class="rui-cropper__angle">{{ rotation() }}°</span>
+        </div>
+
+        @if (!isAspectRatioFixed()) {
+          <div class="rui-cropper__controls-group">
+            <label>
+              Aspect:
+              <select (change)="onAspectChange($event)" aria-label="Aspect ratio">
+                <option value="free" [selected]="effectiveAspectRatio() === 'free'">Free</option>
+                <option value="1:1" [selected]="effectiveAspectRatio() === '1:1'">1:1</option>
+                <option value="4:3" [selected]="effectiveAspectRatio() === '4:3'">4:3</option>
+                <option value="16:9" [selected]="effectiveAspectRatio() === '16:9'">16:9</option>
+              </select>
+            </label>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
