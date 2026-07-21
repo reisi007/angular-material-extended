@@ -9,6 +9,7 @@ import type { RuiMenuItem, RuiMenuConfig } from './menu.types';
   templateUrl: './menu-button.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
+    'class': 'inline-block',
     '[class.is-open]': 'isOpen()',
   },
 })

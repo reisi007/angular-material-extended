@@ -17,6 +17,9 @@ import { RUI_DATA_TABLE_DEFAULT_OPTIONS, RUI_DATA_TABLE_DEFAULTS } from './data-
   imports: [CommonModule, FormsModule, MatTableModule, MatSortModule, MatPaginatorModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule],
   templateUrl: './data-table.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    'class': 'block',
+  },
 })
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class RuiDataTable<T extends { [key: string]: any }> implements AfterViewInit {

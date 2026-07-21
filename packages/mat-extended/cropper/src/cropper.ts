@@ -20,6 +20,7 @@ import { RUI_CROPPER_DEFAULT_OPTIONS } from './cropper.config';
   host: {
     tabindex: '0',
     '(keydown)': 'onKeydown($event)',
+    'class': 'block relative w-full max-w-[800px]',
   },
 })
 export class RuiCropper extends RuiValueAccessor<string> {

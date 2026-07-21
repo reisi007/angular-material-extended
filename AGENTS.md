@@ -23,27 +23,27 @@
 
 ## 2. Projekt-Identität
 
-| | |
-|---|---|
-| Display-Name | Angular Material Extended |
-| npm-Package | `@all-the.rest/mat-extended` (+ Secondary Entrypoints) |
-| Selector-Prefix | `rui-` (z.B. `<rui-cropper>`) |
-| GitHub Repo | `reisi007/angular-material-extended` |
-| Lizenz | MIT |
-| Package Manager | **pnpm** (ausschließlich) |
+|                 |                                                        |
+| --------------- | ------------------------------------------------------ |
+| Display-Name    | Angular Material Extended                              |
+| npm-Package     | `@all-the.rest/mat-extended` (+ Secondary Entrypoints) |
+| Selector-Prefix | `rui-` (z.B. `<rui-cropper>`)                          |
+| GitHub Repo     | `reisi007/angular-material-extended`                   |
+| Lizenz          | MIT                                                    |
+| Package Manager | **pnpm** (ausschließlich)                              |
 
 > **Unofficial-Disclaimer**: Dieses Projekt ist eine Community-Erweiterung und NICHT offiziell mit Google oder dem Angular-Team affiliiert. Die Disclaim-Formulierung MUSS in jeder README (Top-Level + Secondary Entrypoints) erhalten bleiben. "Angular" und "Material" sind Marken von Google LLC.
 
 ## 3. Tooling & Versions
 
-| | |
-|---|---|
-| Node | `>=22` (lokal v26) |
-| Package Manager | **pnpm** (`engines.pnpm` in `package.json` setzen) |
-| Angular | v22 (oder neuestes stable) |
-| Angular Material + CDK | v22 (M3 Theming) |
-| Monorepo | Nx |
-| Test-Runner | Vitest (`vitest-angular` executor) |
+|                        |                                                    |
+| ---------------------- | -------------------------------------------------- |
+| Node                   | `>=22` (lokal v26)                                 |
+| Package Manager        | **pnpm** (`engines.pnpm` in `package.json` setzen) |
+| Angular                | v22 (oder neuestes stable)                         |
+| Angular Material + CDK | v22 (M3 Theming)                                   |
+| Monorepo               | Nx                                                 |
+| Test-Runner            | Vitest (`vitest-angular` executor)                 |
 
 - **KEINE** `npm install` / `yarn`-Befehle – IMMER `pnpm install` / `pnpm add`.
 - Lockfile `pnpm-lock.yaml` MUSS committed werden.
@@ -82,15 +82,15 @@
 
 Ein Feature gilt NUR als abgeschlossen, wenn ALLE folgenden Kriterien erfüllt sind:
 
-| Kriterium | Beschreibung |
-|---|---|
-| Implementierung | Code vollständig inkl. aller Inputs/Outputs/Signals |
-| Unit-Tests | ≥80% Coverage (Statements + Branches + Functions) |
-| E2E-Tests | Playwright-Tests mit mobile Chrome + Desktop Chrome |
-| CI-Pipeline | `pnpm nx test` + `pnpm nx lint` + Playwright E2E laufen grün in GitHub Actions |
-| Barrierefreiheit | Keyboard-Navigation, ARIA-Labels, Focus-Management |
-| Demo-Seite | Feature wird in der Demo-App demonstriert |
-| Keine eslint-disable | Alle Lint-Regeln werden eingehalten, keine Unterdrückung |
+| Kriterium            | Beschreibung                                                                   |
+| -------------------- | ------------------------------------------------------------------------------ |
+| Implementierung      | Code vollständig inkl. aller Inputs/Outputs/Signals                            |
+| Unit-Tests           | ≥80% Coverage (Statements + Branches + Functions)                              |
+| E2E-Tests            | Playwright-Tests mit mobile Chrome + Desktop Chrome                            |
+| CI-Pipeline          | `pnpm nx test` + `pnpm nx lint` + Playwright E2E laufen grün in GitHub Actions |
+| Barrierefreiheit     | Keyboard-Navigation, ARIA-Labels, Focus-Management                             |
+| Demo-Seite           | Feature wird in der Demo-App demonstriert                                      |
+| Keine eslint-disable | Alle Lint-Regeln werden eingehalten, keine Unterdrückung                       |
 
 > **Pipeline-Regel**: Ein Feature ist erst dann `[x]`, wenn die GitHub Action grün durchläuft.
 
@@ -102,6 +102,7 @@ Jede form-fähige Komponente MUSS beides unterstützen:
 2. **Signal-API** via `model()` parallel.
 
 Beispiel-Pattern:
+
 ```ts
 export class RuiCropper extends RuiValueAccessor<string> implements ControlValueAccessor {
   readonly croppedImage = model<string>(); // parallele Signal-API
@@ -217,12 +218,36 @@ Wo sinnvoll möglich, werden Sub-Agents (via `task`-Tool) parallel eingesetzt, u
 
 ### Mapping: Phase → Parallelisierungsgrad
 
-| Phase | Sequentiell (Haupt) | Parallel (Sub-Agent) |
-|---|---|---|
-| Phase 1 (Workspace) | Nx-Init, Lib-Gen, Demo, Angular Material, Secondary Entry Points, Tailwind | CI-Skeleton (ci.yml) |
-| Phase 2 (Theming/Infra) | CVA-Helper, SSR-Guard, A11y-Helper, Theme-Tokens, Mixins | - |
-| Phase 3 (Cropper) | Grundgerüst (Types, Config) | Canvas-Engine + Component + Interaction + A11y + Tests + Demo + README (pro Modul ein Sub-Agent) |
-| Phase 4 (File Upload) | Grundgerüst (Types, Config) | Component + Drag/Drop + Validation + Upload + Tests + Demo + README (pro Feature-Gruppe ein Sub-Agent) |
-| Phase 5 (Toast) | Service + Overlay + Tests + README in einem Sub-Agent | - |
-| Phase 6 (Data Table) | Grundgerüst (Types, Config) | Component + Sort + Paginator + Filter + Selection + Tests + Demo + README (pro Feature-Gruppe ein Sub-Agent) |
-| Phase 7 (Release) | Release-YAML, Deploy-YAML | - |
+| Phase                   | Sequentiell (Haupt)                                                        | Parallel (Sub-Agent)                                                                                         |
+| ----------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Phase 1 (Workspace)     | Nx-Init, Lib-Gen, Demo, Angular Material, Secondary Entry Points, Tailwind | CI-Skeleton (ci.yml)                                                                                         |
+| Phase 2 (Theming/Infra) | CVA-Helper, SSR-Guard, A11y-Helper, Theme-Tokens, Mixins                   | -                                                                                                            |
+| Phase 3 (Cropper)       | Grundgerüst (Types, Config)                                                | Canvas-Engine + Component + Interaction + A11y + Tests + Demo + README (pro Modul ein Sub-Agent)             |
+| Phase 4 (File Upload)   | Grundgerüst (Types, Config)                                                | Component + Drag/Drop + Validation + Upload + Tests + Demo + README (pro Feature-Gruppe ein Sub-Agent)       |
+| Phase 5 (Toast)         | Service + Overlay + Tests + README in einem Sub-Agent                      | -                                                                                                            |
+| Phase 6 (Data Table)    | Grundgerüst (Types, Config)                                                | Component + Sort + Paginator + Filter + Selection + Tests + Demo + README (pro Feature-Gruppe ein Sub-Agent) |
+| Phase 7 (Release)       | Release-YAML, Deploy-YAML                                                  | -                                                                                                            |
+
+<!-- nx configuration start-->
+<!-- Leave the start & end comments to automatically receive updates. -->
+
+## General Guidelines for working with Nx
+
+- For navigating/exploring the workspace, invoke the `nx-workspace` skill first - it has patterns for querying projects, targets, and dependencies
+- When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
+- Prefix nx commands with the workspace's package manager (e.g., `pnpm nx build`, `npm exec nx test`) - avoids using globally installed CLI
+- You have access to the Nx MCP server and its tools, use them to help the user
+- For Nx plugin best practices, check `node_modules/@nx/<plugin>/PLUGIN.md`. Not all plugins have this file - proceed without it if unavailable.
+- NEVER guess CLI flags - always check nx_docs or `--help` first when unsure
+
+## Scaffolding & Generators
+
+- For scaffolding tasks (creating apps, libs, project structure, setup), ALWAYS invoke the `nx-generate` skill FIRST before exploring or calling MCP tools
+
+## When to use nx_docs
+
+- USE for: advanced config options, unfamiliar flags, migration guides, plugin configuration, edge cases
+- DON'T USE for: basic generator syntax (`nx g @nx/react:app`), standard commands, things you already know
+- The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
+
+<!-- nx configuration end-->

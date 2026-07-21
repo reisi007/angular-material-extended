@@ -83,7 +83,7 @@ import { MatSliderModule } from '@angular/material/slider';
       </mat-form-field>
       <mat-form-field>
         <mat-label>Quality: {{ selectedQuality() }}</mat-label>
-        <input matInput type="range" min="0.1" max="1" step="0.01" [value]="selectedQuality()" (input)="onQualityChange($event)" />
+        <input type="range" min="0.1" max="1" step="0.01" [value]="selectedQuality()" (input)="onQualityChange($event)" class="w-full" />
       </mat-form-field>
       <mat-form-field>
         <mat-label>Output Width: {{ selectedOutputWidth() || 'auto' }}</mat-label>

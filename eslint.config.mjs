@@ -23,6 +23,7 @@ export default [
             '^.*/src/common/',
             '^.*/src/theme/',
             '^.*/src/i18n/',
+            '^@all-the\\.rest/mat-extended(/.*)?$',
           ],
           depConstraints: [
             {

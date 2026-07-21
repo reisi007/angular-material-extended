@@ -26,6 +26,7 @@ import { RUI_FILE_UPLOAD_DEFAULT_OPTIONS } from './file-upload.config';
   templateUrl: './file-upload.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
+    'class': 'block',
     '(dragover)': 'onDragOver($event)',
     '(dragleave)': 'onDragLeave($event)',
     '(drop)': 'onDrop($event)',

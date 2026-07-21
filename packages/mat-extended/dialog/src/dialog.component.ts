@@ -10,6 +10,9 @@ import { RuiDialogConfig } from './dialog.types';
   imports: [CommonModule, FormsModule],
   templateUrl: './dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    'class': 'block',
+  },
 })
 export class RuiDialogComponent implements AfterViewInit {
   readonly config = input.required<RuiDialogConfig>();

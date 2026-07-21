@@ -13,6 +13,9 @@ const ICONS: Record<string, string> = {
   standalone: true,
   templateUrl: './toast.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    'class': 'block animate-slide-in',
+  },
 })
 export class RuiToastComponent {
   readonly config = input.required<RuiToastConfig>();
