@@ -165,3 +165,37 @@ export class RuiCropper extends RuiValueAccessor<string> implements ControlValue
 - Bei Fehlern: IMMER den vollen Output lesen und analysieren, nicht einfach retry.
 - Tasks in `AGENTS.todo.md` sofort aktualisieren, nicht erst am Ende.
 - Tab-Größe: 2 Spaces (in TS/SCSS/HTML/MD).
+
+## 17. Parallelisierung & Sub-Agents
+
+Wo sinnvoll möglich, werden Sub-Agents (via `task`-Tool) parallel eingesetzt, um die Bearbeitungszeit zu verkürzen.
+
+### Grundsätze
+
+- **Sequentielles Scaffolding** (Nx-Workspace-Init, Library-Gen, Angular-Material, Secondary Entry Points, Demo-App) läuft AUSNAHMSLOS seriell im Haupt-Agent. Diese Schritte bauen aufeinander auf und Nx-Generators vertragen keine parallelen Instanzen.
+- **Parallelisierbare Aufgaben** werden als Sub-Agent gestartet:
+  - CI/CD-YAML-Dateien (ci.yml, release.yml, deploy-demo.yml)
+  - Konfigurationsdateien mit klarer Vorgabe (ESLint-Prettier-Config, Tailwind-Config)
+  - README-Dokumentation für Secondary Entry Points
+  - Skelleton-Tests
+- **Nicht parallelisierbar**: Alles was Nx-Generators oder Direct-Git-Operationen im selben Workspace betrifft.
+
+### Ablauf bei paralleler Arbeit
+
+1. Jeder Sub-Agent bekommt eine **eigenständige, vollständig spezifizierte Task-Beschreibung** inkl. genauer Dateipfade und Inhaltsvorgaben.
+2. Sub-Agents arbeiten **ausschließlich Dateibasiert** (Write/Edit/Read-Tools), nie mit Nx-Befehlen.
+3. Ergebnisse von Sub-Agents werden vom Haupt-Agent vor dem Commit geprüft.
+4. Bei Konflikten zwischen parallelen Tasks gewinnt der Haupt-Agent.
+5. Alle Tasks müssen in `AGENTS.todo.md` nachgetragen werden.
+
+### Mapping: Phase → Parallelisierungsgrad
+
+| Phase | Sequentiell (Haupt) | Parallel (Sub-Agent) |
+|---|---|---|
+| Phase 1 (Workspace) | Nx-Init, Lib-Gen, Demo, Angular Material, Secondary Entry Points, Tailwind | CI-Skeleton (ci.yml) |
+| Phase 2 (Theming/Infra) | CVA-Helper, SSR-Guard, A11y-Helper, Theme-Tokens, Mixins | - |
+| Phase 3 (Cropper) | Architektur + Types, Canvas-Engine, Component, Interaction, A11y | Tests + Demo-Seite + README parallelien zu A11y |
+| Phase 4 (File Upload) | Component, Drag/Drop, Validation, Upload-Trigger | Tests + Demo-Seite + README |
+| Phase 5 (Toast) | Service + Overlay | Tests + README |
+| Phase 6 (Data Table) | Component, Columns, Filter/Selection | Tests + Demo-Seite + README |
+| Phase 7 (Release) | Release-YAML, Deploy-YAML | - |
