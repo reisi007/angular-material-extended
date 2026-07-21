@@ -18,7 +18,12 @@ export default [
         'error',
         {
           enforceBuildableLibDependency: true,
-          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
+          allow: [
+            '^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$',
+            '^.*/src/common/',
+            '^.*/src/theme/',
+            '^.*/src/i18n/',
+          ],
           depConstraints: [
             {
               sourceTag: 'scope:shared',
@@ -31,6 +36,14 @@ export default [
             {
               sourceTag: 'scope:api',
               onlyDependOnLibsWithTags: ['scope:api', 'scope:shared'],
+            },
+            {
+              sourceTag: 'scope:demo',
+              onlyDependOnLibsWithTags: ['scope:mat-extended', 'scope:shared'],
+            },
+            {
+              sourceTag: 'scope:mat-extended',
+              onlyDependOnLibsWithTags: ['scope:mat-extended', 'scope:shared'],
             },
             {
               sourceTag: 'type:data',

@@ -1,2 +1,3 @@
-export * from './theme/index';
-export * from './common/index';
+export * from './theme';
+export * from './common';
+export * from './i18n';

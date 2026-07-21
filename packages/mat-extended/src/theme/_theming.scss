@@ -1,1 +1,18 @@
-// Placeholder — will be implemented in Phase 2
+// Theming mixin for Angular Material Extended components.
+//
+// Usage (in global styles.scss):
+//   @use '@all-the.rest/mat-extended/theme' as rui;
+//   @include rui.rui-custom-theme();
+//
+// Custom colors can be overridden via CSS custom properties:
+//   :root {
+//     --rui-color-primary: #your-color;
+//   }
+
+@mixin rui-custom-theme() {
+  // Tokens from _tokens.scss are applied automatically via :root
+}
+
+@mixin rui-component-tokens($component-name) {
+  // Override tokens per component if needed
+}

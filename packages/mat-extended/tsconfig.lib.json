@@ -5,6 +5,7 @@
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
+    "skipLibCheck": true,
     "types": []
   },
   "include": [
@@ -12,7 +13,10 @@
     "cropper/src/**/*.ts",
     "data-table/src/**/*.ts",
     "file-upload/src/**/*.ts",
-    "toast/src/**/*.ts"
+    "toast/src/**/*.ts",
+    "menu/src/**/*.ts",
+    "dialog/src/**/*.ts",
+    "i18n/src/**/*.ts"
   ],
   "exclude": [
     "src/**/*.spec.ts",
@@ -24,6 +28,16 @@
     "file-upload/src/**/*.spec.ts",
     "file-upload/src/**/*.test.ts",
     "toast/src/**/*.spec.ts",
-    "toast/src/**/*.test.ts"
-  ]
+    "toast/src/**/*.test.ts",
+    "menu/src/**/*.spec.ts",
+    "menu/src/**/*.test.ts",
+    "dialog/src/**/*.spec.ts",
+    "dialog/src/**/*.test.ts",
+    "i18n/src/**/*.spec.ts",
+    "i18n/src/**/*.test.ts"
+  ],
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
+  }
 }

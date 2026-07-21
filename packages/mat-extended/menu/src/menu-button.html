@@ -1,0 +1,5 @@
+<button class="flex flex-col gap-1 p-2 border-none bg-transparent cursor-pointer rounded transition-background-color duration-200 hover:bg-[var(--mat-sys-surface-variant)]" (click)="toggle()" aria-label="Menu" aria-haspopup="true" [attr.aria-expanded]="isOpen()">
+  <span class="block w-6 h-0.5 bg-[var(--mat-sys-on-surface)] rounded transition-transform duration-200" [style.transform]="isOpen() ? 'translateY(6px) rotate(45deg)' : undefined"></span>
+  <span class="block w-6 h-0.5 bg-[var(--mat-sys-on-surface)] rounded transition-transform duration-200" [style.opacity]="isOpen() ? '0' : undefined"></span>
+  <span class="block w-6 h-0.5 bg-[var(--mat-sys-on-surface)] rounded transition-transform duration-200" [style.transform]="isOpen() ? 'translateY(-6px) rotate(-45deg)' : undefined"></span>
+</button>

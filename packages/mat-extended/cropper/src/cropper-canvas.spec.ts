@@ -1,32 +1,35 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { RuiCropperCanvas } from './cropper-canvas';
+import { createCanvas } from 'canvas';
 
-function createMockImage(width: number, height: number): HTMLImageElement {
-  const img = document.createElement('img');
-  Object.defineProperty(img, 'naturalWidth', { value: width, configurable: true });
-  Object.defineProperty(img, 'naturalHeight', { value: height, configurable: true });
-  setTimeout(() => {
-    if (typeof img.onload === 'function') {
-      img.onload(new Event('load'));
-    }
-  });
-  return img;
+function generateTestImageDataUrl(width: number, height: number): string {
+  const c = createCanvas(width, height);
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#ff0000';
+  ctx.fillRect(0, 0, width / 2, height / 2);
+  ctx.fillStyle = '#00ff00';
+  ctx.fillRect(width / 2, 0, width / 2, height / 2);
+  ctx.fillStyle = '#0000ff';
+  ctx.fillRect(0, height / 2, width / 2, height / 2);
+  ctx.fillStyle = '#ffff00';
+  ctx.fillRect(width / 2, height / 2, width / 2, height / 2);
+  return c.toDataURL('image/png');
 }
 
 describe('RuiCropperCanvas', () => {
-  function createCanvas(): HTMLCanvasElement {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  function createCanvasEl(): HTMLCanvasElement {
     const c = document.createElement('canvas');
     c.width = 800;
     c.height = 600;
     return c;
   }
 
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
   it('constructor sets default cropRect to full image', () => {
-    const cropper = new RuiCropperCanvas(createCanvas());
+    const cropper = new RuiCropperCanvas(createCanvasEl());
     const rect = cropper.getCropRect();
     expect(rect.x).toBe(0);
     expect(rect.y).toBe(0);
@@ -35,10 +38,8 @@ describe('RuiCropperCanvas', () => {
   });
 
   it('loadImage resolves and sets image dimensions', async () => {
-    vi.stubGlobal('Image', vi.fn().mockImplementation(() => createMockImage(800, 600)));
-
-    const cropper = new RuiCropperCanvas(createCanvas());
-    await cropper.loadImage('test.jpg');
+    const cropper = new RuiCropperCanvas(createCanvasEl());
+    await cropper.loadImage(generateTestImageDataUrl(800, 600));
 
     expect(cropper.imageWidth).toBe(800);
     expect(cropper.imageHeight).toBe(600);
@@ -51,7 +52,7 @@ describe('RuiCropperCanvas', () => {
   });
 
   it('setZoom/getZoom work correctly', () => {
-    const cropper = new RuiCropperCanvas(createCanvas());
+    const cropper = new RuiCropperCanvas(createCanvasEl());
 
     cropper.setZoom(2);
     expect(cropper.getZoom()).toBe(2);
@@ -70,7 +71,7 @@ describe('RuiCropperCanvas', () => {
   });
 
   it('setRotation/getRotation work correctly (normalized)', () => {
-    const cropper = new RuiCropperCanvas(createCanvas());
+    const cropper = new RuiCropperCanvas(createCanvasEl());
 
     cropper.setRotation(90);
     expect(cropper.getRotation()).toBe(90);
@@ -89,7 +90,7 @@ describe('RuiCropperCanvas', () => {
   });
 
   it('setCropRect/getCropRect work correctly', () => {
-    const cropper = new RuiCropperCanvas(createCanvas());
+    const cropper = new RuiCropperCanvas(createCanvasEl());
     const rect = { x: 0.1, y: 0.2, width: 0.5, height: 0.6 };
 
     cropper.setCropRect(rect);
@@ -103,7 +104,7 @@ describe('RuiCropperCanvas', () => {
   });
 
   it('setAspectRatio adjusts cropRect', () => {
-    const cropper = new RuiCropperCanvas(createCanvas());
+    const cropper = new RuiCropperCanvas(createCanvasEl());
     cropper.setCropRect({ x: 0, y: 0, width: 0.8, height: 0.6 });
     cropper.setAspectRatio(1);
 
@@ -115,23 +116,16 @@ describe('RuiCropperCanvas', () => {
     expect(cropper.getAspectRatio()).toBe(1);
   });
 
-  it('render does not throw', () => {
-    const cropper = new RuiCropperCanvas(createCanvas());
+  it('render does not throw with image', async () => {
+    const cropper = new RuiCropperCanvas(createCanvasEl());
+    await cropper.loadImage(generateTestImageDataUrl(100, 100));
     expect(() => cropper.render()).not.toThrow();
   });
 
   it('getOutput returns a data URL string', async () => {
-    vi.stubGlobal('Image', vi.fn().mockImplementation(() => createMockImage(100, 100)));
-
-    const cropper = new RuiCropperCanvas(createCanvas());
-    await cropper.loadImage('test.jpg');
-
-    const originalToDataURL = HTMLCanvasElement.prototype.toDataURL;
-    HTMLCanvasElement.prototype.toDataURL = vi.fn().mockReturnValue('data:image/png;base64,mockdata');
-
+    const cropper = new RuiCropperCanvas(createCanvasEl());
+    await cropper.loadImage(generateTestImageDataUrl(100, 100));
     const result = cropper.getOutput('image/png', 0.92);
-    expect(result).toBe('data:image/png;base64,mockdata');
-
-    HTMLCanvasElement.prototype.toDataURL = originalToDataURL;
+    expect(result).toContain('data:image/png;base64,');
   });
 });

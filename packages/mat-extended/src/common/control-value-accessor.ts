@@ -7,8 +7,10 @@ export abstract class RuiValueAccessor<T> implements ControlValueAccessor {
   );
   readonly disabled = signal(false);
 
-  protected onChange: (value: T | undefined) => void = /* @__NO_SIDE_EFFECTS__ */ () => {};
-  protected onTouched: () => void = /* @__NO_SIDE_EFFECTS__ */ () => {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected onChange: (value: T | undefined) => void = () => {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected onTouched: () => void = () => {};
 
   writeValue(value: T | undefined): void {
     this.value.set(value);

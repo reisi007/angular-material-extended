@@ -8,12 +8,15 @@ export default [
   {
     files: ['**/*.json'],
     rules: {
-      '@nx/dependency-checks': [
-        'error',
-        {
-          ignoredFiles: ['{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}'],
-        },
-      ],
+        '@nx/dependency-checks': [
+          'error',
+          {
+            ignoredFiles: [
+              '{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}',
+              '{projectRoot}/vite.config.{mjs,mts,js,ts}',
+            ],
+          },
+        ],
     },
     languageOptions: {
       parser: await import('jsonc-eslint-parser'),

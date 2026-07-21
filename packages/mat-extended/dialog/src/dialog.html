@@ -1,0 +1,25 @@
+<div
+  [class]="dialogClasses()"
+  role="dialog"
+  aria-modal="true"
+  cdkTrapFocus
+>
+  @if (config().header) {
+    <div class="flex items-center justify-between px-6 py-4 border-b border-[var(--mat-sys-outline-variant)]">
+      <h2 class="m-0 text-lg font-medium text-[var(--mat-sys-on-surface)]">{{ config().header }}</h2>
+      @if (!config().disableClose) {
+        <button class="flex items-center justify-center w-8 h-8 border-none bg-transparent cursor-pointer text-[var(--mat-sys-on-surface-variant)] rounded-full text-base hover:bg-[var(--mat-sys-surface-variant)]" (click)="dismiss.emit()" aria-label="Close dialog">&#x2715;</button>
+      }
+    </div>
+  }
+  <div class="px-6 py-6 overflow-y-auto flex-1">
+    @if (config().template) {
+      <ng-container *ngTemplateOutlet="config().template!; context: config().context" />
+    } @else {
+      <ng-content></ng-content>
+    }
+  </div>
+  <div class="flex justify-end gap-2 px-6 py-4 border-t border-[var(--mat-sys-outline-variant)]">
+    <ng-content select="[ruiDialogActions]"></ng-content>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+{
+  "name": "demo-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/demo-e2e/src",
+  "projectType": "application",
+  "tags": ["scope:demo-e2e"],
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --config=apps/demo-e2e/playwright.config.ts"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "maxWarnings": 0,
+        "lintFilePatterns": ["apps/demo-e2e/**/*.ts"]
+      }
+    }
+  }
+}

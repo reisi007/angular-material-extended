@@ -9,8 +9,11 @@ export class RuiCropperCanvas {
   private cropRect: RuiCropRect;
   private aspectRatio: number | null = null;
 
-  readonly imageWidth: number = 0;
-  readonly imageHeight: number = 0;
+  private _imageWidth = 0;
+  private _imageHeight = 0;
+
+  get imageWidth(): number { return this._imageWidth; }
+  get imageHeight(): number { return this._imageHeight; }
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -25,8 +28,8 @@ export class RuiCropperCanvas {
       const img = new Image();
       img.onload = () => {
         this.image = img;
-        (this as { imageWidth: number }).imageWidth = img.naturalWidth;
-        (this as { imageHeight: number }).imageHeight = img.naturalHeight;
+        this._imageWidth = img.naturalWidth;
+        this._imageHeight = img.naturalHeight;
         const scaleX = this.canvas.width / img.naturalWidth;
         const scaleY = this.canvas.height / img.naturalHeight;
         this.zoom = Math.min(scaleX, scaleY);
@@ -136,35 +139,66 @@ export class RuiCropperCanvas {
     }
   }
 
-  getOutput(format: string, quality: number): string {
+  getOutput(format: string, quality: number, outputWidth?: number, outputHeight?: number): string {
+    const { width, height } = this._resolveOutputSize(outputWidth, outputHeight);
+    const offscreen = this._renderOffscreen(width, height);
+    return offscreen.toDataURL(format, quality);
+  }
+
+  getOutputBlob(format: string, quality: number, outputWidth?: number, outputHeight?: number): Promise<Blob | null> {
+    const { width, height } = this._resolveOutputSize(outputWidth, outputHeight);
+    const offscreen = this._renderOffscreen(width, height);
+    return new Promise<Blob | null>((resolve) => {
+      offscreen.toBlob((blob) => resolve(blob), format, quality);
+    });
+  }
+
+  private _resolveOutputSize(outputWidth?: number, outputHeight?: number): { width: number; height: number } {
     const pixelWidth = this.cropRect.width * this.imageWidth;
     const pixelHeight = this.cropRect.height * this.imageHeight;
+    const aspect = pixelWidth / pixelHeight;
+
+    if (outputWidth && outputWidth > 0 && outputHeight && outputHeight > 0) {
+      return { width: outputWidth, height: outputHeight };
+    }
+    if (outputWidth && outputWidth > 0) {
+      return { width: outputWidth, height: Math.round(outputWidth / aspect) };
+    }
+    if (outputHeight && outputHeight > 0) {
+      return { width: Math.round(outputHeight * aspect), height: outputHeight };
+    }
+    return { width: pixelWidth, height: pixelHeight };
+  }
+
+  private _renderOffscreen(width: number, height: number): HTMLCanvasElement {
     const offscreen = document.createElement('canvas');
-    offscreen.width = pixelWidth;
-    offscreen.height = pixelHeight;
+    offscreen.width = width;
+    offscreen.height = height;
     const offCtx = offscreen.getContext('2d');
     if (!offCtx) throw new Error('Could not get offscreen 2D context');
 
     const cropPixelX = this.cropRect.x * this.imageWidth;
     const cropPixelY = this.cropRect.y * this.imageHeight;
+    const srcWidth = this.cropRect.width * this.imageWidth;
+    const srcHeight = this.cropRect.height * this.imageHeight;
 
     offCtx.save();
-    offCtx.translate(pixelWidth / 2, pixelHeight / 2);
+    offCtx.translate(width / 2, height / 2);
     offCtx.rotate((this.rotation * Math.PI) / 180);
-    offCtx.translate(-pixelWidth / 2, -pixelHeight / 2);
+    offCtx.translate(-width / 2, -height / 2);
     offCtx.drawImage(
       this.image!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
       cropPixelX,
       cropPixelY,
-      pixelWidth,
-      pixelHeight,
+      srcWidth,
+      srcHeight,
       0,
       0,
-      pixelWidth,
-      pixelHeight,
+      width,
+      height,
     );
     offCtx.restore();
 
-    return offscreen.toDataURL(format, quality);
+    return offscreen;
   }
 }

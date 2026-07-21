@@ -1,0 +1,25 @@
+<div class="bg-[var(--mat-sys-surface-container)] rounded shadow-lg py-1 min-w-[200px]">
+  @for (item of items(); track $index; let idx = $index) {
+    @if (item.separator) {
+      <div class="h-px bg-[var(--mat-sys-outline-variant)] my-1"></div>
+    } @else {
+      <button class="flex items-center gap-3 w-full px-4 py-2.5 border-none bg-transparent text-[var(--mat-sys-on-surface)] text-sm cursor-pointer text-left transition-background-color duration-150 hover:bg-[var(--mat-sys-surface-container-high)]"
+        [style.background-color]="activeIndex() === idx ? 'var(--mat-sys-surface-container-high)' : undefined"
+        [class.opacity-40]="item.disabled"
+        [class.cursor-not-allowed]="item.disabled"
+        [disabled]="item.disabled"
+        (click)="onSelect(item)"
+        (mouseenter)="activeIndex.set(idx)"
+        role="menuitem"
+        [attr.tabindex]="activeIndex() === idx ? '0' : '-1'">
+        @if (item.icon) {
+          <span class="text-lg shrink-0 w-5 text-center">{{ item.icon }}</span>
+        }
+        <span class="flex-1">{{ item.label }}</span>
+        @if (item.children) {
+          <span class="text-lg text-[var(--mat-sys-on-surface-variant)]">›</span>
+        }
+      </button>
+    }
+  }
+</div>

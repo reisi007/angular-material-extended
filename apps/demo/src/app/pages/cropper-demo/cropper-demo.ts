@@ -8,13 +8,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSliderModule } from '@angular/material/slider';
 
 @Component({
   selector: 'rui-cropper-demo',
   standalone: true,
   imports: [
     FormsModule, ReactiveFormsModule, JsonPipe,
-    RuiCropper, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule,
+    RuiCropper, MatCardModule, MatFormFieldModule, MatInputModule,
+    MatSelectModule, MatButtonModule, MatSliderModule,
   ],
   template: `
 <div class="max-w-4xl mx-auto space-y-8 p-4">
@@ -24,8 +26,14 @@ import { MatButtonModule } from '@angular/material/button';
     <mat-card-header><mat-card-title>Image Source</mat-card-title></mat-card-header>
     <mat-card-content>
       <mat-form-field class="w-full">
-        <input matInput [ngModel]="imageUrl" (ngModelChange)="imageUrl = $event" placeholder="Enter image URL" />
+        <input matInput [ngModel]="imageUrl" (ngModelChange)="imageUrl = $event; loadError.set('')" placeholder="Enter image URL" />
       </mat-form-field>
+      <button mat-raised-button color="warn" (click)="imageUrl = 'https://invalid.example/nonexistent.jpg'" class="mt-2">
+        Simuliere Lade-Fehler
+      </button>
+      @if (loadError()) {
+        <p class="text-red-500 text-sm mt-2">{{ loadError() }}</p>
+      }
     </mat-card-content>
   </mat-card>
 
@@ -34,11 +42,14 @@ import { MatButtonModule } from '@angular/material/button';
     [aspectRatio]="selectedAspect()"
     [outputFormat]="selectedFormat()"
     [outputQuality]="selectedQuality()"
+    [outputWidth]="selectedOutputWidth()"
+    [outputHeight]="selectedOutputHeight()"
     [(croppedImage)]="croppedValue"
     (cropChange)="onCropChange($event)"
+    (loadError)="loadError.set($event)"
   >
     <svg ruiCropperOverlay class="absolute inset-0 w-full h-full pointer-events-none"
-      style="left: var(--rui-crop-x, 0px); top: var(--rui-crop-y, 0px); width: var(--rui-crop-w, 100px); height: var(--rui-crop-h, 100px);">
+      style="left: var(--rui-crop-x, 0%); top: var(--rui-crop-y, 0%); width: var(--rui-crop-w, 100%); height: var(--rui-crop-h, 100%);">
       <defs>
         <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
           <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
@@ -52,7 +63,7 @@ import { MatButtonModule } from '@angular/material/button';
 
   <mat-card>
     <mat-card-header><mat-card-title>Controls</mat-card-title></mat-card-header>
-    <mat-card-content class="flex gap-4">
+    <mat-card-content class="flex flex-wrap gap-4">
       <mat-form-field>
         <mat-label>Aspect Ratio</mat-label>
         <mat-select [value]="selectedAspect()" (valueChange)="selectedAspect.set($event)">
@@ -73,6 +84,14 @@ import { MatButtonModule } from '@angular/material/button';
       <mat-form-field>
         <mat-label>Quality: {{ selectedQuality() }}</mat-label>
         <input matInput type="range" min="0.1" max="1" step="0.01" [value]="selectedQuality()" (input)="onQualityChange($event)" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Output Width: {{ selectedOutputWidth() || 'auto' }}</mat-label>
+        <input matInput type="number" min="0" max="4096" step="1" [value]="selectedOutputWidth()" (input)="selectedOutputWidth.set(Number(($event.target as HTMLInputElement).value))" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Output Height: {{ selectedOutputHeight() || 'auto' }}</mat-label>
+        <input matInput type="number" min="0" max="4096" step="1" [value]="selectedOutputHeight()" (input)="selectedOutputHeight.set(Number(($event.target as HTMLInputElement).value))" />
       </mat-form-field>
     </mat-card-content>
   </mat-card>
@@ -103,8 +122,11 @@ export class CropperDemo {
   selectedAspect = signal<'free' | '1:1' | '4:3' | '16:9'>('free');
   selectedFormat = signal<RuiOutputFormat>('image/png');
   selectedQuality = signal(0.92);
+  selectedOutputWidth = signal(0);
+  selectedOutputHeight = signal(0);
   croppedValue = signal<string>('');
   outputDimensions = signal({ width: 0, height: 0 });
+  loadError = signal('');
 
   cropperControl = new FormControl<string | undefined>('');
 

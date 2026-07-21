@@ -1,38 +1,38 @@
-<div class="rui-cropper">
+<div class="relative overflow-hidden rounded-lg bg-[var(--mat-sys-surface-variant)]">
   <div
-    class="rui-cropper__viewport"
+    class="relative w-full aspect-video overflow-hidden cursor-crosshair touch-none"
     #viewport
     (pointerdown)="onPointerDown($event)"
     (pointermove)="onPointerMove($event)"
-    (pointerup)="onPointerUp($event)"
+    (pointerup)="onPointerUp()"
   >
-    <div class="rui-cropper__image-layer">
+    <div class="absolute inset-0 flex items-center justify-center">
       <canvas #canvas></canvas>
     </div>
 
-    <div class="rui-cropper__overlay"
-      [style.--rui-crop-x.px]="cropRectStyle().x"
-      [style.--rui-crop-y.px]="cropRectStyle().y"
-      [style.--rui-crop-w.px]="cropRectStyle().width"
-      [style.--rui-crop-h.px]="cropRectStyle().height"
+    <div class="absolute inset-0"
+      [style.--rui-crop-x.%]="cropRectStyle().x"
+      [style.--rui-crop-y.%]="cropRectStyle().y"
+      [style.--rui-crop-w.%]="cropRectStyle().width"
+      [style.--rui-crop-h.%]="cropRectStyle().height"
       [style.--rui-rotation.deg]="rotation()">
       <ng-content select="[ruiCropperOverlay]"></ng-content>
     </div>
 
     @if (imageLoaded()) {
-      <div class="rui-cropper__controls">
-        <div class="rui-cropper__controls-group">
-          <button type="button" class="rui-cropper__btn" (click)="zoomIn()" aria-label="Zoom in">+</button>
-          <button type="button" class="rui-cropper__btn" (click)="zoomOut()" aria-label="Zoom out">-</button>
-          <span class="rui-cropper__zoom-level">{{ zoomLevel() }}%</span>
+      <div class="flex flex-wrap gap-4 p-3 px-4 bg-[var(--mat-sys-surface-container)] border-t border-[var(--mat-sys-outline-variant)]">
+        <div class="flex items-center gap-2">
+          <button type="button" class="inline-flex items-center justify-center w-8 h-8 border border-[var(--mat-sys-outline)] rounded bg-[var(--mat-sys-surface)] text-[var(--mat-sys-on-surface)] cursor-pointer text-base leading-none hover:bg-[var(--mat-sys-surface-container-high)]" (click)="zoomIn()" aria-label="Zoom in">+</button>
+          <button type="button" class="inline-flex items-center justify-center w-8 h-8 border border-[var(--mat-sys-outline)] rounded bg-[var(--mat-sys-surface)] text-[var(--mat-sys-on-surface)] cursor-pointer text-base leading-none hover:bg-[var(--mat-sys-surface-container-high)]" (click)="zoomOut()" aria-label="Zoom out">-</button>
+          <span class="min-w-[3ch] text-xs text-[var(--mat-sys-on-surface-variant)] tabular-nums">{{ zoomLevel() }}%</span>
         </div>
 
-        <div class="rui-cropper__controls-group">
-          <button type="button" class="rui-cropper__btn rotate" (click)="rotate(-90)" aria-label="Rotate left">↺</button>
-          <button type="button" class="rui-cropper__btn rotate" (click)="rotate(90)" aria-label="Rotate right">↻</button>
+        <div class="flex items-center gap-2">
+          <button type="button" class="inline-flex items-center justify-center w-8 h-8 border border-[var(--mat-sys-outline)] rounded bg-[var(--mat-sys-surface)] text-[var(--mat-sys-on-surface)] cursor-pointer text-base leading-none hover:bg-[var(--mat-sys-surface-container-high)]" (click)="rotate(-90)" aria-label="Rotate left">↺</button>
+          <button type="button" class="inline-flex items-center justify-center w-8 h-8 border border-[var(--mat-sys-outline)] rounded bg-[var(--mat-sys-surface)] text-[var(--mat-sys-on-surface)] cursor-pointer text-base leading-none hover:bg-[var(--mat-sys-surface-container-high)]" (click)="rotate(90)" aria-label="Rotate right">↻</button>
           <input
             type="range"
-            class="rui-cropper__slider"
+            class="w-24 accent-[var(--mat-sys-primary)]"
             [min]="0"
             [max]="360"
             [step]="1"
@@ -40,11 +40,11 @@
             (input)="onRotateSlider($event)"
             aria-label="Free rotation"
           />
-          <span class="rui-cropper__angle">{{ rotation() }}°</span>
+          <span class="min-w-[3ch] text-xs text-[var(--mat-sys-on-surface-variant)] tabular-nums">{{ rotation() }}°</span>
         </div>
 
         @if (!isAspectRatioFixed()) {
-          <div class="rui-cropper__controls-group">
+          <div class="flex items-center gap-2">
             <label>
               Aspect:
               <select (change)="onAspectChange($event)" aria-label="Aspect ratio">

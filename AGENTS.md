@@ -60,19 +60,41 @@
 - **strict TS**: `strict: true`, `noUncheckedIndexedAccess` bevorzugt, keine `any` ohne Kommentar-Begründung.
 - **Change Detection**: Default-Strategie (v22 optimiert per-Component via Signals).
 
-## 5. Styling-Regeln (NEU)
+## 5. Styling-Regeln
 
 - **KEIN Inline-CSS**: Weder `styles: [...]` Strings noch inline `<style>` in Templates.
-- **IMMER** externe Stylesheets: `styleUrl: './foo.scss'` (Singluar, modern) oder `styleUrls: [...]`.
-- **Dateiformat**: `.scss` (Sass).
-- **Tailwind** ist für **Layout-Utilities** im Workspace/Demo erlaubt:
-  - Setup in Phase 1 (workspace-weites Tailwind-Config).
-  - Tailwind-Klassen in Templates sind OK für Layout (flex, grid, spacing, sizing).
-  - **NICHT** für Branding/Farben nutzen – das macht das M3-Theming.
-- **Komponenten-spezifisches Styling** (Visuelle Identität) gehört in die `.scss`-Datei via M3-Tokens.
+- **KEINE Custom-CSS-Klassen**: Eigen definierte Klassennamen (`rui-cropper__viewport`, `.rui-file-upload__item`, etc.) sind VERBOTEN. Ausschließlich Tailwind-Utility-Klassen im Template.
+- **KEINE SCSS-Dateien in der Library**: Alle Komponenten-Styles werden via Tailwind-Utilities im Template gesetzt. `styleUrl` entfällt komplett oder zeigt auf eine globale Theme-Datei. Komponenten-spezifische `.scss`-Dateien sind nicht erlaubt.
+- **Tailwind** ist der einzige erlaubte Styling-Ansatz:
+  - Tailwind-Utilities für ALLES: Layout (flex, grid, gap, p-, m-), Sizing (w-, h-, max-w-), Typografie (text-, font-), Farben (text-, bg-, border-), etc.
+  - M3-Tokens via `text-[var(--mat-sys-on-surface)]` oder `bg-[var(--mat-sys-surface)]` – NIEMALS hardcoded Hex-Farben.
+  - Animationen via Tailwind `animate-*` oder globale `@keyframes` in der Demo-App.
 - **Library-Build**: Tailwind wird **NICHT** als runtime dependency der publishten Library gebündelt. Es ist reine Workspace-DevDependency.
 
-## 6. Forms-Integration
+## 6. Verbot von eslint-disable-Kommentaren
+
+- **KEINE** `eslint-disable`-, `eslint-disable-next-line`- oder `eslint-disable-line`-Kommentare im Code.
+- **KEINE** `// @ts-ignore` oder `// @ts-expect-error` Kommentare.
+- Pre-existing Lint-Fehler MÜSSEN vor dem Commit behoben werden, nicht unterdrückt.
+- Ausnahme: `eslint-disable` in Konfigurationsdateien (`.eslintrc.json`, `eslint.config.js`) ist erlaubt.
+
+## 7. Definition of Done (DoD)
+
+Ein Feature gilt NUR als abgeschlossen, wenn ALLE folgenden Kriterien erfüllt sind:
+
+| Kriterium | Beschreibung |
+|---|---|
+| Implementierung | Code vollständig inkl. aller Inputs/Outputs/Signals |
+| Unit-Tests | ≥80% Coverage (Statements + Branches + Functions) |
+| E2E-Tests | Playwright-Tests mit mobile Chrome + Desktop Chrome |
+| CI-Pipeline | `pnpm nx test` + `pnpm nx lint` + Playwright E2E laufen grün in GitHub Actions |
+| Barrierefreiheit | Keyboard-Navigation, ARIA-Labels, Focus-Management |
+| Demo-Seite | Feature wird in der Demo-App demonstriert |
+| Keine eslint-disable | Alle Lint-Regeln werden eingehalten, keine Unterdrückung |
+
+> **Pipeline-Regel**: Ein Feature ist erst dann `[x]`, wenn die GitHub Action grün durchläuft.
+
+## 8. Forms-Integration
 
 Jede form-fähige Komponente MUSS beides unterstützen:
 
@@ -99,15 +121,19 @@ export class RuiCropper extends RuiValueAccessor<string> implements ControlValue
 - Browser-APIs (`canvas`, `window`, `document`, `localStorage`, `ResizeObserver`, `IntersectionObserver` etc.) NUR via Guard aus `libs/mat-extended/src/lib/common/platform.ts` (`ensureBrowser()` / `isPlatformBrowser`).
 - Overlay/DOM-Manipulation erst nach SSR-Check.
 
-## 9. Tests
+## 11. Tests (STRICT – zentrale Library!)
+
+> **Grundregel**: Kein Feature-Code ohne begleitende Tests. Eine Library zentraler Komponenten wird ohne Testabdeckung nicht committed.
 
 - **Test-Runner**: Vitest (`vitest-angular` executor via `@angular/build:unit-test`).
-- JEDE öffentliche Komponente/Methode MUSS Unit-Tests haben (`.spec.ts` neben Source-Datei).
-- A11y-Tests (Keyboard-Navigation, ARIA, Focus-Management) sind **verpflichtend** für interaktive Komponenten.
-- Mindestziel: 80% Coverage für neue Dateien.
-- VOR jedem Commit: `pnpm nx test <project>` MUSS grün sein.
+- JEDE öffentliche Methode, Komponente, Directive, Pipe oder Service MUSS mindestens einen Unit-Test haben (`.spec.ts` neben der Source-Datei).
+- **Coverage-Pflicht**: Neue Dateien müssen >= 80% Code-Coverage erreichen (Statements + Branches + Functions).
+- A11y-Tests (Keyboard-Navigation, ARIA, Focus-Management) sind **verpflichtend** für alle interaktiven Komponenten.
+- **Keine Ausnahmen**: Auch scheinbar "triviale" Funktionen (Getters, Helper) bekommen Tests.
+- VOR jedem Commit: `pnpm nx run-many -t test` MUSS grün sein.
+- Sub-Agents, die Code erstellen, MUSSEN immer auch die dazugehörigen Tests erstellen. Ohne Tests wird kein Code akzeptiert.
 
-## 10. Accessibility (A11y)
+## 12. Accessibility (A11y)
 
 - Alle interaktiven Elemente müssen per Tastatur bedienbar sein.
 - ARIA-Rollen und -Labels wo semantisch sinnvoll (nicht blind drauflos).
@@ -115,7 +141,7 @@ export class RuiCropper extends RuiValueAccessor<string> implements ControlValue
 - Kontrast: mindestens WCAG AA.
 - Bei Dialogen/Toasts: `aria-live` für dynamische Content-Updates.
 
-## 11. Commits & Branches
+## 13. Commits & Branches
 
 - **Conventional Commits** verpflichtend:
   - `feat:` neue Funktion – Scoped: `feat(cropper): add rotation slider`
@@ -129,7 +155,7 @@ export class RuiCropper extends RuiValueAccessor<string> implements ControlValue
 - Branch-Naming: `feat/<topic>`, `fix/<topic>`, `chore/<topic>`, `docs/<topic>`.
 - **KEINE** Merge-Commits ohne Begründung – Rebase bevorzugt.
 
-## 12. Selector & Naming
+## 14. Selector & Naming
 
 - **Selector-Prefix**: `rui-` (z.B. `<rui-cropper>`, `<rui-file-upload>`).
 - Dateinamen: `kebab-case.ts` (z.B. `cropper-canvas.ts`).
@@ -178,6 +204,7 @@ Wo sinnvoll möglich, werden Sub-Agents (via `task`-Tool) parallel eingesetzt, u
   - Konfigurationsdateien mit klarer Vorgabe (ESLint-Prettier-Config, Tailwind-Config)
   - README-Dokumentation für Secondary Entry Points
   - Skelleton-Tests
+- **Implementierung + Validierung laufen im selben Sub-Agent**: Jeder Sub-Agent, der Feature-Code schreibt, MUSS auch die dazugehörigen Tests und Demo-Dokumentation erstellen. Es gibt keine getrennten "Implementation"- und "Test"-Sub-Agents für dieselbe Komponente.
 - **Nicht parallelisierbar**: Alles was Nx-Generators oder Direct-Git-Operationen im selben Workspace betrifft.
 
 ### Ablauf bei paralleler Arbeit
@@ -194,8 +221,8 @@ Wo sinnvoll möglich, werden Sub-Agents (via `task`-Tool) parallel eingesetzt, u
 |---|---|---|
 | Phase 1 (Workspace) | Nx-Init, Lib-Gen, Demo, Angular Material, Secondary Entry Points, Tailwind | CI-Skeleton (ci.yml) |
 | Phase 2 (Theming/Infra) | CVA-Helper, SSR-Guard, A11y-Helper, Theme-Tokens, Mixins | - |
-| Phase 3 (Cropper) | Architektur + Types, Canvas-Engine, Component, Interaction, A11y | Tests + Demo-Seite + README parallelien zu A11y |
-| Phase 4 (File Upload) | Component, Drag/Drop, Validation, Upload-Trigger | Tests + Demo-Seite + README |
-| Phase 5 (Toast) | Service + Overlay | Tests + README |
-| Phase 6 (Data Table) | Component, Columns, Filter/Selection | Tests + Demo-Seite + README |
+| Phase 3 (Cropper) | Grundgerüst (Types, Config) | Canvas-Engine + Component + Interaction + A11y + Tests + Demo + README (pro Modul ein Sub-Agent) |
+| Phase 4 (File Upload) | Grundgerüst (Types, Config) | Component + Drag/Drop + Validation + Upload + Tests + Demo + README (pro Feature-Gruppe ein Sub-Agent) |
+| Phase 5 (Toast) | Service + Overlay + Tests + README in einem Sub-Agent | - |
+| Phase 6 (Data Table) | Grundgerüst (Types, Config) | Component + Sort + Paginator + Filter + Selection + Tests + Demo + README (pro Feature-Gruppe ein Sub-Agent) |
 | Phase 7 (Release) | Release-YAML, Deploy-YAML | - |

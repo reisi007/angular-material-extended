@@ -4,5 +4,14 @@
     "outDir": "../../dist/out-tsc",
     "types": ["vitest/globals"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "cropper/src/**/*.ts",
+    "file-upload/src/**/*.ts",
+    "data-table/src/**/*.ts",
+    "toast/src/**/*.ts",
+    "dialog/src/**/*.ts",
+    "menu/src/**/*.ts"
+  ]
 }

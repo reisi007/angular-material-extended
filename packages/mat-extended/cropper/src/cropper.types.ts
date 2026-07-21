@@ -9,6 +9,8 @@ export interface RuiCropperOptions {
   maintainAspectRatio?: boolean;
   minCropWidth?: number;
   minCropHeight?: number;
+  outputWidth?: number;
+  outputHeight?: number;
   zoomStep?: number;
   rotateStep?: number;
 }

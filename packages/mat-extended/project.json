@@ -11,7 +11,7 @@
       "fallbackCurrentVersionResolver": "disk"
     }
   },
-  "tags": [],
+  "tags": ["scope:mat-extended"],
   "targets": {
     "build": {
       "executor": "@nx/angular:package",

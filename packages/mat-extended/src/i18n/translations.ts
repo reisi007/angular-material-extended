@@ -1,0 +1,111 @@
+import type { RuiTranslations } from './i18n.types';
+
+export const TRANSLATIONS_DE: RuiTranslations = {
+  cropper: {
+    zoomIn: 'Vergrößern',
+    zoomOut: 'Verkleinern',
+    rotateLeft: 'Links drehen',
+    rotateRight: 'Rechts drehen',
+    freeRotation: 'Freie Drehung',
+    aspectRatio: 'Seitenverhältnis',
+    free: 'Frei',
+    cropLabel: 'Bild zuschneiden',
+  },
+  fileUpload: {
+    dropzoneText: 'Dateien hier ablegen oder klicken zum Durchsuchen',
+    dragOverText: 'Dateien hier ablegen',
+    browseText: 'Dateien zum Hochladen auswählen',
+    uploadButtonText: 'Hochladen',
+    clearAll: 'Alle löschen',
+    retry: 'Wiederholen',
+    cancel: 'Abbrechen',
+    rename: 'Umbenennen',
+    acceptedLabel: 'Akzeptiert',
+    maxFilesLabel: 'Max. Dateien',
+    maxSizeLabel: 'Max. Größe',
+    filesLabel: 'Dateien',
+    uploading: 'Lädt hoch...',
+    removeLabel: 'Entfernen',
+  },
+  toast: {
+    dismiss: 'Schließen',
+    success: 'Erfolg',
+    error: 'Fehler',
+    info: 'Info',
+    warning: 'Warnung',
+  },
+  dataTable: {
+    filter: 'Filter',
+    search: 'Suchen...',
+    noData: 'Keine Daten verfügbar',
+    selectPage: 'Seite auswählen',
+    selectAll: 'Alle auswählen',
+    deselectAll: 'Auswahl aufheben',
+    selectRow: 'Zeile auswählen',
+    deselectRow: 'Zeile abwählen',
+    itemsPerPage: 'Einträge pro Seite',
+    of: 'von',
+  },
+  dialog: {
+    close: 'Schließen',
+  },
+  menu: {
+    menuLabel: 'Menü',
+  },
+};
+
+export const TRANSLATIONS_EN_GB: RuiTranslations = {
+  cropper: {
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
+    rotateLeft: 'Rotate left',
+    rotateRight: 'Rotate right',
+    freeRotation: 'Free rotation',
+    aspectRatio: 'Aspect ratio',
+    free: 'Free',
+    cropLabel: 'Crop image',
+  },
+  fileUpload: {
+    dropzoneText: 'Drop files here or click to browse',
+    dragOverText: 'Drop files here',
+    browseText: 'Select files to upload',
+    uploadButtonText: 'Upload',
+    clearAll: 'Clear all',
+    retry: 'Retry',
+    cancel: 'Cancel',
+    rename: 'Rename',
+    acceptedLabel: 'Accepted',
+    maxFilesLabel: 'Max files',
+    maxSizeLabel: 'Max size',
+    filesLabel: 'files',
+    uploading: 'Uploading...',
+    removeLabel: 'Remove',
+  },
+  toast: {
+    dismiss: 'Dismiss',
+    success: 'Success',
+    error: 'Error',
+    info: 'Info',
+    warning: 'Warning',
+  },
+  dataTable: {
+    filter: 'Filter',
+    search: 'Search...',
+    noData: 'No data available',
+    selectPage: 'Select page',
+    selectAll: 'Select all',
+    deselectAll: 'Deselect all',
+    selectRow: 'Select row',
+    deselectRow: 'Deselect row',
+    itemsPerPage: 'Items per page',
+    of: 'of',
+  },
+  dialog: {
+    close: 'Close',
+  },
+  menu: {
+    menuLabel: 'Menu',
+  },
+};
+
+export const TRANSLATIONS_EN_US: RuiTranslations = TRANSLATIONS_EN_GB;

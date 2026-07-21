@@ -16,6 +16,8 @@ export const RUI_CROPPER_DEFAULTS: RuiCropperOptions = {
   maintainAspectRatio: true,
   minCropWidth: 20,
   minCropHeight: 20,
+  outputWidth: 0,
+  outputHeight: 0,
   zoomStep: 0.1,
   rotateStep: 90,
 };

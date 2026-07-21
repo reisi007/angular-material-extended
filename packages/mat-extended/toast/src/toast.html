@@ -1,0 +1,17 @@
+<div
+  class="flex items-center gap-3 px-4 py-3 rounded bg-[var(--mat-sys-surface-container-high)] shadow-lg min-w-[280px] max-w-[480px] animate-slide-in"
+  [style.border-left-width]="'4px'"
+  [style.border-left-style]="'solid'"
+  [style.border-left-color]="borderColor()"
+  [attr.role]="config().kind === 'error' ? 'alert' : 'status'"
+  [attr.aria-live]="config().ariaLive || (config().kind === 'error' ? 'assertive' : 'polite')"
+>
+  <span class="shrink-0 text-xl" [innerHTML]="icon()"></span>
+  <span class="flex-1 text-sm">{{ config().message }}</span>
+  @if (config().action) {
+    <button class="px-3 py-1 border-none rounded bg-[var(--mat-sys-primary-container)] text-[var(--mat-sys-on-primary-container)] cursor-pointer text-xs font-medium" (click)="onAction()">{{ config().action!.label }}</button>
+  }
+  @if (config().dismissible) {
+    <button class="flex items-center justify-center w-6 h-6 border-none bg-transparent cursor-pointer text-[var(--mat-sys-on-surface-variant)] rounded-full hover:bg-[var(--mat-sys-surface-container-high)]" (click)="dismiss.emit()" aria-label="Dismiss">&times;</button>
+  }
+</div>

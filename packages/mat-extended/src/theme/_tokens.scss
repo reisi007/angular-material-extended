@@ -1,4 +1,56 @@
+// Custom design tokens for Angular Material Extended components
+// Overrides Material M3 token layers for custom theming
+
 :root {
-  // Default M3 token overrides — minimal.
-  // More can be added in Phase 2 (Theming).
+  // Color tokens – default to M3 system values but allow override
+  --rui-color-primary: var(--mat-sys-primary);
+  --rui-color-on-primary: var(--mat-sys-on-primary);
+  --rui-color-primary-container: var(--mat-sys-primary-container);
+  --rui-color-on-primary-container: var(--mat-sys-on-primary-container);
+
+  --rui-color-secondary: var(--mat-sys-secondary);
+  --rui-color-on-secondary: var(--mat-sys-on-secondary);
+
+  --rui-color-error: var(--mat-sys-error);
+  --rui-color-on-error: var(--mat-sys-on-error);
+
+  --rui-color-surface: var(--mat-sys-surface);
+  --rui-color-on-surface: var(--mat-sys-on-surface);
+  --rui-color-surface-variant: var(--mat-sys-surface-variant);
+  --rui-color-on-surface-variant: var(--mat-sys-on-surface-variant);
+
+  --rui-color-outline: var(--mat-sys-outline);
+  --rui-color-outline-variant: var(--mat-sys-outline-variant);
+
+  // Shape tokens
+  --rui-shape-corner-extra-small: var(--mat-sys-corner-extra-small, 4px);
+  --rui-shape-corner-small: var(--mat-sys-corner-small, 8px);
+  --rui-shape-corner-medium: var(--mat-sys-corner-medium, 12px);
+  --rui-shape-corner-large: var(--mat-sys-corner-large, 16px);
+  --rui-shape-corner-full: 9999px;
+
+  // State tokens
+  --rui-state-hover-opacity: 0.08;
+  --rui-state-focus-opacity: 0.12;
+  --rui-state-pressed-opacity: 0.12;
+  --rui-state-drag-opacity: 0.16;
+
+  // Typography
+  --rui-font-family: var(--mat-sys-typescale-body-large-font, 'Roboto', sans-serif);
+  --rui-font-size-small: 0.75rem;
+  --rui-font-size-body: 0.875rem;
+  --rui-font-size-medium: 1rem;
+  --rui-font-size-large: 1.25rem;
+
+  // Spacing
+  --rui-spacing-1: 0.25rem;
+  --rui-spacing-2: 0.5rem;
+  --rui-spacing-3: 0.75rem;
+  --rui-spacing-4: 1rem;
+  --rui-spacing-6: 1.5rem;
+  --rui-spacing-8: 2rem;
+
+  // Transitions
+  --rui-transition-duration: 200ms;
+  --rui-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
 }

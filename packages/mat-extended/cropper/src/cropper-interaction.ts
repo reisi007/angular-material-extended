@@ -33,6 +33,8 @@ export class RuiCropperInteraction {
     _canvasWidth: number,
     _canvasHeight: number,
     aspectRatio: number | null,
+    minWidth = 0.005,
+    minHeight = 0.005,
   ): { x: number; y: number; width: number; height: number } {
     if (!this.startCropRect) {
       return { x: 0, y: 0, width: 1, height: 1 };
@@ -80,8 +82,8 @@ export class RuiCropperInteraction {
       rect = this._applyAspectRatio(rect, aspectRatio, start);
     }
 
-    if (rect.width < 0.005) rect.width = 0.005;
-    if (rect.height < 0.005) rect.height = 0.005;
+    if (rect.width < minWidth) rect.width = minWidth;
+    if (rect.height < minHeight) rect.height = minHeight;
     if (rect.x < 0) rect.x = 0;
     if (rect.y < 0) rect.y = 0;
     if (rect.x + rect.width > 1) rect.x = 1 - rect.width;

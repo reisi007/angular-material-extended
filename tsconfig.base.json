@@ -30,6 +30,9 @@
       ],
       "@all-the.rest/mat-extended/data-table": [
         "./packages/mat-extended/data-table/src/index.ts"
+      ],
+      "@all-the.rest/mat-extended/dialog": [
+        "./packages/mat-extended/dialog/src/index.ts"
       ]
     }
   },

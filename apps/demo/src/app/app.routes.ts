@@ -30,4 +30,14 @@ export const appRoutes: Route[] = [
         (m) => m.DataTableDemo,
       ),
   },
+  {
+    path: 'dialog',
+    loadComponent: () =>
+      import('./pages/dialog-demo/dialog-demo').then((m) => m.DialogDemo),
+  },
+  {
+    path: 'menu',
+    loadComponent: () =>
+      import('./pages/menu-demo/menu-demo').then((m) => m.MenuDemo),
+  },
 ];
