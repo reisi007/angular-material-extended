@@ -353,17 +353,21 @@ export class MyComponent {
 }`;
 
   protected sortableHtml = `<div cdkDropList (cdkDropListDropped)="onDrop($event)">
-  @for (item of items(); track item.id) {
+  @for (item of items(); track item.id; let idx = $index) {
     <rui-file-upload-item
       [item]="item"
       [sortable]="true"
+      [dragStartDelay]="200"
       [fileManagement]="false"
       (remove)="removeItem(item.id)"
+      (moveUp)="moveUp(idx)"
+      (moveDown)="moveDown(idx)"
     />
   }
 </div>`;
 
   protected sortableTs = `import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { signal } from '@angular/core';
 
 items = signal<RuiFileItem[]>([...]);
 
@@ -372,11 +376,26 @@ onDrop(event: CdkDragDrop<RuiFileItem[]>): void {
   const [removed] = items.splice(event.previousIndex, 1);
   items.splice(event.currentIndex, 0, removed!);
   this.items.set(items);
+}
+
+moveUp(index: number): void {
+  if (index <= 0) return;
+  const items = [...this.items()];
+  [items[index - 1], items[index]] = [items[index]!, items[index - 1]!];
+  this.items.set(items);
+}
+
+moveDown(index: number): void {
+  const items = [...this.items()];
+  if (index >= items.length - 1) return;
+  [items[index], items[index + 1]] = [items[index + 1]!, items[index]!];
+  this.items.set(items);
 }`;
 
   protected editableHtml = `<rui-file-upload-item
   [item]="item"
   [editable]="true"
+  [fileManagement]="true"
   [editingItemId]="editingId()"
   [editInputValue]="editValue()"
   (startRename)="onStartRename(item)"
@@ -404,22 +423,53 @@ onConfirmRename(item: RuiFileItem): void {
   this.editValue.set('');
 }`;
 
-  protected managementHtml = `<rui-file-upload-item
-  [item]="item"
-  [fileManagement]="true"
-  (remove)="removeItem(item.id)"
-  (retry)="retryItem(item)"
-  (cancelUpload)="cancelItem(item.id)"
-/>`;
+  protected managementHtml = `<div class="flex items-center gap-4 mb-4">
+  <mat-slide-toggle [checked]="showFileMgmt()" (change)="showFileMgmt.set($event.checked)">
+    File Management
+  </mat-slide-toggle>
+  <mat-slide-toggle [checked]="showSortable()" (change)="showSortable.set($event.checked)">
+    Sortable
+  </mat-slide-toggle>
+  <mat-slide-toggle [checked]="showEditable()" (change)="showEditable.set($event.checked)">
+    Editable
+  </mat-slide-toggle>
+</div>
+<div cdkDropList [cdkDropListDisabled]="!showSortable()" (cdkDropListDropped)="onDrop($event)">
+  @for (item of items(); track item.id; let idx = $index) {
+    <rui-file-upload-item
+      [item]="item"
+      [sortable]="showSortable()"
+      [dragStartDelay]="200"
+      [editable]="showEditable()"
+      [fileManagement]="showFileMgmt()"
+      (remove)="removeItem(item.id)"
+      (retry)="retryItem(item)"
+      (cancelUpload)="cancelItem(item.id)"
+      (moveUp)="moveUp(idx)"
+      (moveDown)="moveDown(idx)"
+    />
+  }
+</div>`;
 
-  protected managementTs = `retryItem(item: RuiFileItem): void {
+  protected managementTs = `showFileMgmt = signal(true);
+showSortable = signal(false);
+showEditable = signal(false);
+items = signal<RuiFileItem[]>([...]);
+
+onDrop(event: CdkDragDrop<RuiFileItem[]>): void {
+  const items = [...this.items()];
+  const [removed] = items.splice(event.previousIndex, 1);
+  items.splice(event.currentIndex, 0, removed!);
+  this.items.set(items);
+}
+
+retryItem(item: RuiFileItem): void {
   this.items.update(items =>
     items.map(i => i.id === item.id
       ? { ...i, status: 'uploading', progress: 0, error: undefined }
       : i,
     ),
   );
-  // Re-trigger upload logic
 }
 
 cancelItem(id: string): void {

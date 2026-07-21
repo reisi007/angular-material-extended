@@ -1,5 +1,5 @@
-import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
-import { DragDropModule } from '@angular/cdk/drag-drop';
+import { Component, input, output, ChangeDetectionStrategy, inject } from '@angular/core';
+import { DragDropModule, CDK_DROP_LIST } from '@angular/cdk/drag-drop';
 import { RuiFileItem } from '@all-the.rest/mat-extended/file-upload';
 import { formatSize } from '@all-the.rest/mat-extended/file-upload';
 
@@ -7,6 +7,12 @@ import { formatSize } from '@all-the.rest/mat-extended/file-upload';
   selector: 'rui-file-manager-item',
   standalone: true,
   imports: [DragDropModule],
+  viewProviders: [
+    {
+      provide: CDK_DROP_LIST,
+      useFactory: () => inject(CDK_DROP_LIST, { optional: true, skipSelf: true }),
+    },
+  ],
   template: `
     <div class="flex items-center gap-3 p-2 px-3 border border-[var(--mat-sys-outline-variant)] rounded-lg bg-[var(--mat-sys-surface-container-low)] transition-shadow duration-200 group" cdkDrag [cdkDragDisabled]="!sortable()">
       @if (sortable()) {
