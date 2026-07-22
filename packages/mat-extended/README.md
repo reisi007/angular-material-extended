@@ -7,11 +7,11 @@ Extended Angular Material components — Cropper, File Upload, Data Table, Dialo
 [![CI](https://github.com/reisi007/angular-material-extended/actions/workflows/ci.yml/badge.svg)](https://github.com/reisi007/angular-material-extended/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@all-the.rest/mat-extended.svg)](https://www.npmjs.com/package/@all-the.rest/mat-extended)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/reisi007/angular-material-extended/blob/main/LICENSE)
-[![Demo](https://img.shields.io/badge/demo-GitHub%20Pages-blue.svg)](https://reisi007.github.io/angular-material-extended/)
+[![Demo](https://img.shields.io/badge/demo-mat--extended.all--the.rest-blue.svg)](http://mat-extended.all-the.rest/)
 
 ## Demo
 
-**[reisi007.github.io/angular-material-extended](https://reisi007.github.io/angular-material-extended/)**
+**[mat-extended.all-the.rest](http://mat-extended.all-the.rest/)**
 
 ## Installation
 
@@ -86,7 +86,7 @@ npm install @all-the.rest/mat-extended@snapshot
 
 ## Links
 
-- [Demo App](https://reisi007.github.io/angular-material-extended/)
+- [Demo App](http://mat-extended.all-the.rest/)
 - [GitHub Repository](https://github.com/reisi007/angular-material-extended)
 - [Report Issues](https://github.com/reisi007/angular-material-extended/issues)
 - [Contributing](https://github.com/reisi007/angular-material-extended/blob/main/CONTRIBUTING.md)
