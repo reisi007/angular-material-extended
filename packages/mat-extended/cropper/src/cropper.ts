@@ -112,10 +112,10 @@ export class RuiCropper extends RuiValueAccessor<string> {
       this._canvasEngine.setRotation(rot);
       if (!this.liveRotationDragging()) {
         this._canvasEngine.render();
-        const constrained = this._constrainCropToImage(this._canvasEngine.getCropRect());
-        this._canvasEngine.setCropRect(constrained);
-        this._cropRect.set(constrained);
       }
+      const constrained = this._constrainCropToImage(this._canvasEngine.getCropRect());
+      this._canvasEngine.setCropRect(constrained);
+      this._cropRect.set(constrained);
     });
 
     effect(() => {

@@ -82,6 +82,7 @@ export class RuiCropperCanvas {
 
   setRotation(degrees: number): void {
     this.rotation = ((degrees % 360) + 360) % 360;
+    this._updateOffsets();
   }
 
   getRotation(): number {
@@ -220,21 +221,12 @@ export class RuiCropperCanvas {
   getImageOffsetY(): number { return this._imgOffsetY; }
 
   getCropPixelSize(): { width: number; height: number } {
-    const vw = this.displayWidth || this.canvas.width;
-    const vh = this.displayHeight || this.canvas.height;
-
-    const imageCropW = Math.min(
-      this.imageWidth,
-      this.cropRect.width * vw / this.zoom,
-    );
-    const imageCropH = Math.min(
-      this.imageHeight,
-      this.cropRect.height * vh / this.zoom,
-    );
+    const vw = this.getDisplayWidth();
+    const vh = this.getDisplayHeight();
 
     return {
-      width: Math.round(Math.max(0, imageCropW)),
-      height: Math.round(Math.max(0, imageCropH)),
+      width: Math.round(Math.max(0, this.cropRect.width * vw)),
+      height: Math.round(Math.max(0, this.cropRect.height * vh)),
     };
   }
 
@@ -254,30 +246,18 @@ export class RuiCropperCanvas {
     const cy = vh / 2;
 
     const rad = (this.rotation * Math.PI) / 180;
-    let c = Math.abs(Math.cos(rad));
-    let s = Math.abs(Math.sin(rad));
-    let W = displayW;
-    let H = displayH;
+    const c = Math.abs(Math.cos(rad));
+    const s = Math.abs(Math.sin(rad));
 
-    if (c < s) {
-      [c, s] = [s, c];
-      [W, H] = [H, W];
-    }
+    const bboxW = displayW * c + displayH * s;
+    const bboxH = displayW * s + displayH * c;
 
-    const denom = c * c - s * s;
-    if (denom < 0.0001) {
-      return { left: 0, top: 0, right: vw, bottom: vh };
-    }
-
-    const inscribedW = (W * c - H * s) / denom;
-    const inscribedH = (H * c - W * s) / denom;
-
-    const left = Math.max(0, cx - inscribedW / 2);
-    const top = Math.max(0, cy - inscribedH / 2);
-    const right = Math.min(vw, cx + inscribedW / 2);
-    const bottom = Math.min(vh, cy + inscribedH / 2);
-
-    return { left, top, right, bottom };
+    return {
+      left: cx - bboxW / 2,
+      top: cy - bboxH / 2,
+      right: cx + bboxW / 2,
+      bottom: cy + bboxH / 2,
+    };
   }
 
   private _computeRotationFitScale(rotationDeg: number): number {
@@ -295,24 +275,18 @@ export class RuiCropperCanvas {
   private _updateOffsets(): void {
     const w = this.displayWidth || this.canvas.width;
     const h = this.displayHeight || this.canvas.height;
-    this._imgOffsetX = (w - this.imageWidth * this.zoom) / 2;
-    this._imgOffsetY = (h - this.imageHeight * this.zoom) / 2;
+    const rotationFitScale = this._computeRotationFitScale(this.rotation);
+    const effectiveZoom = this.zoom * rotationFitScale;
+    this._imgOffsetX = (w - this.imageWidth * effectiveZoom) / 2;
+    this._imgOffsetY = (h - this.imageHeight * effectiveZoom) / 2;
   }
 
   private _resolveOutputSize(outputWidth?: number, outputHeight?: number): { width: number; height: number } {
-    const vw = this.displayWidth || this.canvas.width;
-    const vh = this.displayHeight || this.canvas.height;
+    const vw = this.getDisplayWidth();
+    const vh = this.getDisplayHeight();
 
-    const imgX = this._imgOffsetX;
-    const imgY = this._imgOffsetY;
-
-    const imageCropX = Math.max(0, (this.cropRect.x * vw - imgX) / this.zoom);
-    const imageCropY = Math.max(0, (this.cropRect.y * vh - imgY) / this.zoom);
-    const imageCropW = Math.min(this.imageWidth - imageCropX, this.cropRect.width * vw / this.zoom);
-    const imageCropH = Math.min(this.imageHeight - imageCropY, this.cropRect.height * vh / this.zoom);
-
-    const pixelWidth = Math.round(imageCropW);
-    const pixelHeight = Math.round(imageCropH);
+    const pixelWidth = Math.round(this.cropRect.width * vw);
+    const pixelHeight = Math.round(this.cropRect.height * vh);
     const aspect = pixelWidth / Math.max(pixelHeight, 1);
 
     if (outputWidth && outputWidth > 0 && outputHeight && outputHeight > 0) {
@@ -334,35 +308,41 @@ export class RuiCropperCanvas {
     const offCtx = offscreen.getContext('2d');
     if (!offCtx || !this.image) throw new Error('Could not get offscreen 2D context');
 
-    const vw = this.displayWidth || this.canvas.width;
-    const vh = this.displayHeight || this.canvas.height;
+    const vw = this.getDisplayWidth();
+    const vh = this.getDisplayHeight();
 
-    const imgX = this._imgOffsetX;
-    const imgY = this._imgOffsetY;
+    const intermediate = document.createElement('canvas');
+    intermediate.width = vw;
+    intermediate.height = vh;
+    const intCtx = intermediate.getContext('2d');
+    if (!intCtx) throw new Error('Could not get intermediate 2D context');
 
-    const imageCropX = (this.cropRect.x * vw - imgX) / this.zoom;
-    const imageCropY = (this.cropRect.y * vh - imgY) / this.zoom;
-    const srcWidth = this.cropRect.width * vw / this.zoom;
-    const srcHeight = this.cropRect.height * vh / this.zoom;
+    const rotationFitScale = this._computeRotationFitScale(this.rotation);
+    const effectiveZoom = this.zoom * rotationFitScale;
+    const displayW = this.imageWidth * effectiveZoom;
+    const displayH = this.imageHeight * effectiveZoom;
+    const cx = vw / 2;
+    const cy = vh / 2;
+    const imgX = cx - displayW / 2;
+    const imgY = cy - displayH / 2;
 
-    const sx = Math.round(Math.max(0, imageCropX));
-    const sy = Math.round(Math.max(0, imageCropY));
-    const sw = Math.round(Math.min(srcWidth, this.imageWidth - sx));
-    const sh = Math.round(Math.min(srcHeight, this.imageHeight - sy));
+    intCtx.save();
+    intCtx.translate(cx, cy);
+    intCtx.rotate((this.rotation * Math.PI) / 180);
+    intCtx.translate(-cx, -cy);
+    if (this._imageCache) {
+      intCtx.drawImage(this._imageCache, imgX, imgY, displayW, displayH);
+    } else if (this.image) {
+      intCtx.drawImage(this.image, imgX, imgY, displayW, displayH);
+    }
+    intCtx.restore();
 
-    offCtx.translate(width / 2, height / 2);
-    offCtx.rotate((this.rotation * Math.PI) / 180);
-    offCtx.drawImage(
-      this.image,
-      sx,
-      sy,
-      sw,
-      sh,
-      -width / 2,
-      -height / 2,
-      width,
-      height,
-    );
+    const sx = Math.round(this.cropRect.x * vw);
+    const sy = Math.round(this.cropRect.y * vh);
+    const sw = Math.round(this.cropRect.width * vw);
+    const sh = Math.round(this.cropRect.height * vh);
+
+    offCtx.drawImage(intermediate, sx, sy, sw, sh, 0, 0, width, height);
 
     return offscreen;
   }

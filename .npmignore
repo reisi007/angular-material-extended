@@ -1,0 +1,57 @@
+# Root-Level .npmignore
+# Library is published from dist/packages/mat-extended/ — NOT from root.
+# This file prevents accidental `npm publish` from workspace root.
+
+# All source code
+packages/
+apps/
+tools/
+
+# Nx workspace
+.nx/
+nx.json
+pnpm-workspace.yaml
+pnpm-lock.yaml
+
+# CI/CD & GitHub
+.github/
+.verdaccio/
+
+# Agent configs
+.opencode/
+.agents/
+
+# IDE
+.idea/
+.vscode/
+.run/
+.editorconfig
+
+# Config files
+eslint.config.mjs
+vitest.config.ts
+tsconfig.base.json
+opencode.json
+.prettierrc
+.prettierignore
+
+# Documentation (not needed in npm package)
+AGENTS.md
+AGENTS.todo.md
+MANUAL_TESTS.md
+CONTRIBUTING.md
+
+# Test & build artifacts
+dist/
+tmp/
+test-results/
+playwright-report/
+__screenshots__/
+coverage/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Lockfiles
+*.lock
