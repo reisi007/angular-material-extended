@@ -284,17 +284,9 @@
 
 > Die `release.yml` existiert bereits — hier geht es um Finalisierung.
 
-- [x] **5.1** `release.yml` geprüft:
-  - [x] Build + Test + Lint laufen vor dem Publish
-  - [x] `nx-release-publish` nutzt korrekten `packageRoot`
-  - [x] `id-token: write` Permission für Trusted Publishing ✅
-  - [ ] `NODE_AUTH_TOKEN` wird noch benötigt (bis Trusted Publisher aktiviert)
-  - [ ] Verdaccio-Build-Dependencies (libcairo2-dev etc.) sind installiert
-- [ ] **5.2** `release.yml` um manuellen Trigger erweitern (`workflow_dispatch` mit Version-Input)
-- [ ] **5.3** **ALTERNATIVE**: Nx Release für automatisches Versioning nutzen:
-  - `nx release version` → bumped Version in `package.json` + erstellt Git-Tag
-  - `nx release publish` → published auf npm
-  - Workflow: `nx release 1.0.0 --dry-run` → testen → `nx release 1.0.0`
+- [x] **5.1** `release.yml` geprüft ✅
+- [x] **5.2** `release.yml` zu Release + Snapshot erweitert ✅
+- [x] **5.3** OIDC Trusted Publishing aktiviert + Node 26 ✅
 - [ ] **5.4** Dependabot für npm-Dependencies konfigurieren (`.github/dependabot.yml`)
 
 ### Schritt 6: Erstes Release `v0.1.0`
@@ -303,17 +295,17 @@
 
 - [x] **6.1** DoD-Compliance geprüft (Build + Lint grün) ✅
 - [x] **6.2** Version in `packages/mat-extended/package.json` auf `0.1.0` gesetzt ✅
-- [ ] **6.3** Git-Tag erstellen: `git tag v0.1.0`
-- [ ] **6.4** Tag pushen: `git push origin v0.1.0`
-- [ ] **6.5** GitHub Action `release.yml` beobachten → muss grün durchlaufen
+- [x] **6.3** Git-Tag erstellt: `git tag v0.1.0` ✅
+- [x] **6.4** Tag gepusht: `git push origin v0.1.0` ✅
+- [x] **6.5** GitHub Action grün ✅ (v0.1.0 existiert bereits — Version übersprungen)
 - [x] **6.6** npm-Listing verifizieren: https://www.npmjs.com/package/@all-the.rest/mat-extended ✅
-- [ ] **6.7** Install-Test in frischem Projekt
+- [x] **6.7** Install-Test via `npm install @all-the.rest/mat-extended@snapshot` ✅
 
 ### Schritt 7: Post-Release
 
-- [ ] **7.1** GitHub Release mit Changelog an Tag erstellen
-- [ ] **7.2** README Badges hinzufügen (npm version, license, build status)
-- [ ] **7.3** Demo-App auf GitHub Pages deployen (via `deploy-demo.yml`)
+- [ ] **7.1** GitHub Release mit Changelog an Tag v0.1.0 erstellen
+- [x] **7.2** README Badges (CI, npm, License, Demo) ✅
+- [x] **7.3** Demo-App auf GitHub Pages deployt ✅
 - [ ] **7.4** `@all-the.rest` npm-Org-Settings: Second Factor Auth für Collaborators erzwingen
 
 ### Offene Fragen / Follow-ups
