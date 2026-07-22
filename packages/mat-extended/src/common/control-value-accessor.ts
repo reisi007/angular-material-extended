@@ -33,12 +33,12 @@ export abstract class RuiValueAccessor<T> implements ControlValueAccessor {
     this.disabled.set(isDisabled);
   }
 
-  protected markAsChanged(value: T | undefined = this._value()): void {
+  markAsChanged(value: T | undefined = this._value()): void {
     this._value.set(value);
     this.onChange(value);
   }
 
-  protected markAsTouched(): void {
+  markAsTouched(): void {
     this.onTouched();
   }
 }
