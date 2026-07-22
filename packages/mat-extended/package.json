@@ -9,7 +9,7 @@
     "url": "https://github.com/reisi007/angular-material-extended.git",
     "directory": "packages/mat-extended"
   },
-  "homepage": "https://github.com/reisi007/angular-material-extended#readme",
+  "homepage": "https://reisi007.github.io/angular-material-extended/",
   "bugs": {
     "url": "https://github.com/reisi007/angular-material-extended/issues"
   },
@@ -32,15 +32,10 @@
     "signals"
   ],
   "peerDependencies": {
-    "@angular/cdk": "^22.0.0",
-    "tslib": "^2.3.0",
     "@angular/common": "^22.0.0",
     "@angular/core": "^22.0.0",
     "@angular/forms": "^22.0.0",
     "@angular/material": "^22.0.0"
-  },
-  "dependencies": {
-    "tslib": "^2.3.0"
   },
   "sideEffects": false,
   "publishConfig": {

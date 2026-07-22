@@ -24,6 +24,9 @@ Live demo hosted on GitHub Pages:
 | Data Table | Done | `@all-the.rest/mat-extended/data-table` |
 | Dialog | Done | `@all-the.rest/mat-extended/dialog` |
 | Menu | Done | `@all-the.rest/mat-extended/menu` |
+| Multi-Select | Done | `@all-the.rest/mat-extended/multi-select` |
+| Breadcrumb | Done | `@all-the.rest/mat-extended/breadcrumb` |
+| File Manager | Done | `@all-the.rest/mat-extended/file-manager` |
 
 See [`AGENTS.todo.md`](./AGENTS.todo.md) for the full roadmap.
 
