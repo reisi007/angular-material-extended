@@ -5,4 +5,8 @@ export const DEMO_URLS = {
   dataTable: '/data-table',
   dialog: '/dialog',
   menu: '/menu',
+  breadcrumb: '/breadcrumb',
+  fileManager: '/file-manager',
+  multiSelect: '/multi-select',
+  dateInput: '/date-input',
 } as const;

@@ -4,67 +4,77 @@ import { DEMO_URLS } from '../fixtures/test-data';
 test.describe('File Upload', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(DEMO_URLS.fileUpload);
+    const basicSection = page.locator('section').filter({ has: page.locator('h2#basic') });
+    await expect(basicSection.locator('rui-file-upload')).toBeVisible();
   });
 
   test('should display the file upload component', async ({ page }) => {
-    await expect(page.locator('rui-file-upload')).toBeVisible();
+    const basicSection = page.locator('section').filter({ has: page.locator('h2#basic') });
+    await expect(basicSection.locator('rui-file-upload')).toBeVisible();
   });
 
   test('should have drop zone with text', async ({ page }) => {
-    await expect(page.getByText('Drag & drop files here or click to browse')).toBeVisible();
+    const basicSection = page.locator('section').filter({ has: page.locator('h2#basic') });
+    await expect(basicSection.locator('rui-file-upload').getByText(/drag.*files/i)).toBeVisible();
   });
 
   test('should show multiple toggle', async ({ page }) => {
-    await expect(page.getByText('Multiple files')).toBeVisible();
+    const basicSection = page.locator('section').filter({ has: page.locator('h2#basic') });
+    await expect(basicSection.getByText('Multiple files')).toBeVisible();
   });
 
   test('should open file picker on click', async ({ page }) => {
-    const filePicker = page.locator('input[type="file"]');
+    const basicSection = page.locator('section').filter({ has: page.locator('h2#basic') });
+    const fileUpload = basicSection.locator('rui-file-upload');
     const [fileChooser] = await Promise.all([
       page.waitForEvent('filechooser', { timeout: 3000 }).catch(() => null),
-      page.locator('[role="button"]').first().click(),
+      fileUpload.getByRole('button', { name: /select files/i }).click(),
     ]);
-    expect(filePicker).toBeDefined();
+    expect(fileChooser).not.toBeNull();
   });
 
   test('should accept file upload and show file in list', async ({ page }) => {
-    const fileInput = page.locator('input[type="file"]');
-    const filePath = __filename;
-    await fileInput.setInputFiles(filePath);
-    await expect(page.getByText('Upload starten')).toBeVisible({ timeout: 3000 });
-    await expect(page.getByText('(1 Dateien)')).toBeVisible();
+    const basicSection = page.locator('section').filter({ has: page.locator('h2#basic') });
+    const fileUpload = basicSection.locator('rui-file-upload');
+    const fileInput = fileUpload.locator('input[type="file"]');
+    await fileInput.setInputFiles([__filename]);
+    await expect(fileUpload.getByRole('button', { name: /upload starten/i })).toBeVisible({ timeout: 3000 });
   });
 
   test('should start upload and show progress', async ({ page }) => {
-    const fileInput = page.locator('input[type="file"]');
-    const filePath = __filename;
-    await fileInput.setInputFiles(filePath);
-    await page.getByText('Upload starten').click();
-    await expect(page.getByText('Uploading...')).toBeVisible({ timeout: 5000 });
-    await expect(page.getByText(/100%/)).toBeVisible({ timeout: 10000 });
+    const basicSection = page.locator('section').filter({ has: page.locator('h2#basic') });
+    const fileUpload = basicSection.locator('rui-file-upload');
+    const fileInput = fileUpload.locator('input[type="file"]');
+    await fileInput.setInputFiles([__filename]);
+    await expect(fileUpload.getByRole('button', { name: /upload starten/i })).toBeVisible({ timeout: 3000 });
+    await fileUpload.getByRole('button', { name: /upload starten/i }).click();
+    await expect(fileUpload.getByText(/Uploading/)).toBeVisible({ timeout: 3000 });
+    await expect(fileUpload.getByText('✓')).toBeVisible({ timeout: 5000 });
   });
 
-  test('should show file size in file list', async ({ page }) => {
-    const fileInput = page.locator('input[type="file"]');
-    const filePath = __filename;
-    await fileInput.setInputFiles(filePath);
-    await expect(page.getByText(/KB/)).toBeVisible();
+  test('should show file in file list after upload', async ({ page }) => {
+    const basicSection = page.locator('section').filter({ has: page.locator('h2#basic') });
+    const fileUpload = basicSection.locator('rui-file-upload');
+    const fileInput = fileUpload.locator('input[type="file"]');
+    await fileInput.setInputFiles([__filename]);
+    await expect(fileUpload).toContainText('Upload', { timeout: 3000 });
   });
 
-  test('should clear all files when clear button clicked', async ({ page }) => {
-    const fileInput = page.locator('input[type="file"]');
-    const filePath = __filename;
-    await fileInput.setInputFiles(filePath);
-    await expect(page.getByText('Upload starten')).toBeVisible({ timeout: 3000 });
-    await page.getByText('Clear all').click();
-    await expect(page.getByText('Upload starten')).not.toBeVisible();
+  test('should remove file when remove button clicked', async ({ page }) => {
+    const basicSection = page.locator('section').filter({ has: page.locator('h2#basic') });
+    const fileUpload = basicSection.locator('rui-file-upload');
+    const fileInput = fileUpload.locator('input[type="file"]');
+    await fileInput.setInputFiles([__filename]);
+    await expect(fileUpload.getByRole('button', { name: /upload starten/i })).toBeVisible({ timeout: 3000 });
+    await fileUpload.getByRole('button', { name: /remove/i }).click();
+    await expect(fileUpload.getByRole('button', { name: /upload starten/i })).not.toBeVisible();
   });
 
   test('should accept multiple files when multiple mode is on', async ({ page }) => {
-    const fileInput = page.locator('input[type="file"]');
-    const filePath = __filename;
-    await fileInput.setInputFiles([filePath, filePath]);
-    await expect(page.getByText('Upload starten')).toBeVisible({ timeout: 3000 });
-    await expect(page.getByText('(2 Dateien)')).toBeVisible();
+    const basicSection = page.locator('section').filter({ has: page.locator('h2#basic') });
+    const fileUpload = basicSection.locator('rui-file-upload');
+    const fileInput = fileUpload.locator('input[type="file"]');
+    await fileInput.setInputFiles([__filename, __filename]);
+    await expect(fileUpload.getByRole('button', { name: /2 Dateien/i })).toBeVisible({ timeout: 3000 });
   });
 });

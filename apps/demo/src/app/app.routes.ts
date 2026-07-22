@@ -268,4 +268,10 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./pages/multi-select-demo/multi-select-demo').then((m) => m.MultiSelectDemo),
   },
+  {
+    path: 'date-input',
+    data: { title: 'Date Input' },
+    loadComponent: () =>
+      import('./pages/date-input-demo/date-input-demo').then((m) => m.DateInputDemo),
+  },
 ];

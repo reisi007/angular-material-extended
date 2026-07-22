@@ -4,56 +4,60 @@ import { DEMO_URLS } from '../fixtures/test-data';
 test.describe('Dialog', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(DEMO_URLS.dialog);
+    await page.waitForLoadState('networkidle');
   });
 
   test('should display the dialog demo', async ({ page }) => {
-    await expect(page.getByText('Dialog / Modal')).toBeVisible();
+    await expect(page.locator('h1').filter({ hasText: /Dialog/ })).toBeVisible();
   });
 
   test('should open and close md dialog', async ({ page }) => {
-    await page.getByText('md').first().click();
+    await page.getByRole('button', { name: 'md' }).first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
-    await page.getByLabel('Close dialog').click();
+    await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).not.toBeVisible();
   });
 
   test('should open all sizes sequentially', async ({ page }) => {
     for (const size of ['sm', 'md', 'lg', 'xl']) {
-      await page.getByText(size).first().click();
+      await page.getByRole('button', { name: size }).first().click();
       await expect(page.getByRole('dialog')).toBeVisible();
-      await page.getByLabel('Close dialog').click();
+      await page.keyboard.press('Escape');
       await expect(page.getByRole('dialog')).not.toBeVisible();
     }
   });
 
   test('should open custom dialog with custom title', async ({ page }) => {
-    const titleInput = page.getByLabel('Title');
-    await titleInput.fill('Custom E2E Title');
-    await page.getByText('Open Custom').click();
+    await page.keyboard.press('Escape');
+    const customCard = page.locator('h2#dialog-custom ~ mat-card').first();
+    await customCard.getByLabel('Title').fill('Custom E2E Title');
+    await customCard.getByRole('button', { name: 'Open Custom' }).click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await expect(page.getByText('Custom E2E Title')).toBeVisible();
-    await page.getByLabel('Close dialog').click();
+    await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).not.toBeVisible();
   });
 
   test('should open fullscreen dialog', async ({ page }) => {
-    await page.getByText('Fullscreen').click();
+    await page.getByRole('button', { name: 'Fullscreen' }).first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await expect(page.getByText('Fullscreen Dialog')).toBeVisible();
-    await page.getByLabel('Close dialog').click();
+    await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).not.toBeVisible();
   });
 
-  test('should open non-dismissible dialog (cannot close by button)', async ({ page }) => {
-    await page.getByText('Non-dismissible').click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('Important')).toBeVisible();
-    const closeBtn = page.getByLabel('Close dialog');
-    await expect(closeBtn).not.toBeVisible();
+  test('should open non-dismissible dialog (cannot close by escape/backdrop)', async ({ page }) => {
+    await page.getByRole('button', { name: 'Non-dismissible' }).first().click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeVisible();
+    await page.getByRole('button', { name: 'Confirm & Close' }).click();
+    await expect(dialog).not.toBeVisible();
   });
 
   test('should close dialog on escape key', async ({ page }) => {
-    await page.getByText('md').first().click();
+    await page.getByRole('button', { name: 'md' }).first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).not.toBeVisible();

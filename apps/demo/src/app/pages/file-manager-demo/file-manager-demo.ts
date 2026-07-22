@@ -24,95 +24,115 @@ import { ShowcaseCode } from '../../shared/showcase-code';
   </p>
 
   <!-- Section 1: Basic -->
-  <h2 id="basic">Basic File Manager</h2>
+  <section>
+    <h2 id="basic" class="!text-xl !font-semibold mb-1">Basic File Manager</h2>
 
-  <mat-card>
-    <mat-card-header><mat-card-title>Toggle Features</mat-card-title></mat-card-header>
-    <mat-card-content class="flex gap-4 items-center flex-wrap pt-4">
-      <mat-slide-toggle [checked]="basicSortable()" (change)="basicSortable.set($event.checked)">
-        Sortable
-      </mat-slide-toggle>
-      <mat-slide-toggle [checked]="basicEditable()" (change)="basicEditable.set($event.checked)">
-        Editable
-      </mat-slide-toggle>
-      <mat-slide-toggle [checked]="basicFileMgmt()" (change)="basicFileMgmt.set($event.checked)">
-        File Management
-      </mat-slide-toggle>
-    </mat-card-content>
-  </mat-card>
+    <mat-card>
+      <mat-card-header><mat-card-title>Toggle Features</mat-card-title></mat-card-header>
+      <mat-card-content class="pt-4 flex flex-wrap gap-4 items-center">
+        <mat-slide-toggle [checked]="basicSortable()" (change)="basicSortable.set($event.checked)">
+          Sortable
+        </mat-slide-toggle>
+        <mat-slide-toggle [checked]="basicEditable()" (change)="basicEditable.set($event.checked)">
+          Editable
+        </mat-slide-toggle>
+        <mat-slide-toggle [checked]="basicFileMgmt()" (change)="basicFileMgmt.set($event.checked)">
+          File Management
+        </mat-slide-toggle>
+      </mat-card-content>
+    </mat-card>
 
-  <rui-file-manager
-    [(files)]="basicFiles"
-    [sortable]="basicSortable()"
-    [editable]="basicEditable()"
-    [fileManagement]="basicFileMgmt()"
-  />
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-file-manager
+          [(files)]="basicFiles"
+          [sortable]="basicSortable()"
+          [editable]="basicEditable()"
+          [fileManagement]="basicFileMgmt()"
+        />
+      </mat-card-content>
+    </mat-card>
 
-  <rui-showcase-code [html]="basicHtml" [ts]="basicTs" />
+    <rui-showcase-code [html]="basicHtml" [ts]="basicTs" />
+  </section>
 
   <!-- Section 2: Rename -->
-  <h2 id="rename">Rename (mit/ohne Extension)</h2>
+  <section>
+    <h2 id="rename" class="!text-xl !font-semibold mb-1">Rename (mit/ohne Extension)</h2>
 
-  <mat-card>
-    <mat-card-header><mat-card-title>Extension Handling</mat-card-title></mat-card-header>
-    <mat-card-content class="flex gap-4 items-center flex-wrap pt-4">
-      <mat-slide-toggle [checked]="allowExtEdit()" (change)="allowExtEdit.set($event.checked)">
-        Edit extension ({{ allowExtEdit() ? 'on' : 'off — extension preserved' }})
-      </mat-slide-toggle>
-    </mat-card-content>
-  </mat-card>
+    <mat-card>
+      <mat-card-header><mat-card-title>Extension Handling</mat-card-title></mat-card-header>
+      <mat-card-content class="pt-4 flex flex-wrap gap-4 items-center">
+        <mat-slide-toggle [checked]="allowExtEdit()" (change)="allowExtEdit.set($event.checked)">
+          Edit extension ({{ allowExtEdit() ? 'on' : 'off — extension preserved' }})
+        </mat-slide-toggle>
+      </mat-card-content>
+    </mat-card>
 
-  <rui-file-manager
-    [(files)]="renameFiles"
-    [editable]="true"
-    [editableExtension]="allowExtEdit()"
-    [fileManagement]="true"
-  />
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-file-manager
+          [(files)]="renameFiles"
+          [editable]="true"
+          [editableExtension]="allowExtEdit()"
+          [fileManagement]="true"
+        />
+      </mat-card-content>
+    </mat-card>
 
-  <rui-showcase-code [html]="renameHtml" [ts]="renameTs" />
+    <rui-showcase-code [html]="renameHtml" [ts]="renameTs" />
+  </section>
 
   <!-- Section 3: Sort -->
-  <h2 id="sort">Sortierung (Drag & Drop + Buttons)</h2>
+  <section>
+    <h2 id="sort" class="!text-xl !font-semibold mb-1">Sortierung (Drag & Drop + Buttons)</h2>
 
-  <mat-card>
-    <mat-card-header><mat-card-title>Drag Handle &amp; Move Buttons</mat-card-title></mat-card-header>
-    <mat-card-content>
-      <p class="text-sm text-[var(--mat-sys-on-surface-variant)] pt-4">
-        Dateien per Drag Handle (Gitter-Icon) oder den Pfeil-Buttons neu anordnen.
-      </p>
-    </mat-card-content>
-  </mat-card>
+    <mat-card>
+      <mat-card-header><mat-card-title>Drag Handle &amp; Move Buttons</mat-card-title></mat-card-header>
+      <mat-card-content class="pt-4">
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
+          Dateien per Drag Handle (Gitter-Icon) oder den Pfeil-Buttons neu anordnen.
+        </p>
+      </mat-card-content>
+    </mat-card>
 
-  <rui-file-manager
-    [(files)]="sortFiles"
-    [sortable]="true"
-    [fileManagement]="false"
-  />
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-file-manager
+          [(files)]="sortFiles"
+          [sortable]="true"
+          [fileManagement]="false"
+        />
+      </mat-card-content>
+    </mat-card>
 
-  <rui-showcase-code [html]="sortHtml" [ts]="sortTs" />
+    <rui-showcase-code [html]="sortHtml" [ts]="sortTs" />
+  </section>
 
   <!-- Section 4: Composition -->
-  <h2 id="composition">Composition mit File Upload</h2>
+  <section>
+    <h2 id="composition" class="!text-xl !font-semibold mb-1">Composition mit File Upload</h2>
 
-  <mat-card>
-    <mat-card-header><mat-card-title>Upload + Management</mat-card-title></mat-card-header>
-    <mat-card-content class="flex flex-col gap-4 pt-4">
-      <rui-file-upload
-        [(files)]="sharedFiles"
-        [uploadHandler]="mockHandler"
-        [autoUpload]="true"
-        [fileManagement]="false"
-      />
-      <rui-file-manager
-        [(files)]="sharedFiles"
-        [sortable]="true"
-        [editable]="true"
-        [fileManagement]="true"
-      />
-    </mat-card-content>
-  </mat-card>
+    <mat-card>
+      <mat-card-header><mat-card-title>Upload + Management</mat-card-title></mat-card-header>
+      <mat-card-content class="pt-4 flex flex-col gap-4">
+        <rui-file-upload
+          [(files)]="sharedFiles"
+          [uploadHandler]="mockHandler"
+          [autoUpload]="true"
+          [fileManagement]="false"
+        />
+        <rui-file-manager
+          [(files)]="sharedFiles"
+          [sortable]="true"
+          [editable]="true"
+          [fileManagement]="true"
+        />
+      </mat-card-content>
+    </mat-card>
 
-  <rui-showcase-code [html]="compositionHtml" [ts]="compositionTs" />
+    <rui-showcase-code [html]="compositionHtml" [ts]="compositionTs" />
+  </section>
 </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -22,121 +22,129 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 <div class="max-w-4xl mx-auto space-y-8 p-4">
   <h1 class="font-bold">File Upload Demo</h1>
 
-  <h2 id="template-driven" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Template-driven Form</h2>
-  <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using ngModel with the file upload. The model value is the array of RuiFileItem.</p>
-  <mat-card>
-    <mat-card-content class="pt-4">
-      <rui-file-upload
-        ngModel
-        name="fileUploadModel"
-        #fileUploadModelRef="ngModel"
-        [uploadHandler]="uploadHandler"
-      />
-      @if (fileUploadModelRef.value?.length) {
-        <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ fileUploadModelRef.value.length }} file(s) selected</p>
-      }
-    </mat-card-content>
-  </mat-card>
-  <rui-showcase-code [html]="templateHtml" [ts]="templateTs" />
-
-  <h2 id="basic">Basic Usage</h2>
-
-  <mat-card>
-    <mat-card-header><mat-card-title>Configuration</mat-card-title></mat-card-header>
-    <mat-card-content class="flex gap-4 items-center flex-wrap">
-      <mat-slide-toggle [checked]="multipleFiles()" (change)="multipleFiles.set($event.checked)">
-        Multiple files
-      </mat-slide-toggle>
-      <mat-form-field class="w-48">
-        <mat-label>Max file size (bytes)</mat-label>
-        <input matInput type="number" [value]="maxFileSize()" (input)="onMaxSizeChange($event)" />
-      </mat-form-field>
-      <mat-slide-toggle [checked]="autoUploadEnabled()" (change)="autoUploadEnabled.set($event.checked)">
-        Auto Upload
-      </mat-slide-toggle>
-    </mat-card-content>
-  </mat-card>
-
-  <rui-file-upload
-    [multiple]="multipleFiles()"
-    [maxSize]="maxFileSize()"
-    [autoUpload]="autoUploadEnabled()"
-    [uploadHandler]="uploadHandler"
-    (uploadStart)="onUploadStart($event)"
-  />
-
-  <rui-showcase-code [html]="basicHtml" [ts]="basicTs" />
-
-  @if (uploadedFiles().length > 0) {
+  <section>
+    <h2 id="basic" class="!text-xl !font-semibold mb-1">Basic Usage</h2>
     <mat-card>
-      <mat-card-header><mat-card-title>Uploaded Files</mat-card-title></mat-card-header>
-      <mat-card-content>
-        <ul class="list-disc pl-5">
-          @for (f of uploadedFiles(); track f.id) {
-            <li>{{ f.file.name }} &mdash; {{ f.status }}</li>
-          }
-        </ul>
+      <mat-card-content class="pt-4 flex flex-col gap-4">
+        <div class="flex gap-4 items-center flex-wrap">
+          <mat-slide-toggle [checked]="multipleFiles()" (change)="multipleFiles.set($event.checked)">
+            Multiple files
+          </mat-slide-toggle>
+          <mat-form-field class="w-48">
+            <mat-label>Max file size (bytes)</mat-label>
+            <input matInput type="number" [value]="maxFileSize()" (input)="onMaxSizeChange($event)" />
+          </mat-form-field>
+          <mat-slide-toggle [checked]="autoUploadEnabled()" (change)="autoUploadEnabled.set($event.checked)">
+            Auto Upload
+          </mat-slide-toggle>
+        </div>
+        <rui-file-upload
+          [multiple]="multipleFiles()"
+          [maxSize]="maxFileSize()"
+          [autoUpload]="autoUploadEnabled()"
+          [uploadHandler]="uploadHandler"
+          (uploadStart)="onUploadStart($event)"
+        />
+        @if (uploadedFiles().length > 0) {
+          <div>
+            <strong>Uploaded Files</strong>
+            <ul class="list-disc pl-5">
+              @for (f of uploadedFiles(); track f.id) {
+                <li>{{ f.file.name }} &mdash; {{ f.status }}</li>
+              }
+            </ul>
+          </div>
+        }
       </mat-card-content>
     </mat-card>
-  }
+    <rui-showcase-code [html]="basicHtml" [ts]="basicTs" />
+  </section>
 
-  <h2 id="accept">File Type Filtering</h2>
+  <section>
+    <h2 id="accept" class="!text-xl !font-semibold mb-1">File Type Filtering</h2>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-file-upload
+          accept="image/*"
+          [maxFiles]="5"
+          dropzoneText="Drop images here or click to browse"
+          uploadButtonText="Upload Images"
+          [uploadHandler]="imageUploadHandler"
+        />
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="acceptHtml" [ts]="acceptTs" />
+  </section>
 
-  <rui-file-upload
-    accept="image/*"
-    [maxFiles]="5"
-    dropzoneText="Drop images here or click to browse"
-    uploadButtonText="Upload Images"
-    [uploadHandler]="imageUploadHandler"
-  />
+  <section>
+    <h2 id="sortable-editable" class="!text-xl !font-semibold mb-1">Sortable &amp; Editable</h2>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-file-upload
+          [sortable]="true"
+          [editable]="true"
+          [dropzoneText]="'Drop files, then reorder and rename'"
+          [uploadHandler]="uploadHandler"
+        />
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="sortableHtml" [ts]="sortableTs" />
+  </section>
 
-  <rui-showcase-code [html]="acceptHtml" [ts]="acceptTs" />
+  <section>
+    <h2 id="template-driven" class="!text-xl !font-semibold mb-1">Template-driven Form</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using ngModel with the file upload. The model value is the array of RuiFileItem.</p>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-file-upload
+          ngModel
+          name="fileUploadModel"
+          #fileUploadModelRef="ngModel"
+          [uploadHandler]="uploadHandler"
+        />
+        @if (fileUploadModelRef.value?.length) {
+          <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ fileUploadModelRef.value.length }} file(s) selected</p>
+        }
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="templateHtml" [ts]="templateTs" />
+  </section>
 
-  <h2 id="reactive-forms">Reactive Forms Integration</h2>
+  <section>
+    <h2 id="reactive-forms" class="!text-xl !font-semibold mb-1">Reactive Forms Integration</h2>
+    <mat-card>
+      <mat-card-content class="pt-4 flex flex-col gap-3">
+        <rui-file-upload
+          [formControl]="fileControl"
+          [uploadHandler]="uploadHandler"
+        />
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
+          Files in control: {{ fileControl.value?.length ?? 0 }}
+        </p>
+        <button mat-flat-button (click)="fileControl.disable()" class="self-start">
+          {{ fileControl.disabled ? 'Enable' : 'Disable' }} form control
+        </button>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="formsHtml" [ts]="formsTs" />
+  </section>
 
-  <mat-card>
-    <mat-card-header><mat-card-title>Form Control</mat-card-title></mat-card-header>
-    <mat-card-content class="flex flex-col gap-3">
-      <rui-file-upload
-        [formControl]="fileControl"
-        [uploadHandler]="uploadHandler"
-      />
-      <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
-        Files in control: {{ fileControl.value?.length ?? 0 }}
-      </p>
-      <button mat-flat-button (click)="fileControl.disable()" class="self-start">
-        {{ fileControl.disabled ? 'Enable' : 'Disable' }} form control
-      </button>
-    </mat-card-content>
-  </mat-card>
-
-  <rui-showcase-code [html]="formsHtml" [ts]="formsTs" />
-
-  <h2 id="signal-form" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Signal Form</h2>
-  <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using model() signal directly — no FormsModule or ReactiveFormsModule needed.</p>
-  <mat-card>
-    <mat-card-content class="pt-4">
-      <rui-file-upload
-        [(files)]="signalFiles"
-        [uploadHandler]="uploadHandler"
-      />
-      @if (signalFiles().length > 0) {
-        <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ signalFiles().length }} file(s) selected</p>
-      }
-    </mat-card-content>
-  </mat-card>
-  <rui-showcase-code [html]="signalHtml" [ts]="signalTs" />
-
-  <h2 id="sortable-editable">Sortable &amp; Editable</h2>
-
-  <rui-file-upload
-    [sortable]="true"
-    [editable]="true"
-    [dropzoneText]="'Drop files, then reorder and rename'"
-    [uploadHandler]="uploadHandler"
-  />
-
-  <rui-showcase-code [html]="sortableHtml" [ts]="sortableTs" />
+  <section>
+    <h2 id="signal-form" class="!text-xl !font-semibold mb-1">Signal Form</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using model() signal directly — no FormsModule or ReactiveFormsModule needed.</p>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-file-upload
+          [(files)]="signalFiles"
+          [uploadHandler]="uploadHandler"
+        />
+        @if (signalFiles().length > 0) {
+          <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ signalFiles().length }} file(s) selected</p>
+        }
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="signalHtml" [ts]="signalTs" />
+  </section>
 </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

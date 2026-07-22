@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, Injector, ApplicationRef, ComponentRef, inject } from '@angular/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
@@ -23,7 +22,7 @@ export class RuiDialogService {
   private _activeDialogs = new Map<string, ActiveDialog>();
   private _counter = 0;
 
-  open<T = any>(config: RuiDialogConfig<T>): RuiDialogRef<T> {
+  open<T = unknown>(config: RuiDialogConfig<T>): RuiDialogRef<T> {
     if (!ensureBrowser(this._injector)) {
       return this._createDummyRef<T>();
     }
@@ -38,7 +37,7 @@ export class RuiDialogService {
     }
   }
 
-  private _createDialog<T = any>(config: RuiDialogConfig<T>): RuiDialogRef<T> {
+  private _createDialog<T = unknown>(config: RuiDialogConfig<T>): RuiDialogRef<T> {
     const id = `rui-dialog-${++this._counter}`;
     const overlayRef = this._createOverlay(config);
 
@@ -101,7 +100,7 @@ export class RuiDialogService {
     return ref;
   }
 
-  private _createOverlay(config: RuiDialogConfig<any>): OverlayRef {
+  private _createOverlay(config: RuiDialogConfig<unknown>): OverlayRef {
     const positionStrategy = this._overlay.position().global().centerHorizontally().centerVertically();
 
     return this._overlay.create({
@@ -122,7 +121,7 @@ export class RuiDialogService {
     this._activeDialogs.delete(id);
   }
 
-  private _createDummyRef<T = any>(): RuiDialogRef<T> {
+  private _createDummyRef<T = unknown>(): RuiDialogRef<T> {
     const id = `rui-dialog-dummy-${++this._counter}`;
     return {
       id,

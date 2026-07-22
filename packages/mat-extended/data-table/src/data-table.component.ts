@@ -28,8 +28,7 @@ import { RUI_DATA_TABLE_DEFAULT_OPTIONS, RUI_DATA_TABLE_DEFAULTS } from './data-
     'class': 'block',
   },
 })
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class RuiDataTable<T extends { [key: string]: any }> implements AfterViewInit {
+export class RuiDataTable<T extends object> implements AfterViewInit {
   readonly data = input<T[]>([]);
   readonly columns = input<RuiDataColumn<T>[]>([]);
   readonly config = input<Partial<RuiDataTableConfig>>({});

@@ -28,8 +28,7 @@ export interface RuiDataTableConfig {
   selectable?: boolean;
   stickyHeader?: boolean;
   expandable?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  trackBy?: (index: number, item: any) => any;
+  trackBy?: (index: number, item: unknown) => unknown;
 }
 
 export type RuiDataSortDirection = 'asc' | 'desc' | '';

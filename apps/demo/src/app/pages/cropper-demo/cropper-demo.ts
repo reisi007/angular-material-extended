@@ -24,7 +24,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
     MatSelectModule, MatSliderModule, MatSlideToggleModule, MatButtonModule, ShowcaseCode,
   ],
   template: `
-<div class="max-w-5xl mx-auto p-4 md:p-6 space-y-8">
+<div class="max-w-4xl mx-auto p-4 md:p-6 space-y-8">
   <h1 class="font-bold text-[var(--mat-sys-on-surface)]">Image Cropper</h1>
   <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
     Crop, zoom, and rotate images. Supports Reactive Forms and Signal API.
@@ -32,7 +32,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
 
   <!-- Basic Cropper -->
   <section>
-    <h2 id="basic-cropper" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Basic Cropper (16:9)</h2>
+    <h2 id="basic-cropper" class="!text-xl !font-semibold mb-1">Basic Cropper (16:9)</h2>
     <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Default 16:9 aspect ratio. Drag to crop, zoom with +/-, rotate with the slider.</p>
     <mat-card>
       <mat-card-content class="pt-4">
@@ -63,7 +63,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
 
   <!-- Square Fixed Aspect -->
   <section>
-    <h2 id="square-fixed" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Square 1:1 (Fixed Aspect)</h2>
+    <h2 id="square-fixed" class="!text-xl !font-semibold mb-1">Square 1:1 (Fixed Aspect)</h2>
     <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Fixed 1:1 aspect ratio in a 320px square container. No aspect dropdown shown.</p>
     <mat-card>
       <mat-card-content class="pt-4">
@@ -90,7 +90,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
 
   <!-- Free Aspect -->
   <section>
-    <h2 id="free-aspect" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Free Aspect Ratio</h2>
+    <h2 id="free-aspect" class="!text-xl !font-semibold mb-1">Free Aspect Ratio</h2>
     <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Container has 4:3 aspect ratio. Aspect ratio selector is visible.</p>
     <mat-card>
       <mat-card-content class="pt-4">
@@ -121,7 +121,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
 
   <!-- Fixed Width -->
   <section>
-    <h2 id="fixed-width" class="font-bold text-[var(--mat-sys-on-surface)] mb-2">Fixed Width with Sidebar</h2>
+    <h2 id="fixed-width" class="!text-xl !font-semibold mb-1">Fixed Width with Sidebar</h2>
     <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Set a fixed width like <code>[width]="600"</code> so the cropper size stays constant regardless of sibling layout changes.</p>
     <mat-card>
       <mat-card-content class="pt-4">
@@ -143,7 +143,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
 
   <!-- Error State -->
   <section>
-    <h2 id="error-state" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Error Handling</h2>
+    <h2 id="error-state" class="!text-xl !font-semibold mb-1">Error Handling</h2>
     <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">When the image fails to load, a <code>loadError</code> event is emitted.</p>
     <mat-card>
       <mat-card-content class="pt-4 space-y-3">
@@ -167,7 +167,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
 
   <!-- Dynamic Configuration -->
   <section>
-    <h2 id="dynamic-config" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Dynamic Configuration</h2>
+    <h2 id="dynamic-config" class="!text-xl !font-semibold mb-1">Dynamic Configuration</h2>
     <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Change aspect ratio, format, quality, and output size on the fly.</p>
     <mat-card>
       <mat-card-content class="pt-4 space-y-3">
@@ -242,7 +242,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
 
   <!-- Toolbar Positions -->
   <section>
-    <h2 id="toolbar-positions" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Toolbar Positions</h2>
+    <h2 id="toolbar-positions" class="!text-xl !font-semibold mb-1">Toolbar Positions</h2>
     <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">The toolbar can be placed at top, bottom (default), left, or right.</p>
     <mat-card>
       <mat-card-content class="pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -269,7 +269,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
 
   <!-- Constrain to Image -->
   <section>
-    <h2 id="constrain-to-image" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Constrain to Image</h2>
+    <h2 id="constrain-to-image" class="!text-xl !font-semibold mb-1">Constrain to Image</h2>
     <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">
       When <code>constrainToImage</code> is <code>true</code> (default), the crop selection cannot leave the original image area — even when zooming out or rotating.
     </p>
@@ -303,7 +303,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
 
   <!-- Template-driven Form -->
   <section>
-    <h2 id="template-driven" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Template-driven Form</h2>
+    <h2 id="template-driven" class="!text-xl !font-semibold mb-1">Template-driven Form</h2>
     <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using ngModel with the cropper. The model value is the cropped image data URL.</p>
     <mat-card>
       <mat-card-content class="pt-4">
@@ -326,7 +326,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
 
   <!-- Reactive Form -->
   <section>
-    <h2 id="reactive-form" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Reactive Form</h2>
+    <h2 id="reactive-form" class="!text-xl !font-semibold mb-1">Reactive Form</h2>
     <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using formControl with the cropper. The control value is the cropped image data URL.</p>
     <mat-card>
       <mat-card-content class="pt-4">
@@ -349,7 +349,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
 
   <!-- Signal Form -->
   <section>
-    <h2 id="signal-form" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Signal Form</h2>
+    <h2 id="signal-form" class="!text-xl !font-semibold mb-1">Signal Form</h2>
     <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using model() signal directly — no FormsModule or ReactiveFormsModule needed.</p>
     <mat-card>
       <mat-card-content class="pt-4">

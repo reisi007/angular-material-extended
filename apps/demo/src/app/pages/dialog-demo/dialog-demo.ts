@@ -21,14 +21,13 @@ import { ShowcaseCode } from '../../shared/showcase-code';
     ShowcaseCode,
   ],
   template: `
-<div class="max-w-4xl mx-auto p-4">
+<div class="max-w-4xl mx-auto p-4 md:p-6 space-y-8">
   <h1 class="font-bold mb-6">Dialog / Modal</h1>
 
-  <div class="space-y-6">
-    <h2 id="dialog-sizes" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Dialog Sizes</h2>
+  <section>
+    <h2 id="dialog-sizes" class="!text-xl !font-semibold mb-1">Dialog Sizes</h2>
     <mat-card>
-      <mat-card-header><mat-card-title>Dialog Sizes</mat-card-title></mat-card-header>
-      <mat-card-content class="space-y-3">
+      <mat-card-content class="pt-4">
         <ng-template #sizeDialog let-dialogRef="dialogRef">
           <p class="text-[var(--mat-sys-on-surface-variant)]">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -48,11 +47,12 @@ import { ShowcaseCode } from '../../shared/showcase-code';
       </mat-card-content>
     </mat-card>
     <rui-showcase-code [html]="sizesHtml" [ts]="sizesTs" />
+  </section>
 
-    <h2 id="dialog-custom" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Custom Content</h2>
+  <section>
+    <h2 id="dialog-custom" class="!text-xl !font-semibold mb-1">Custom Content</h2>
     <mat-card>
-      <mat-card-header><mat-card-title>Custom Content</mat-card-title></mat-card-header>
-      <mat-card-content class="space-y-3">
+      <mat-card-content class="pt-4">
         <ng-template #customContent let-dialogRef="dialogRef">
           <p class="text-[var(--mat-sys-on-surface-variant)]">{{ dialogMessage }}</p>
         </ng-template>
@@ -77,11 +77,12 @@ import { ShowcaseCode } from '../../shared/showcase-code';
       </mat-card-content>
     </mat-card>
     <rui-showcase-code [html]="customHtml" [ts]="customTs" />
+  </section>
 
-    <h2 id="dialog-options" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Options</h2>
+  <section>
+    <h2 id="dialog-options" class="!text-xl !font-semibold mb-1">Options</h2>
     <mat-card>
-      <mat-card-header><mat-card-title>Options</mat-card-title></mat-card-header>
-      <mat-card-content class="space-y-4">
+      <mat-card-content class="pt-4">
         <div class="flex gap-4 flex-wrap">
           <ng-template #blockingDialog let-dialogRef="dialogRef">
             <p class="text-[var(--mat-sys-on-surface-variant)]">
@@ -131,13 +132,13 @@ import { ShowcaseCode } from '../../shared/showcase-code';
     <rui-showcase-code label="Non-dismissible" [html]="blockingHtml" [ts]="blockingTs" />
     <rui-showcase-code label="Fullscreen" [html]="fullscreenHtml" [ts]="fullscreenTs" />
     <rui-showcase-code label="Confirm Dialog" [html]="confirmHtml" [ts]="confirmTs" />
+  </section>
 
-    @if (lastResult(); as result) {
-      <mat-card>
-        <mat-card-content>Dialog closed with: {{ result | json }}</mat-card-content>
-      </mat-card>
-    }
-  </div>
+  @if (lastResult(); as result) {
+    <mat-card>
+      <mat-card-content>Dialog closed with: {{ result | json }}</mat-card-content>
+    </mat-card>
+  }
 </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

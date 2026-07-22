@@ -17,55 +17,58 @@ import { ShowcaseCode } from '../../shared/showcase-code';
     ShowcaseCode,
   ],
   template: `
-<div class="max-w-4xl mx-auto space-y-8 p-4">
+<div class="max-w-4xl mx-auto p-4 md:p-6 space-y-8">
   <h1 class="font-bold">Menu / Hamburger</h1>
 
-  <div class="pt-4 space-y-6">
-    <h2 id="menu-basic" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Basic Hamburger Menu</h2>
+  <section>
+    <h2 id="menu-basic" class="!text-xl !font-semibold mb-1">Basic Hamburger Menu</h2>
     <mat-card>
-      <mat-card-header><mat-card-title>Basic Hamburger Menu</mat-card-title></mat-card-header>
-      <mat-card-content class="space-y-3">
+      <mat-card-content class="pt-4">
         <rui-menu-button [items]="menuItems" />
       </mat-card-content>
     </mat-card>
     <rui-showcase-code [html]="basicHtml" [ts]="basicTs" />
+  </section>
 
-    <h2 id="menu-icons" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Menu with Icons</h2>
+  <section>
+    <h2 id="menu-icons" class="!text-xl !font-semibold mb-1">Menu with Icons</h2>
     <mat-card>
-      <mat-card-header><mat-card-title>Menu with Icons</mat-card-title></mat-card-header>
-      <mat-card-content class="space-y-3">
+      <mat-card-content class="pt-4">
         <rui-menu-button [items]="iconMenuItems" />
       </mat-card-content>
     </mat-card>
     <rui-showcase-code [html]="iconHtml" [ts]="iconTs" />
+  </section>
 
-    <h2 id="menu-disabled" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Menu with Disabled Items</h2>
+  <section>
+    <h2 id="menu-disabled" class="!text-xl !font-semibold mb-1">Menu with Disabled Items</h2>
     <mat-card>
-      <mat-card-header><mat-card-title>Menu with Disabled Items</mat-card-title></mat-card-header>
-      <mat-card-content class="space-y-3">
+      <mat-card-content class="pt-4">
         <rui-menu-button [items]="disabledMenuItems" />
       </mat-card-content>
     </mat-card>
     <rui-showcase-code [html]="disabledHtml" [ts]="disabledTs" />
+  </section>
 
-     <h2 id="menu-divider" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Menu with Divider / Separator</h2>
-     <mat-card>
-       <mat-card-header><mat-card-title>Menu with Divider / Separator</mat-card-title></mat-card-header>
-       <mat-card-content class="space-y-3">
-         <rui-menu-button [items]="advancedMenuItems" />
-       </mat-card-content>
-     </mat-card>
-     <rui-showcase-code [html]="advancedHtml" [ts]="advancedTs" />
+  <section>
+    <h2 id="menu-divider" class="!text-xl !font-semibold mb-1">Menu with Divider / Separator</h2>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-menu-button [items]="advancedMenuItems" />
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="advancedHtml" [ts]="advancedTs" />
+  </section>
 
-     <h2 id="menu-router-links" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Menu with Router Links</h2>
-     <mat-card>
-       <mat-card-header><mat-card-title>Menu with Router Links</mat-card-title></mat-card-header>
-       <mat-card-content class="space-y-3">
-         <rui-menu-button [items]="routerMenuItems" />
-       </mat-card-content>
-     </mat-card>
-     <rui-showcase-code [html]="routerHtml" [ts]="routerTs" />
-  </div>
+  <section>
+    <h2 id="menu-router-links" class="!text-xl !font-semibold mb-1">Menu with Router Links</h2>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-menu-button [items]="routerMenuItems" />
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="routerHtml" [ts]="routerTs" />
+  </section>
 </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

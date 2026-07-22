@@ -24,164 +24,172 @@ interface User {
   standalone: true,
   imports: [JsonPipe, FormsModule, ReactiveFormsModule, MatCardModule, MatIconModule, MatButtonModule, RuiDataTable, ShowcaseCode],
   template: `
-<div class="p-4 md:p-6 space-y-6">
+<div class="max-w-4xl mx-auto p-4 md:p-6 space-y-8">
   <h1 class="font-bold">Data Table</h1>
 
-  <h2 id="template-driven" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Template-driven Form</h2>
-  <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using ngModel with the data table. The model value is the array of selected items. Note: data-table does not implement ControlValueAccessor, so ngModel binding is one-way.</p>
-  <mat-card>
-    <mat-card-content class="pt-4">
-      <rui-data-table
-        [data]="users()"
-        [columns]="columns"
-        [config]="{ selectable: true }"
-        [(selectedItems)]="tdSelectedItems"
-      />
-      <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ tdSelectedItems().length }} item(s) selected</p>
-    </mat-card-content>
-  </mat-card>
-  <rui-showcase-code [html]="templateHtml" [ts]="templateTs" />
+  <section>
+    <h2 id="data-table-select-no-sort" class="!text-xl !font-semibold mb-1">Multi-select without sorting</h2>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-data-table
+          [data]="users()"
+          [columns]="columns"
+          [config]="{ selectable: true, sortable: false }"
+          (selectionChange)="onSelectionChange($event)"
+          [(selectedItems)]="selectedItemsNoSort"
+        />
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="selectNoSortCode" [ts]="selectNoSortTs" />
+  </section>
 
-  <h2 id="reactive-form" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Reactive Form</h2>
-  <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using formControl with the data table. Note: the data table uses its own model for selection; formControl shows one-way value sync.</p>
-  <mat-card>
-    <mat-card-content class="pt-4">
-      <rui-data-table
-        [data]="users()"
-        [columns]="columns"
-        [config]="{ selectable: true }"
-        [(selectedItems)]="reactiveSelectedItems"
-      />
-      <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ reactiveSelectedItems().length }} item(s) selected</p>
-    </mat-card-content>
-  </mat-card>
-  <rui-showcase-code [html]="reactiveHtml" [ts]="reactiveTs" />
+  <section>
+    <h2 id="data-table-select-sort" class="!text-xl !font-semibold mb-1">Multi-select with sorting</h2>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-data-table
+          [data]="users()"
+          [columns]="columns"
+          [config]="{ selectable: true, sortable: true }"
+          (selectionChange)="onSelectionChangeSort($event)"
+          (sortChange)="onSortChange($event)"
+          [(selectedItems)]="selectedItemsWithSort"
+        />
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="selectSortCode" [ts]="selectSortTs" />
+  </section>
 
-  <h2 id="signal-form" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Signal Form</h2>
-  <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using model() signal directly — no FormsModule or ReactiveFormsModule needed. This is the native API for the data table selection.</p>
-  <mat-card>
-    <mat-card-content class="pt-4">
-      <rui-data-table
-        [data]="users()"
-        [columns]="columns"
-        [config]="{ selectable: true }"
-        [(selectedItems)]="signalSelectedItems"
-      />
-      <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ signalSelectedItems().length }} item(s) selected</p>
-    </mat-card-content>
-  </mat-card>
-  <rui-showcase-code [html]="signalHtml" [ts]="signalTs" />
+  <section>
+    <h2 id="data-table-filter" class="!text-xl !font-semibold mb-1">Filter</h2>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-data-table
+          [data]="users()"
+          [columns]="columns"
+          [config]="{ filterable: true }"
+        />
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="filterCode" [ts]="filterTs" />
+  </section>
 
-  <h2 id="data-table-select-no-sort" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Multi-select without sorting</h2>
-  <mat-card>
-    <mat-card-header><mat-card-title>Multi-select without sorting</mat-card-title></mat-card-header>
-    <mat-card-content class="space-y-4">
-      <rui-data-table
-        [data]="users()"
-        [columns]="columns"
-        [config]="{ selectable: true, sortable: false }"
-        (selectionChange)="onSelectionChange($event)"
-        [(selectedItems)]="selectedItemsNoSort"
-      />
-
-      <rui-showcase-code [html]="selectNoSortCode" [ts]="selectNoSortTs" />
-    </mat-card-content>
-  </mat-card>
-
-  <h2 id="data-table-select-sort" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Multi-select with sorting</h2>
-  <mat-card>
-    <mat-card-header><mat-card-title>Multi-select with sorting</mat-card-title></mat-card-header>
-    <mat-card-content class="space-y-4">
-      <rui-data-table
-        [data]="users()"
-        [columns]="columns"
-        [config]="{ selectable: true, sortable: true }"
-        (selectionChange)="onSelectionChangeSort($event)"
-        (sortChange)="onSortChange($event)"
-        [(selectedItems)]="selectedItemsWithSort"
-      />
-
-      <rui-showcase-code [html]="selectSortCode" [ts]="selectSortTs" />
-    </mat-card-content>
-  </mat-card>
-
-  <h2 id="data-table-filter" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Filter</h2>
-  <mat-card>
-    <mat-card-header><mat-card-title>Filter</mat-card-title></mat-card-header>
-    <mat-card-content class="space-y-4">
-      <rui-data-table
-        [data]="users()"
-        [columns]="columns"
-        [config]="{ filterable: true }"
-      />
-
-      <rui-showcase-code [html]="filterCode" [ts]="filterTs" />
-    </mat-card-content>
-  </mat-card>
-
-  <h2 id="data-table-selection" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Selection output</h2>
-  <mat-card>
-    <mat-card-header><mat-card-title>Selection output</mat-card-title></mat-card-header>
-    <mat-card-content class="space-y-4">
-      <div>
-        <p class="text-sm font-medium text-[var(--mat-sys-on-surface)]">No sorting table:</p>
-        <pre class="bg-[var(--mat-sys-surface-container-high)] p-3 rounded text-xs overflow-auto max-h-40">{{ selectedItemsNoSort() | json }}</pre>
-      </div>
-      <div>
-        <p class="text-sm font-medium text-[var(--mat-sys-on-surface)]">With sorting table:</p>
-        <pre class="bg-[var(--mat-sys-surface-container-high)] p-3 rounded text-xs overflow-auto max-h-40">{{ selectedItemsWithSort() | json }}</pre>
-      </div>
-    </mat-card-content>
-  </mat-card>
-
-  <h2 id="data-table-actions" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Row Actions Menu</h2>
-  <mat-card>
-    <mat-card-header><mat-card-title>Row Actions Menu</mat-card-title></mat-card-header>
-    <mat-card-content class="space-y-4">
-      <rui-data-table
-        [data]="users()"
-        [columns]="columns"
-        [actions]="rowActions()"
-        [config]="{ sortable: true }"
-      />
-
-      <rui-showcase-code [html]="actionsCode" [ts]="actionsTs" />
-    </mat-card-content>
-  </mat-card>
-
-  <h2 id="data-table-expandable" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Expandable Rows</h2>
-  <mat-card>
-    <mat-card-header><mat-card-title>Expandable Rows</mat-card-title></mat-card-header>
-    <mat-card-content class="space-y-4">
-      <ng-template #expandedRow let-user>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-          <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Department:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.department }}</span></div>
-          <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Joined:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.joined }}</span></div>
-          <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Phone:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.phone }}</span></div>
-          <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Email:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.email }}</span></div>
-          <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Role:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.role }}</span></div>
-          <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Active:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.active ? 'Yes' : 'No' }}</span></div>
+  <section>
+    <h2 id="data-table-selection" class="!text-xl !font-semibold mb-1">Selection output</h2>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <div>
+          <p class="text-sm font-medium text-[var(--mat-sys-on-surface)]">No sorting table:</p>
+          <pre class="bg-[var(--mat-sys-surface-container-high)] p-3 rounded text-xs overflow-auto max-h-40">{{ selectedItemsNoSort() | json }}</pre>
         </div>
-      </ng-template>
+        <div>
+          <p class="text-sm font-medium text-[var(--mat-sys-on-surface)]">With sorting table:</p>
+          <pre class="bg-[var(--mat-sys-surface-container-high)] p-3 rounded text-xs overflow-auto max-h-40">{{ selectedItemsWithSort() | json }}</pre>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </section>
 
-      <rui-data-table
-        [data]="usersWithDetails()"
-        [columns]="columns"
-        [expandedRowTemplate]="expandedRow"
-        [config]="{ sortable: true }"
-      />
+  <section>
+    <h2 id="data-table-actions" class="!text-xl !font-semibold mb-1">Row Actions Menu</h2>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-data-table
+          [data]="users()"
+          [columns]="columns"
+          [actions]="rowActions()"
+          [config]="{ sortable: true }"
+        />
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="actionsCode" [ts]="actionsTs" />
+  </section>
 
-      <rui-showcase-code [html]="expandableCode" [ts]="expandableTs" />
-    </mat-card-content>
-  </mat-card>
+  <section>
+    <h2 id="data-table-expandable" class="!text-xl !font-semibold mb-1">Expandable Rows</h2>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <ng-template #expandedRow let-user>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+            <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Department:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.department }}</span></div>
+            <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Joined:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.joined }}</span></div>
+            <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Phone:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.phone }}</span></div>
+            <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Email:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.email }}</span></div>
+            <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Role:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.role }}</span></div>
+            <div><span class="font-medium text-[var(--mat-sys-on-surface)]">Active:</span> <span class="text-[var(--mat-sys-on-surface-variant)]">{{ user.active ? 'Yes' : 'No' }}</span></div>
+          </div>
+        </ng-template>
 
-  <h2 id="data-table-usage" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Usage</h2>
-  <mat-card>
-    <mat-card-header><mat-card-title>Usage</mat-card-title></mat-card-header>
-    <mat-card-content class="space-y-3">
-      <rui-showcase-code label="Usage" [html]="htmlCode" [ts]="tsCode" />
-    </mat-card-content>
-  </mat-card>
+        <rui-data-table
+          [data]="usersWithDetails()"
+          [columns]="columns"
+          [expandedRowTemplate]="expandedRow"
+          [config]="{ sortable: true }"
+        />
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="expandableCode" [ts]="expandableTs" />
+  </section>
+
+  <section>
+    <h2 id="data-table-usage" class="!text-xl !font-semibold mb-1">Usage</h2>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-showcase-code label="Usage" [html]="htmlCode" [ts]="tsCode" />
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <section>
+    <h2 id="template-driven" class="!text-xl !font-semibold mb-1">Template-driven Form</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using ngModel with the data table. The model value is the array of selected items. Note: data-table does not implement ControlValueAccessor, so ngModel binding is one-way.</p>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-data-table
+          [data]="users()"
+          [columns]="columns"
+          [config]="{ selectable: true }"
+          [(selectedItems)]="tdSelectedItems"
+        />
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ tdSelectedItems().length }} item(s) selected</p>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="templateHtml" [ts]="templateTs" />
+  </section>
+
+  <section>
+    <h2 id="reactive-form" class="!text-xl !font-semibold mb-1">Reactive Form</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using formControl with the data table. Note: the data table uses its own model for selection; formControl shows one-way value sync.</p>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-data-table
+          [data]="users()"
+          [columns]="columns"
+          [config]="{ selectable: true }"
+          [(selectedItems)]="reactiveSelectedItems"
+        />
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ reactiveSelectedItems().length }} item(s) selected</p>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="reactiveHtml" [ts]="reactiveTs" />
+  </section>
+
+  <section>
+    <h2 id="signal-form" class="!text-xl !font-semibold mb-1">Signal Form</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using model() signal directly — no FormsModule or ReactiveFormsModule needed. This is the native API for the data table selection.</p>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-data-table
+          [data]="users()"
+          [columns]="columns"
+          [config]="{ selectable: true }"
+          [(selectedItems)]="signalSelectedItems"
+        />
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ signalSelectedItems().length }} item(s) selected</p>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="signalHtml" [ts]="signalTs" />
+  </section>
 </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

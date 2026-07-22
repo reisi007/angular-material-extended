@@ -21,14 +21,13 @@ import { ShowcaseCode } from '../../shared/showcase-code';
     ShowcaseCode,
   ],
   template: `
-<div class="max-w-4xl mx-auto space-y-8 p-4">
+<div class="max-w-4xl mx-auto p-4 md:p-6 space-y-8">
   <h1 class="font-bold">Toast / Notification</h1>
 
-  <div class="pt-4 space-y-6">
-    <h2 id="toast-types" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Toast Types</h2>
+  <section>
+    <h2 id="toast-types" class="!text-xl !font-semibold mb-1">Toast Types</h2>
     <mat-card>
-      <mat-card-header><mat-card-title>Toast Types</mat-card-title></mat-card-header>
-      <mat-card-content class="space-y-3">
+      <mat-card-content class="pt-4">
         <div class="flex gap-4 flex-wrap">
           <button mat-raised-button color="primary" (click)="showSuccess()">Success</button>
           <button mat-raised-button color="warn" (click)="showError()">Error</button>
@@ -39,11 +38,12 @@ import { ShowcaseCode } from '../../shared/showcase-code';
       </mat-card-content>
     </mat-card>
     <rui-showcase-code [html]="toastTypesHtml" [ts]="toastTypesTs" />
+  </section>
 
-    <h2 id="toast-custom-duration" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Custom Duration</h2>
+  <section>
+    <h2 id="toast-custom-duration" class="!text-xl !font-semibold mb-1">Custom Duration</h2>
     <mat-card>
-      <mat-card-header><mat-card-title>Custom Duration</mat-card-title></mat-card-header>
-      <mat-card-content class="space-y-3">
+      <mat-card-content class="pt-4">
         <div class="flex gap-4 items-end">
           <mat-form-field>
             <mat-label>Message</mat-label>
@@ -58,22 +58,23 @@ import { ShowcaseCode } from '../../shared/showcase-code';
       </mat-card-content>
     </mat-card>
     <rui-showcase-code [html]="customDurationHtml" [ts]="customDurationTs" />
+  </section>
 
-    <h2 id="toast-default-config" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Default Configuration</h2>
+  <section>
+    <h2 id="toast-default-config" class="!text-xl !font-semibold mb-1">Default Configuration</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">
+      Override global toast defaults via the <code>RUI_TOAST_DEFAULT_OPTIONS</code> injection token in your app config.
+    </p>
     <mat-card>
-      <mat-card-header><mat-card-title>Default Configuration</mat-card-title></mat-card-header>
-      <mat-card-content class="space-y-3">
-        <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
-          Override global toast defaults via the <code>RUI_TOAST_DEFAULT_OPTIONS</code> injection token in your app config.
-        </p>
-      </mat-card-content>
+      <mat-card-content class="pt-4" />
     </mat-card>
     <rui-showcase-code [html]="defaultConfigHtml" [ts]="defaultConfigTs" />
+  </section>
 
-    <h2 id="toast-position" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Position</h2>
+  <section>
+    <h2 id="toast-position" class="!text-xl !font-semibold mb-1">Position</h2>
     <mat-card>
-      <mat-card-header><mat-card-title>Position</mat-card-title></mat-card-header>
-      <mat-card-content class="space-y-3">
+      <mat-card-content class="pt-4">
         <div class="flex gap-4 flex-wrap">
           @for (pos of positions; track pos) {
             <button mat-stroked-button (click)="showAtPosition(pos)">{{ pos }}</button>
@@ -82,7 +83,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
       </mat-card-content>
     </mat-card>
     <rui-showcase-code [html]="positionsHtml" [ts]="positionsTs" />
-  </div>
+  </section>
 </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

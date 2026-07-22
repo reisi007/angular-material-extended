@@ -19,62 +19,61 @@ import { RuiMultiSelect } from '@all-the.rest/mat-extended/multi-select';
   template: `
 <div class="max-w-4xl mx-auto p-4 md:p-6 space-y-8">
   <h1 class="font-bold text-[var(--mat-sys-on-surface)]">Multi-Select</h1>
-  <div class="pt-4 space-y-8">
-    <section id="signal-forms">
-      <h2 class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Signal Forms</h2>
-      <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using <code>[(values)]</code> with a <code>signal</code>.</p>
-      <mat-card>
-        <mat-card-content class="space-y-3 pt-4">
-          <rui-multi-select
-            label="Select fruits"
-            [options]="fruits"
-            [(values)]="selectedFruits"
-          />
-          <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
-            Selected: {{ selectedFruits() | json }}
-          </p>
-        </mat-card-content>
-      </mat-card>
-      <rui-showcase-code [html]="signalHtmlCode" [ts]="signalTsCode" />
-    </section>
 
-    <section id="reactive-forms">
-      <h2 class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Reactive Forms (sortable)</h2>
-      <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using <code>[formControl]</code> with <code>sortable</code> enabled for drag reorder.</p>
-      <mat-card>
-        <mat-card-content class="space-y-3 pt-4">
-          <rui-multi-select
-            label="Select fruits"
-            [options]="fruits"
-            [formControl]="reactiveControl"
-            [sortable]="true"
-          />
-          <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
-            Selected: {{ reactiveControl.value | json }}
-          </p>
-        </mat-card-content>
-      </mat-card>
-      <rui-showcase-code [html]="reactiveHtmlCode" [ts]="reactiveTsCode" />
-    </section>
+  <section>
+    <h2 id="signal-forms" class="!text-xl !font-semibold mb-1">Signal Forms</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using <code>[(values)]</code> with a <code>signal</code>.</p>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-multi-select
+          label="Select fruits"
+          [options]="fruits"
+          [(values)]="selectedFruits"
+        />
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
+          Selected: {{ selectedFruits() | json }}
+        </p>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="signalHtmlCode" [ts]="signalTsCode" />
+  </section>
 
-    <section id="template-driven-forms">
-      <h2 class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Template-driven Forms</h2>
-      <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using <code>[(ngModel)]</code> with the multi-select.</p>
-      <mat-card>
-        <mat-card-content class="space-y-3 pt-4">
-          <rui-multi-select
-            label="Select fruits"
-            [options]="fruits"
-            [(ngModel)]="ngModelFruits"
-          />
-          <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
-            Selected: {{ ngModelFruits | json }}
-          </p>
-        </mat-card-content>
-      </mat-card>
-      <rui-showcase-code [html]="templateHtmlCode" [ts]="templateTsCode" />
-    </section>
-  </div>
+  <section>
+    <h2 id="reactive-forms" class="!text-xl !font-semibold mb-1">Reactive Forms (sortable)</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using <code>[formControl]</code> with <code>sortable</code> enabled for drag reorder.</p>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-multi-select
+          label="Select fruits"
+          [options]="fruits"
+          [formControl]="reactiveControl"
+          [sortable]="true"
+        />
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
+          Selected: {{ reactiveControl.value | json }}
+        </p>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="reactiveHtmlCode" [ts]="reactiveTsCode" />
+  </section>
+
+  <section>
+    <h2 id="template-driven-forms" class="!text-xl !font-semibold mb-1">Template-driven Forms</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using <code>[(ngModel)]</code> with the multi-select.</p>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <rui-multi-select
+          label="Select fruits"
+          [options]="fruits"
+          [(ngModel)]="ngModelFruits"
+        />
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
+          Selected: {{ ngModelFruits | json }}
+        </p>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="templateHtmlCode" [ts]="templateTsCode" />
+  </section>
 </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
