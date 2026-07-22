@@ -37,6 +37,7 @@ const { mockCanvas } = vi.hoisted(() => {
     getOutputBlob: vi.fn().mockResolvedValue(new Blob(['test'], { type: 'image/png' })),
     getImageOffsetX: vi.fn().mockReturnValue(0),
     getImageOffsetY: vi.fn().mockReturnValue(0),
+    getImageBoundsInView: vi.fn().mockReturnValue({ left: 0, top: 0, right: 800, bottom: 600 }),
     getCropPixelSize: vi.fn().mockReturnValue({ width: 400, height: 300 }),
     getDisplayWidth: vi.fn().mockReturnValue(800),
     getDisplayHeight: vi.fn().mockReturnValue(600),
@@ -498,11 +499,7 @@ describe('RuiCropper', () => {
     comp.imageLoaded.set(true);
     mockCanvas.getDisplayWidth.mockReturnValue(800);
     mockCanvas.getDisplayHeight.mockReturnValue(600);
-    mockCanvas.getZoom.mockReturnValue(1);
-    mockCanvas.imageWidth = 400;
-    mockCanvas.imageHeight = 600;
-    mockCanvas.getImageOffsetX.mockReturnValue(100);
-    mockCanvas.getImageOffsetY.mockReturnValue(0);
+    mockCanvas.getImageBoundsInView.mockReturnValue({ left: 100, top: 0, right: 500, bottom: 600 });
 
     const constrained = (comp as unknown as Record<string, (...args: unknown[]) => unknown>)['_constrainCropToImage'](
       { x: 0, y: 0, width: 1, height: 1 },
@@ -525,11 +522,7 @@ describe('RuiCropper', () => {
     comp.imageLoaded.set(true);
     mockCanvas.getDisplayWidth.mockReturnValue(800);
     mockCanvas.getDisplayHeight.mockReturnValue(600);
-    mockCanvas.getZoom.mockReturnValue(1);
-    mockCanvas.imageWidth = 800;
-    mockCanvas.imageHeight = 600;
-    mockCanvas.getImageOffsetX.mockReturnValue(0);
-    mockCanvas.getImageOffsetY.mockReturnValue(0);
+    mockCanvas.getImageBoundsInView.mockReturnValue({ left: 0, top: 0, right: 800, bottom: 600 });
 
     const constrained = (comp as unknown as Record<string, (...args: unknown[]) => unknown>)['_constrainCropToImage'](
       { x: 0.25, y: 0.25, width: 0.5, height: 0.5 },
@@ -630,11 +623,7 @@ describe('RuiCropper', () => {
     mockCanvas.getCropRect.mockReturnValue({ x: 0.1, y: 0.1, width: 0.8, height: 0.8 });
     mockCanvas.getDisplayWidth.mockReturnValue(800);
     mockCanvas.getDisplayHeight.mockReturnValue(600);
-    mockCanvas.getZoom.mockReturnValue(1);
-    mockCanvas.imageWidth = 400;
-    mockCanvas.imageHeight = 600;
-    mockCanvas.getImageOffsetX.mockReturnValue(100);
-    mockCanvas.getImageOffsetY.mockReturnValue(0);
+    mockCanvas.getImageBoundsInView.mockReturnValue({ left: 100, top: 0, right: 500, bottom: 600 });
 
     const viewportRef = comp.viewportRef();
     if (!viewportRef) return;
@@ -650,5 +639,153 @@ describe('RuiCropper', () => {
     const lastCall = calls[calls.length - 1]?.[0];
     if (!lastCall) return;
     expect(lastCall.x).toBeGreaterThanOrEqual(0.125);
+  });
+
+  it('constrainToImage defaults to true', () => {
+    const fixture = TestBed.createComponent(RuiCropper);
+    const comp = fixture.componentInstance;
+    expect(comp.constrainToImage()).toBe(true);
+  });
+
+  it('_constrainCropToImage returns rect unchanged when constrainToImage is false', () => {
+    const fixture = TestBed.createComponent(RuiCropper);
+    const comp = fixture.componentInstance;
+    fixture.detectChanges();
+
+    asCropper(comp)._initCanvas();
+    fixture.detectChanges();
+
+    comp.imageLoaded.set(true);
+    mockCanvas.getImageBoundsInView.mockReturnValue({ left: 0, top: 0, right: 800, bottom: 600 });
+
+    fixture.componentRef.setInput('constrainToImage', false);
+    fixture.detectChanges();
+
+    const constrained = (comp as unknown as Record<string, (...args: unknown[]) => unknown>)['_constrainCropToImage'](
+      { x: -0.5, y: -0.5, width: 2, height: 2 },
+    ) as RuiCropRect;
+
+    expect(constrained.x).toBe(-0.5);
+    expect(constrained.y).toBe(-0.5);
+    expect(constrained.width).toBe(2);
+    expect(constrained.height).toBe(2);
+  });
+
+  it('constraint applied after image load', async () => {
+    const fixture = TestBed.createComponent(RuiCropper);
+    const comp = fixture.componentInstance;
+    fixture.detectChanges();
+
+    asCropper(comp)._initCanvas();
+    asCropper(comp)._canvasReady.set(true);
+    fixture.detectChanges();
+
+    comp.imageLoaded.set(false);
+    mockCanvas.getImageBoundsInView.mockReturnValue({ left: 50, top: 50, right: 750, bottom: 550 });
+    mockCanvas.setCropRect.mockReset();
+
+    fixture.componentRef.setInput('src', 'https://example.com/img.jpg');
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+    fixture.detectChanges();
+
+    expect(mockCanvas.setCropRect).toHaveBeenCalled();
+    const calls = (mockCanvas.setCropRect as unknown as { mock: { calls: Array<[RuiCropRect]> } }).mock.calls;
+    const lastCall = calls[calls.length - 1]?.[0];
+    if (!lastCall) return;
+    expect(lastCall.x * 800).toBeGreaterThanOrEqual(50);
+  });
+
+  it('zoom effect re-constrains crop rect', () => {
+    const fixture = TestBed.createComponent(RuiCropper);
+    const comp = fixture.componentInstance;
+    fixture.detectChanges();
+
+    asCropper(comp)._initCanvas();
+    asCropper(comp)._canvasReady.set(true);
+    comp.imageLoaded.set(true);
+    fixture.detectChanges();
+
+    mockCanvas.getCropRect.mockReturnValue({ x: 0, y: 0, width: 1, height: 1 });
+    mockCanvas.getImageBoundsInView.mockReturnValue({ left: 100, top: 0, right: 700, bottom: 600 });
+    mockCanvas.setCropRect.mockReset();
+
+    comp.zoomOut();
+    fixture.detectChanges();
+
+    expect(mockCanvas.setZoom).toHaveBeenCalled();
+    expect(mockCanvas.setCropRect).toHaveBeenCalled();
+    const calls = (mockCanvas.setCropRect as unknown as { mock: { calls: Array<[RuiCropRect]> } }).mock.calls;
+    const lastCall = calls[calls.length - 1]?.[0];
+    if (!lastCall) return;
+    expect(lastCall.x).toBeGreaterThanOrEqual(0.125);
+    expect(lastCall.width).toBeLessThanOrEqual(0.75);
+  });
+
+  it('rotation effect re-constrains crop rect when not live-dragging', () => {
+    const fixture = TestBed.createComponent(RuiCropper);
+    const comp = fixture.componentInstance;
+    fixture.detectChanges();
+
+    asCropper(comp)._initCanvas();
+    asCropper(comp)._canvasReady.set(true);
+    comp.imageLoaded.set(true);
+    comp.liveRotationDragging.set(false);
+    fixture.detectChanges();
+
+    mockCanvas.setCropRect.mockReset();
+    mockCanvas.render.mockReset();
+
+    comp.rotationAngle.set(45);
+    fixture.detectChanges();
+
+    expect(mockCanvas.setCropRect).toHaveBeenCalled();
+  });
+
+  it('rotation effect does not constrain during live rotation drag', () => {
+    const fixture = TestBed.createComponent(RuiCropper);
+    const comp = fixture.componentInstance;
+    fixture.detectChanges();
+
+    asCropper(comp)._initCanvas();
+    asCropper(comp)._canvasReady.set(true);
+    comp.imageLoaded.set(true);
+    comp.liveRotationDragging.set(true);
+    fixture.detectChanges();
+
+    mockCanvas.setCropRect.mockReset();
+    mockCanvas.render.mockReset();
+
+    comp.rotationAngle.set(30);
+    fixture.detectChanges();
+
+    expect(mockCanvas.render).not.toHaveBeenCalled();
+    expect(mockCanvas.setCropRect).not.toHaveBeenCalled();
+  });
+
+  it('rotation slider end constrains crop rect', () => {
+    const fixture = TestBed.createComponent(RuiCropper);
+    const comp = fixture.componentInstance;
+    fixture.detectChanges();
+
+    asCropper(comp)._initCanvas();
+    asCropper(comp)._canvasReady.set(true);
+    comp.imageLoaded.set(true);
+    comp.liveRotationDragging.set(true);
+    fixture.detectChanges();
+
+    comp.rotationAngle.set(30);
+    fixture.detectChanges();
+
+    mockCanvas.getCropRect.mockReturnValue({ x: 0, y: 0, width: 1, height: 1 });
+    mockCanvas.getImageBoundsInView.mockReturnValue({ left: 50, top: 50, right: 750, bottom: 550 });
+    mockCanvas.setCropRect.mockReset();
+    mockCanvas.render.mockReset();
+
+    comp.liveRotationDragging.set(false);
+    fixture.detectChanges();
+
+    expect(mockCanvas.render).toHaveBeenCalled();
+    expect(mockCanvas.setCropRect).toHaveBeenCalled();
   });
 });

@@ -1,19 +1,24 @@
 import { ControlValueAccessor } from '@angular/forms';
-import { signal, WritableSignal } from '@angular/core';
+import { signal } from '@angular/core';
 
 export abstract class RuiValueAccessor<T> implements ControlValueAccessor {
-  readonly value: WritableSignal<T | undefined> = signal<T | undefined>(
-    undefined,
-  );
   readonly disabled = signal(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected onChange: (value: T | undefined) => void = () => {};
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected onTouched: () => void = () => {};
+  protected onChange: (value: T | undefined) => void = () => undefined;
+  protected onTouched: () => void = () => undefined;
+
+  private readonly _value = signal<T | undefined>(undefined);
+
+  get value(): T | undefined {
+    return this._value();
+  }
+
+  set value(v: T | undefined) {
+    this._value.set(v);
+  }
 
   writeValue(value: T | undefined): void {
-    this.value.set(value);
+    this._value.set(value);
   }
 
   registerOnChange(fn: (value: T | undefined) => void): void {
@@ -28,8 +33,8 @@ export abstract class RuiValueAccessor<T> implements ControlValueAccessor {
     this.disabled.set(isDisabled);
   }
 
-  protected markAsChanged(value: T | undefined = this.value()): void {
-    this.value.set(value);
+  protected markAsChanged(value: T | undefined = this._value()): void {
+    this._value.set(value);
     this.onChange(value);
   }
 

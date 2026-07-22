@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Component } from '@angular/core';
@@ -67,27 +67,26 @@ describe('RuiFileManagerItem standalone', () => {
     }).compileComponents();
   });
 
-  it('creates the component without a drop list', () => {
+  function createFixture(itemOverrides: Partial<RuiFileItem> = {}) {
     const fixture = TestBed.createComponent(RuiFileManagerItem);
     fixture.componentRef.setInput('item', {
       id: '1',
-      file: new File([''], 'a.txt', { type: 'text/plain' }),
+      file: new File([''], 'photo.pdf', { type: 'application/pdf' }),
       status: 'selected',
       progress: 0,
-      editName: 'a.txt',
+      editName: 'photo.pdf',
+      ...itemOverrides,
     });
+    return fixture;
+  }
+
+  it('creates the component without a drop list', () => {
+    const fixture = createFixture();
     expect(fixture.componentInstance).toBeTruthy();
   });
 
   it('shows sortable controls when sortable is true', () => {
-    const fixture = TestBed.createComponent(RuiFileManagerItem);
-    fixture.componentRef.setInput('item', {
-      id: '1',
-      file: new File([''], 'a.txt', { type: 'text/plain' }),
-      status: 'selected',
-      progress: 0,
-      editName: 'a.txt',
-    });
+    const fixture = createFixture();
     fixture.componentRef.setInput('sortable', true);
     fixture.detectChanges();
 
@@ -96,18 +95,176 @@ describe('RuiFileManagerItem standalone', () => {
   });
 
   it('hides sortable controls when sortable is false', () => {
-    const fixture = TestBed.createComponent(RuiFileManagerItem);
-    fixture.componentRef.setInput('item', {
-      id: '1',
-      file: new File([''], 'a.txt', { type: 'text/plain' }),
-      status: 'selected',
-      progress: 0,
-      editName: 'a.txt',
-    });
+    const fixture = createFixture();
     fixture.componentRef.setInput('sortable', false);
     fixture.detectChanges();
 
     const dragHandle = fixture.nativeElement.querySelector('[cdkdraghandle]');
     expect(dragHandle).toBeFalsy();
+  });
+
+  it('emits remove when onRemove is called', () => {
+    const fixture = createFixture();
+    const comp = fixture.componentInstance;
+    const spy = vi.fn();
+    comp.remove.subscribe(spy);
+    comp.onRemove();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('emits startRename when onStartRename is called', () => {
+    const fixture = createFixture();
+    const comp = fixture.componentInstance;
+    const spy = vi.fn();
+    comp.startRename.subscribe(spy);
+    comp.onStartRename();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('emits confirmRename when onConfirmRename is called', () => {
+    const fixture = createFixture();
+    const comp = fixture.componentInstance;
+    const spy = vi.fn();
+    comp.confirmRename.subscribe(spy);
+    comp.onConfirmRename();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('emits cancelRename when onCancelRename is called', () => {
+    const fixture = createFixture();
+    const comp = fixture.componentInstance;
+    const spy = vi.fn();
+    comp.cancelRename.subscribe(spy);
+    comp.onCancelRename();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('emits editInputChange with input value', () => {
+    const fixture = createFixture();
+    const comp = fixture.componentInstance;
+    const spy = vi.fn();
+    comp.editInputChange.subscribe(spy);
+    const event = new Event('input');
+    Object.defineProperty(event, 'target', { value: { value: 'new-name' } });
+    comp.onEditInputChange(event);
+    expect(spy).toHaveBeenCalledWith('new-name');
+  });
+
+  it('emits moveUp when onMoveUp is called', () => {
+    const fixture = createFixture();
+    const comp = fixture.componentInstance;
+    const spy = vi.fn();
+    comp.moveUp.subscribe(spy);
+    comp.onMoveUp();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('emits moveDown when onMoveDown is called', () => {
+    const fixture = createFixture();
+    const comp = fixture.componentInstance;
+    const spy = vi.fn();
+    comp.moveDown.subscribe(spy);
+    comp.onMoveDown();
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows extension suffix when editableExtension is false and in rename mode', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('editable', true);
+    fixture.componentRef.setInput('editableExtension', false);
+    fixture.componentRef.setInput('editingItemId', '1');
+    fixture.detectChanges();
+
+    const extSpan = fixture.nativeElement.querySelector('.whitespace-nowrap');
+    expect(extSpan).toBeTruthy();
+    expect(extSpan.textContent).toContain('.pdf');
+  });
+
+  it('does not show extension suffix when editableExtension is true and in rename mode', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('editable', true);
+    fixture.componentRef.setInput('editableExtension', true);
+    fixture.componentRef.setInput('editingItemId', '1');
+    fixture.detectChanges();
+
+    const extSpans = fixture.nativeElement.querySelectorAll('.whitespace-nowrap');
+    const inputExtSpan = Array.from<Element>(extSpans).find((s) => s.textContent?.trim().startsWith('.'));
+    expect(inputExtSpan).toBeFalsy();
+  });
+
+  it('does not render remove button when editingItemId matches item id', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('fileManagement', true);
+    fixture.componentRef.setInput('editingItemId', '1');
+    fixture.detectChanges();
+
+    const removeBtn = fixture.nativeElement.querySelector('[aria-label="Remove photo.pdf"]');
+    expect(removeBtn).toBeFalsy();
+  });
+
+  it('does not render rename button when editingItemId matches item id', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('editable', true);
+    fixture.componentRef.setInput('fileManagement', true);
+    fixture.componentRef.setInput('editingItemId', '1');
+    fixture.detectChanges();
+
+    const renameBtn = fixture.nativeElement.querySelector('[aria-label="Rename photo.pdf"]');
+    expect(renameBtn).toBeFalsy();
+  });
+
+  it('renders rename and remove buttons when editingItemId does not match', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('editable', true);
+    fixture.componentRef.setInput('fileManagement', true);
+    fixture.componentRef.setInput('editingItemId', 'other-id');
+    fixture.detectChanges();
+
+    const renameBtn = fixture.nativeElement.querySelector('[aria-label="Rename photo.pdf"]');
+    expect(renameBtn).toBeTruthy();
+
+    const removeBtn = fixture.nativeElement.querySelector('[aria-label="Remove photo.pdf"]');
+    expect(removeBtn).toBeTruthy();
+  });
+
+  it('fileBaseName returns name without extension', () => {
+    const fixture = createFixture();
+    const comp = fixture.componentInstance;
+    expect(comp.fileBaseName()).toBe('photo');
+  });
+
+  it('fileExtension returns extension with dot', () => {
+    const fixture = createFixture();
+    const comp = fixture.componentInstance;
+    expect(comp.fileExtension()).toBe('.pdf');
+  });
+
+  it('fileBaseName returns full name when no extension', () => {
+    const fixture = createFixture({ editName: 'photofile' });
+    const comp = fixture.componentInstance;
+    expect(comp.fileBaseName()).toBe('photofile');
+  });
+
+  it('fileExtension returns empty string when no extension', () => {
+    const fixture = createFixture({ editName: 'photofile' });
+    const comp = fixture.componentInstance;
+    expect(comp.fileExtension()).toBe('');
+  });
+
+  it('renders extension badge in display mode', () => {
+    const fixture = createFixture();
+    fixture.detectChanges();
+
+    const extSpans = fixture.nativeElement.querySelectorAll('.whitespace-nowrap');
+    const badge = Array.from<Element>(extSpans).find((s) => s.textContent?.trim() === '.pdf');
+    expect(badge).toBeTruthy();
+  });
+
+  it('binds dragStartDelay to cdkDragStartDelay', () => {
+    const fixture = createFixture();
+    fixture.componentRef.setInput('dragStartDelay', 200);
+    fixture.detectChanges();
+    const cdkDrag = fixture.nativeElement.querySelector('[cdkdrag]');
+    expect(cdkDrag).toBeTruthy();
   });
 });

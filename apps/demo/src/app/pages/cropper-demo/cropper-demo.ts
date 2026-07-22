@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 
 import { RuiCropper, RuiCropperGridOverlay } from '@all-the.rest/mat-extended/cropper';
 import { RuiCropperResult, RuiOutputFormat, RuiAspectRatioPreset } from '@all-the.rest/mat-extended/cropper';
@@ -8,6 +8,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatButtonModule } from '@angular/material/button';
 import { ShowcaseCode } from '../../shared/showcase-code';
 
 const VALID_IMAGE = 'https://picsum.photos/800/600';
@@ -19,7 +21,7 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
   imports: [
     FormsModule, ReactiveFormsModule,
     RuiCropper, RuiCropperGridOverlay, MatCardModule, MatFormFieldModule, MatInputModule,
-    MatSelectModule, MatSliderModule, ShowcaseCode,
+    MatSelectModule, MatSliderModule, MatSlideToggleModule, MatButtonModule, ShowcaseCode,
   ],
   template: `
 <div class="max-w-5xl mx-auto p-4 md:p-6 space-y-8">
@@ -264,6 +266,107 @@ const INVALID_IMAGE = 'https://invalid.example/nonexistent.jpg';
     </mat-card>
     <rui-showcase-code [html]="positionHtml" ts="Check the basic example for the TypeScript setup." />
   </section>
+
+  <!-- Constrain to Image -->
+  <section>
+    <h2 id="constrain-to-image" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Constrain to Image</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">
+      When <code>constrainToImage</code> is <code>true</code> (default), the crop selection cannot leave the original image area — even when zooming out or rotating.
+    </p>
+    <mat-card>
+      <mat-card-content class="pt-4 space-y-3">
+        <mat-slide-toggle [checked]="constrainEnabled()" (change)="constrainEnabled.set($event.checked)">
+          constrainToImage: <strong>{{ constrainEnabled() }}</strong>
+        </mat-slide-toggle>
+        <div class="max-w-[800px]">
+          <rui-cropper
+            [src]="basicSrc"
+            [constrainToImage]="constrainEnabled()"
+            [aspectRatio]="'free'"
+            [rotationMin]="-180"
+            [rotationMax]="180"
+            (cropChange)="onConstrainCrop($event)"
+          />
+        </div>
+        @if (constrainResult()) {
+          <p class="text-xs text-[var(--mat-sys-on-surface-variant)]">{{ constrainResult()!.width }} x {{ constrainResult()!.height }} px</p>
+        }
+        <p class="text-xs text-[var(--mat-sys-on-surface-variant)]">
+          Try zooming out (<kbd>-</kbd>) or rotating (<kbd>r</kbd>).
+          @if (constrainEnabled()) { The crop stays inside the image. }
+          @else { The crop can extend into the dark letterbox area. }
+        </p>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="constrainHtml" [ts]="constrainTs" />
+  </section>
+
+  <!-- Template-driven Form -->
+  <section>
+    <h2 id="template-driven" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Template-driven Form</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using ngModel with the cropper. The model value is the cropped image data URL.</p>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <div class="max-w-[800px]">
+          <rui-cropper
+            [src]="basicSrc"
+            ngModel
+            name="cropperModel"
+            #cropperModelRef="ngModel"
+            [rotationMin]="-10"
+            [rotationMax]="10"
+            (cropChange)="onTemplateCrop($event)"
+          />
+        </div>
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">Model value: {{ cropperModelRef.value?.length ? (cropperModelRef.value?.length + ' chars') : 'none' }}</p>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="templateHtml" [ts]="templateTs" />
+  </section>
+
+  <!-- Reactive Form -->
+  <section>
+    <h2 id="reactive-form" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Reactive Form</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using formControl with the cropper. The control value is the cropped image data URL.</p>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <div class="max-w-[800px]">
+          <rui-cropper
+            [src]="basicSrc"
+            [formControl]="cropControl"
+            [rotationMin]="-10"
+            [rotationMax]="10"
+            (cropChange)="onReactiveCrop($event)"
+          />
+        </div>
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">Control value: {{ cropControl.value?.length ? (cropControl.value.length + ' chars') : 'none' }}</p>
+        <p class="text-sm">Control enabled: {{ cropControl.enabled }}</p>
+        <button mat-stroked-button (click)="cropControl.disable()" class="mt-2">Toggle disabled</button>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="reactiveHtml" [ts]="reactiveTs" />
+  </section>
+
+  <!-- Signal Form -->
+  <section>
+    <h2 id="signal-form" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Signal Form</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using model() signal directly — no FormsModule or ReactiveFormsModule needed.</p>
+    <mat-card>
+      <mat-card-content class="pt-4">
+        <div class="max-w-[800px]">
+          <rui-cropper
+            [src]="basicSrc"
+            [(croppedImage)]="signalCropped"
+            [rotationMin]="-10"
+            [rotationMax]="10"
+            (cropChange)="onSignalCrop($event)"
+          />
+        </div>
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">Signal value: {{ signalCropped().length ? (signalCropped().length + ' chars') : 'none' }}</p>
+      </mat-card-content>
+    </mat-card>
+    <rui-showcase-code [html]="signalHtml" [ts]="signalTs" />
+  </section>
 </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -347,6 +450,74 @@ export class MyComponent {
 
 <rui-cropper toolbarPosition="right" />`;
 
+  readonly cropControl = new FormControl<string>('');
+  readonly signalCropped = signal('');
+
+  readonly templateHtml = `<rui-cropper
+  [src]="'https://picsum.photos/800/600'"
+  ngModel
+  name="cropperModel"
+  #cropperModelRef="ngModel"
+  [rotationMin]="-10"
+  [rotationMax]="10"
+/>`;
+
+  readonly templateTs = `import { FormsModule } from '@angular/forms';
+import { RuiCropper } from '@all-the.rest/mat-extended/cropper';
+
+@Component({
+  imports: [FormsModule, RuiCropper],
+})
+export class MyComponent {
+  // ngModel value is automatically synced with the cropped image
+}`;
+
+  readonly reactiveHtml = `<rui-cropper
+  [src]="'https://picsum.photos/800/600'"
+  [formControl]="cropControl"
+  [rotationMin]="-10"
+  [rotationMax]="10"
+/>`;
+
+  readonly reactiveTs = `import { ReactiveFormsModule, FormControl } from '@angular/forms';
+import { RuiCropper } from '@all-the.rest/mat-extended/cropper';
+
+@Component({
+  imports: [ReactiveFormsModule, RuiCropper],
+})
+export class MyComponent {
+  cropControl = new FormControl<string>('');
+}`;
+
+  readonly signalHtml = `<rui-cropper
+  [src]="'https://picsum.photos/800/600'"
+  [(croppedImage)]="cropped"
+  [rotationMin]="-10"
+  [rotationMax]="10"
+/>`;
+
+  readonly signalTs = `import { signal } from '@angular/core';
+import { RuiCropper } from '@all-the.rest/mat-extended/cropper';
+
+@Component({
+  imports: [RuiCropper],
+})
+export class MyComponent {
+  cropped = signal('');
+}`;
+
+  onTemplateCrop(result: RuiCropperResult): void {
+    void result;
+  }
+
+  onReactiveCrop(result: RuiCropperResult): void {
+    void result;
+  }
+
+  onSignalCrop(result: RuiCropperResult): void {
+    void result;
+  }
+
   onBasicCrop(result: RuiCropperResult): void {
     this.basicDimensions.set({ width: result.width, height: result.height });
   }
@@ -373,5 +544,31 @@ export class MyComponent {
 
   onFixedCrop(result: RuiCropperResult): void {
     this.fixedResult.set(result);
+  }
+
+  readonly constrainEnabled = signal(true);
+  readonly constrainResult = signal<RuiCropperResult | null>(null);
+
+  readonly constrainHtml = `<mat-slide-toggle [checked]="constrain()" (change)="constrain.set($event.checked)">
+  constrainToImage: {{ constrain() }}
+</mat-slide-toggle>
+
+<rui-cropper
+  [src]="'...'"
+  [constrainToImage]="constrain()"
+  [aspectRatio]="'free'"
+  [rotationMin]="-180"
+  [rotationMax]="180"
+/>`;
+
+  readonly constrainTs = `import { signal } from '@angular/core';
+import { RuiCropper } from '@all-the.rest/mat-extended/cropper';
+
+export class MyComponent {
+  constrain = signal(true);
+}`;
+
+  onConstrainCrop(result: RuiCropperResult): void {
+    this.constrainResult.set(result);
   }
 }

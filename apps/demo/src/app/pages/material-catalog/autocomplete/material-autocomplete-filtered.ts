@@ -1,8 +1,10 @@
 import { Component, ChangeDetectionStrategy, computed, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { map } from 'rxjs/operators';
 import { ShowcaseCode } from '../../../shared/showcase-code';
 
 @Component({
@@ -43,10 +45,12 @@ export class MaterialAutocompleteFiltered {
 </mat-form-field>`;
 
   protected tsCode = `import { Component, computed, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { map } from 'rxjs/operators';
 
 const states = ['California', 'Colorado', 'Florida', 'New York', 'Texas'];
 
@@ -57,16 +61,18 @@ const states = ['California', 'Colorado', 'Florida', 'New York', 'Texas'];
 export class Example {
   stateCtrl = new FormControl('');
   private allStates = signal(states);
+  private stateValue = toSignal(this.stateCtrl.valueChanges.pipe(map(v => v ?? '')), { initialValue: '' });
   filteredStates = computed(() => {
-    const value = (this.stateCtrl.value ?? '').toLowerCase();
+    const value = this.stateValue().toLowerCase();
     return this.allStates().filter(s => s.toLowerCase().includes(value));
   });
 }`;
 
   protected readonly stateCtrl = new FormControl('');
   #allStates = signal(['California', 'Colorado', 'Florida', 'New York', 'Texas']);
+  #stateValue = toSignal(this.stateCtrl.valueChanges.pipe(map(v => v ?? '')), { initialValue: '' });
   protected readonly filteredStates = computed(() => {
-    const value = (this.stateCtrl.value ?? '').toLowerCase();
+    const value = this.#stateValue().toLowerCase();
     return this.#allStates().filter(s => s.toLowerCase().includes(value));
   });
 }

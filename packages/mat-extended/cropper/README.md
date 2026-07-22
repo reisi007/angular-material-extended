@@ -45,8 +45,8 @@ export class MyComponent {}
 | `outputQuality` | `number` | `0.92` | Quality for JPEG/WebP (`0`–`1`) |
 | `minCropWidth` | `number` | `20` | Minimum crop width in pixels |
 | `minCropHeight` | `number` | `20` | Minimum crop height in pixels |
-
-## Outputs / Models
+| `constrainToImage` | `boolean` | `true` | When `true`, the crop selection cannot leave the original image area during move, resize, zoom, or rotation |
+| `outputWidth` | `number` | `0` | Fixed output width in pixels (0 = auto) |
 
 | Name | Type | Description |
 |---|---|---|

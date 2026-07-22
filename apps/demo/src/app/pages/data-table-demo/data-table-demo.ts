@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { JsonPipe } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,10 +22,55 @@ interface User {
 @Component({
   selector: 'rui-data-table-demo',
   standalone: true,
-  imports: [JsonPipe, MatCardModule, MatIconModule, MatButtonModule, RuiDataTable, ShowcaseCode],
+  imports: [JsonPipe, FormsModule, ReactiveFormsModule, MatCardModule, MatIconModule, MatButtonModule, RuiDataTable, ShowcaseCode],
   template: `
 <div class="p-4 md:p-6 space-y-6">
   <h1 class="font-bold">Data Table</h1>
+
+  <h2 id="template-driven" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Template-driven Form</h2>
+  <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using ngModel with the data table. The model value is the array of selected items. Note: data-table does not implement ControlValueAccessor, so ngModel binding is one-way.</p>
+  <mat-card>
+    <mat-card-content class="pt-4">
+      <rui-data-table
+        [data]="users()"
+        [columns]="columns"
+        [config]="{ selectable: true }"
+        [(selectedItems)]="tdSelectedItems"
+      />
+      <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ tdSelectedItems().length }} item(s) selected</p>
+    </mat-card-content>
+  </mat-card>
+  <rui-showcase-code [html]="templateHtml" [ts]="templateTs" />
+
+  <h2 id="reactive-form" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Reactive Form</h2>
+  <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using formControl with the data table. Note: the data table uses its own model for selection; formControl shows one-way value sync.</p>
+  <mat-card>
+    <mat-card-content class="pt-4">
+      <rui-data-table
+        [data]="users()"
+        [columns]="columns"
+        [config]="{ selectable: true }"
+        [(selectedItems)]="reactiveSelectedItems"
+      />
+      <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ reactiveSelectedItems().length }} item(s) selected</p>
+    </mat-card-content>
+  </mat-card>
+  <rui-showcase-code [html]="reactiveHtml" [ts]="reactiveTs" />
+
+  <h2 id="signal-form" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Signal Form</h2>
+  <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using model() signal directly — no FormsModule or ReactiveFormsModule needed. This is the native API for the data table selection.</p>
+  <mat-card>
+    <mat-card-content class="pt-4">
+      <rui-data-table
+        [data]="users()"
+        [columns]="columns"
+        [config]="{ selectable: true }"
+        [(selectedItems)]="signalSelectedItems"
+      />
+      <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ signalSelectedItems().length }} item(s) selected</p>
+    </mat-card-content>
+  </mat-card>
+  <rui-showcase-code [html]="signalHtml" [ts]="signalTs" />
 
   <h2 id="data-table-select-no-sort" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Multi-select without sorting</h2>
   <mat-card>
@@ -143,6 +189,75 @@ interface User {
 export class DataTableDemo {
   selectedItemsNoSort = signal<User[]>([]);
   selectedItemsWithSort = signal<User[]>([]);
+  protected tdSelectedItems = signal<User[]>([]);
+  protected reactiveSelectedItems = signal<User[]>([]);
+  protected signalSelectedItems = signal<User[]>([]);
+
+  protected templateHtml = `<rui-data-table
+  [data]="users"
+  [columns]="columns"
+  [config]="{ selectable: true }"
+  [(selectedItems)]="selectedItems"
+/>`;
+
+  protected templateTs = `import { Component, signal } from '@angular/core';
+import { RuiDataTable } from '@all-the.rest/mat-extended/data-table';
+import { RuiDataColumn } from '@all-the.rest/mat-extended/data-table';
+
+@Component({
+  imports: [RuiDataTable],
+})
+export class MyComponent {
+  users = signal<User[]>([]);
+  columns: RuiDataColumn<User>[] = [
+    { key: 'name', header: 'Name' },
+  ];
+  selectedItems = signal<User[]>([]);
+}`;
+
+  protected reactiveHtml = `<rui-data-table
+  [data]="users"
+  [columns]="columns"
+  [config]="{ selectable: true }"
+  [(selectedItems)]="selectedItems"
+/>`;
+
+  protected reactiveTs = `import { Component, signal } from '@angular/core';
+import { RuiDataTable } from '@all-the.rest/mat-extended/data-table';
+import { RuiDataColumn } from '@all-the.rest/mat-extended/data-table';
+
+@Component({
+  imports: [RuiDataTable],
+})
+export class MyComponent {
+  users = signal<User[]>([]);
+  columns: RuiDataColumn<User>[] = [
+    { key: 'name', header: 'Name' },
+  ];
+  selectedItems = signal<User[]>([]);
+}`;
+
+  protected signalHtml = `<rui-data-table
+  [data]="users"
+  [columns]="columns"
+  [config]="{ selectable: true }"
+  [(selectedItems)]="selectedItems"
+/>`;
+
+  protected signalTs = `import { Component, signal } from '@angular/core';
+import { RuiDataTable } from '@all-the.rest/mat-extended/data-table';
+import { RuiDataColumn } from '@all-the.rest/mat-extended/data-table';
+
+@Component({
+  imports: [RuiDataTable],
+})
+export class MyComponent {
+  users = signal<User[]>([]);
+  columns: RuiDataColumn<User>[] = [
+    { key: 'name', header: 'Name' },
+  ];
+  selectedItems = signal<User[]>([]);
+}`;
 
   users = signal<User[]>([
     { id: 1, name: 'Alice', email: 'alice@example.com', role: 'Admin', active: true },

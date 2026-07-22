@@ -18,7 +18,7 @@ describe('RuiValueAccessor', () => {
   });
 
   it('should default value to undefined', () => {
-    expect(accessor.value()).toBeUndefined();
+    expect(accessor.value).toBeUndefined();
   });
 
   it('should default disabled to false', () => {
@@ -27,7 +27,7 @@ describe('RuiValueAccessor', () => {
 
   it('should update value via writeValue', () => {
     accessor.writeValue('test');
-    expect(accessor.value()).toBe('test');
+    expect(accessor.value).toBe('test');
   });
 
   it('should call onChange when markAsChanged is triggered', () => {
@@ -35,7 +35,7 @@ describe('RuiValueAccessor', () => {
     accessor.registerOnChange((v) => (changed = v));
     accessor.triggerChange('hello');
     expect(changed).toBe('hello');
-    expect(accessor.value()).toBe('hello');
+    expect(accessor.value).toBe('hello');
   });
 
   it('should call onTouched when markAsTouched is triggered', () => {
@@ -54,7 +54,7 @@ describe('RuiValueAccessor', () => {
     let changed: string | undefined;
     accessor.registerOnChange((v) => (changed = v));
     accessor.triggerChange('world');
-    expect(accessor.value()).toBe('world');
+    expect(accessor.value).toBe('world');
     expect(changed).toBe('world');
   });
 });

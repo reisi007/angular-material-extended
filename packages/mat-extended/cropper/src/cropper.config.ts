@@ -22,4 +22,5 @@ export const RUI_CROPPER_DEFAULTS: RuiCropperOptions = {
   rotateStep: 90,
   rotationMin: -45,
   rotationMax: 45,
+  constrainToImage: true,
 };

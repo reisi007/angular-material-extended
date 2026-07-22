@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { CdkDropList, CdkDragDrop, moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
+import { CdkDropList, CdkDrag, CdkDragDrop, moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
 import { Component } from '@angular/core';
 import { RuiFileUploadItem } from './file-upload-item.component';
 import { RuiFileItem } from './file-upload.types';
@@ -53,6 +53,36 @@ describe('RuiFileUploadItem with CdkDropList', () => {
     const dragHandle = fixture.nativeElement.querySelector('[cdkdraghandle]');
     expect(dragHandle).toBeTruthy();
   });
+
+  it('has custom drag preview template registered', () => {
+    const fixture = TestBed.createComponent(TestHost);
+    fixture.detectChanges();
+    const dragDebug = fixture.debugElement.query(By.directive(CdkDrag));
+    const drag = dragDebug.injector.get(CdkDrag);
+    expect((drag as unknown as { _previewTemplate: unknown })._previewTemplate).toBeTruthy();
+  });
+
+  it('has custom drag placeholder template registered', () => {
+    const fixture = TestBed.createComponent(TestHost);
+    fixture.detectChanges();
+    const dragDebug = fixture.debugElement.query(By.directive(CdkDrag));
+    const drag = dragDebug.injector.get(CdkDrag);
+    expect((drag as unknown as { _placeholderTemplate: unknown })._placeholderTemplate).toBeTruthy();
+  });
+
+  it('all buttons inside cdkDrag have pointerdown stopPropagation', () => {
+    const fixture = TestBed.createComponent(TestHost);
+    fixture.detectChanges();
+    const cdkDragEl = fixture.nativeElement.querySelector('[cdkdrag]');
+    const buttons = cdkDragEl.querySelectorAll('button');
+    expect(buttons.length).toBeGreaterThan(0);
+    for (const button of Array.from<Element>(buttons)) {
+      const event = new Event('pointerdown', { bubbles: true, cancelable: true });
+      const spy = vi.spyOn(event, 'stopPropagation');
+      button.dispatchEvent(event);
+      expect(spy).toHaveBeenCalled();
+    }
+  });
 });
 
 describe('RuiFileUploadItem standalone', () => {
@@ -103,5 +133,74 @@ describe('RuiFileUploadItem standalone', () => {
     fixture.detectChanges();
     const dragHandle = fixture.nativeElement.querySelector('[cdkdraghandle]');
     expect(dragHandle).toBeFalsy();
+  });
+
+  it('passes dragStartDelay to cdkDrag', () => {
+    const fixture = TestBed.createComponent(RuiFileUploadItem);
+    fixture.componentRef.setInput('item', {
+      id: '1',
+      file: new File([''], 'a.txt', { type: 'text/plain' }),
+      status: 'selected',
+      progress: 0,
+      editName: 'a.txt',
+    });
+    fixture.componentRef.setInput('sortable', true);
+    fixture.componentRef.setInput('dragStartDelay', 200);
+    fixture.detectChanges();
+    const cdkDragDebug = fixture.debugElement.query(By.directive(CdkDrag));
+    const cdkDrag = cdkDragDebug.injector.get(CdkDrag);
+    expect(cdkDrag.dragStartDelay).toBe(200);
+  });
+
+  it('disables drag when sortable is false', () => {
+    const fixture = TestBed.createComponent(RuiFileUploadItem);
+    fixture.componentRef.setInput('item', {
+      id: '1',
+      file: new File([''], 'a.txt', { type: 'text/plain' }),
+      status: 'selected',
+      progress: 0,
+      editName: 'a.txt',
+    });
+    fixture.componentRef.setInput('sortable', false);
+    fixture.detectChanges();
+    const cdkDragDebug = fixture.debugElement.query(By.directive(CdkDrag));
+    const cdkDrag = cdkDragDebug.injector.get(CdkDrag);
+    expect(cdkDrag.disabled).toBe(true);
+  });
+
+  it('emits moveUp output', () => {
+    const fixture = TestBed.createComponent(RuiFileUploadItem);
+    fixture.componentRef.setInput('item', {
+      id: '1',
+      file: new File([''], 'a.txt', { type: 'text/plain' }),
+      status: 'selected',
+      progress: 0,
+      editName: 'a.txt',
+    });
+    fixture.componentRef.setInput('sortable', true);
+    fixture.detectChanges();
+    const moveUpSpy = vi.fn();
+    fixture.componentInstance.moveUp.subscribe(moveUpSpy);
+    const moveUpBtn = fixture.nativeElement.querySelector('[aria-label="Move up"]');
+    moveUpBtn.click();
+    expect(moveUpSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('emits moveDown output', () => {
+    const fixture = TestBed.createComponent(RuiFileUploadItem);
+    fixture.componentRef.setInput('item', {
+      id: '1',
+      file: new File([''], 'a.txt', { type: 'text/plain' }),
+      status: 'selected',
+      progress: 0,
+      editName: 'a.txt',
+    });
+    fixture.componentRef.setInput('sortable', true);
+    fixture.detectChanges();
+    const moveDownSpy = vi.fn();
+    fixture.componentInstance.moveDown.subscribe(moveDownSpy);
+    const moveDownBtn = fixture.nativeElement.querySelector('[aria-label="Move down"]');
+    moveDownBtn.click();
+    expect(moveDownSpy).toHaveBeenCalledTimes(1);
   });
 });

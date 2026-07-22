@@ -66,13 +66,7 @@
         </svg>
       </button>
 
-      @if (currentPage(); as page) {
-        <div class="flex items-center gap-2 text-sm">
-          <span class="text-[var(--mat-sys-on-surface-variant)]">Demo</span>
-          <span class="text-[var(--mat-sys-outline)]">/</span>
-          <span class="font-medium">{{ page }}</span>
-        </div>
-      }
+      <rui-breadcrumb />
     </header>
 
     <div class="flex flex-1 min-h-0">

@@ -1,5 +1,5 @@
-import { Component, ElementRef, viewChild, input, model, output, signal, computed, effect, afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef, NgZone, Injector } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, ElementRef, viewChild, input, model, output, signal, computed, effect, afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef, NgZone, Injector, forwardRef } from '@angular/core';
+import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { RuiValueAccessor, ensureBrowser } from '@all-the.rest/mat-extended';
 import { RuiCropperCanvas } from './cropper-canvas';
 import { RuiCropperInteraction } from './cropper-interaction';
@@ -24,6 +24,13 @@ import { RUI_CROPPER_DEFAULT_OPTIONS } from './cropper.config';
     '(keydown)': 'onKeydown($event)',
     'class': 'block relative w-full',
   },
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => RuiCropper),
+      multi: true,
+    },
+  ],
 })
 export class RuiCropper extends RuiValueAccessor<string> {
   readonly src = input<string>('');
@@ -38,6 +45,7 @@ export class RuiCropper extends RuiValueAccessor<string> {
   readonly rotationMin = input<number>(-45);
   readonly rotationMax = input<number>(45);
   readonly rotationStepInput = input<number>(1);
+  readonly constrainToImage = input<boolean>(true);
   readonly toolbarPosition = input<'top' | 'bottom' | 'left' | 'right'>('bottom');
   readonly width = input<string | number>('100%');
 
@@ -104,6 +112,9 @@ export class RuiCropper extends RuiValueAccessor<string> {
       this._canvasEngine.setRotation(rot);
       if (!this.liveRotationDragging()) {
         this._canvasEngine.render();
+        const constrained = this._constrainCropToImage(this._canvasEngine.getCropRect());
+        this._canvasEngine.setCropRect(constrained);
+        this._cropRect.set(constrained);
       }
     });
 
@@ -111,6 +122,9 @@ export class RuiCropper extends RuiValueAccessor<string> {
       if (!this._canvasReady() || !this._canvasEngine) return;
       this._canvasEngine.setZoom(this.zoomLevel() / 100);
       this._canvasEngine.render();
+      const constrained = this._constrainCropToImage(this._canvasEngine.getCropRect());
+      this._canvasEngine.setCropRect(constrained);
+      this._cropRect.set(constrained);
     });
 
     effect(() => {
@@ -362,6 +376,9 @@ export class RuiCropper extends RuiValueAccessor<string> {
       this._canvasEngine.setAspectRatio(ratio);
       this._canvasEngine.render();
       this._cropRect.set(this._canvasEngine.getCropRect());
+      const constrained = this._constrainCropToImage(this._canvasEngine.getCropRect());
+      this._canvasEngine.setCropRect(constrained);
+      this._cropRect.set(constrained);
       this.imageLoaded.set(true);
       this._emitResult();
     } catch {
@@ -466,22 +483,18 @@ export class RuiCropper extends RuiValueAccessor<string> {
   }
 
   private _constrainCropToImage(rect: RuiCropRect): RuiCropRect {
+    if (!this.constrainToImage()) return rect;
     if (!this._canvasEngine || !this.imageLoaded()) return rect;
 
     const vw = this._canvasEngine.getDisplayWidth();
     const vh = this._canvasEngine.getDisplayHeight();
     if (vw <= 0 || vh <= 0) return rect;
 
-    const zoom = this._canvasEngine.getZoom();
-    const imgX = this._canvasEngine.getImageOffsetX();
-    const imgY = this._canvasEngine.getImageOffsetY();
-    const imgW = this._canvasEngine.imageWidth * zoom;
-    const imgH = this._canvasEngine.imageHeight * zoom;
-
-    const left = Math.max(0, imgX / vw);
-    const top = Math.max(0, imgY / vh);
-    const right = Math.min(1, (imgX + imgW) / vw);
-    const bottom = Math.min(1, (imgY + imgH) / vh);
+    const bounds = this._canvasEngine.getImageBoundsInView();
+    const left = bounds.left / vw;
+    const top = bounds.top / vh;
+    const right = bounds.right / vw;
+    const bottom = bounds.bottom / vh;
 
     let { x, y, width, height } = rect;
 

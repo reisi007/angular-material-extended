@@ -14,7 +14,7 @@
   />
 
   @if (hasFiles()) {
-    <div class="mt-4 flex flex-col gap-2" cdkDropList [cdkDropListDisabled]="!sortable()" (cdkDropListDropped)="onDropListDropped($event)">
+    <div class="mt-4 flex flex-col gap-2" cdkDropList [cdkDropListDisabled]="!sortable()" [cdkDropListOrientation]="'vertical'" (cdkDropListDropped)="onDropListDropped($event)">
       @for (item of files(); track item.id; let idx = $index) {
         <rui-file-upload-item
           [item]="item"

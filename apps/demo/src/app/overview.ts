@@ -68,6 +68,14 @@ import { MatIconModule } from '@angular/material/icon';
       <p class="text-sm text-[var(--mat-sys-on-surface-variant)] leading-relaxed">Kontextmen&uuml; mit Icons, Separator, Disabled-Items, Keyboard-Navigation und Submen&uuml;s</p>
     </a>
 
+    <a routerLink="/breadcrumb" class="block p-6 rounded-xl border border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface)] hover:bg-[var(--mat-sys-surface-container-low)] hover:border-[var(--mat-sys-primary)] transition-all no-underline group">
+      <div class="flex items-center gap-3 mb-2">
+        <mat-icon class="text-2xl group-hover:text-[var(--mat-sys-primary)] transition-colors">arrow_right_alt</mat-icon>
+        <h2 id="breadcrumb" class="text-xl font-semibold text-[var(--mat-sys-on-surface)] group-hover:text-[var(--mat-sys-primary)] transition-colors">Breadcrumb</h2>
+      </div>
+      <p class="text-sm text-[var(--mat-sys-on-surface-variant)] leading-relaxed">Auto-Breadcrumb aus Route-Data, manueller Modus, benutzerdefinierte Trennzeichen und Icons</p>
+    </a>
+
     <a routerLink="/multi-select" class="block p-6 rounded-xl border border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface)] hover:bg-[var(--mat-sys-surface-container-low)] hover:border-[var(--mat-sys-primary)] transition-all no-underline group">
       <div class="flex items-center gap-3 mb-2">
         <mat-icon class="text-2xl group-hover:text-[var(--mat-sys-primary)] transition-colors">playlist_add_check</mat-icon>

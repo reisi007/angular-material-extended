@@ -118,18 +118,139 @@ describe('RuiFileManager', () => {
     expect(comp.files()[1].id).toBe('1');
   });
 
-  it('retries a failed upload', async () => {
+  it('onDropListDropped with same previousIndex/currentIndex is no-op', () => {
     const fixture = TestBed.createComponent(RuiFileManager);
     const comp = fixture.componentInstance;
-    const handlerSpy = vi.fn().mockResolvedValue(undefined);
-    fixture.componentRef.setInput('uploadHandler', handlerSpy);
+    const item1 = createMockItem('1', 'a.txt');
+    const item2 = createMockItem('2', 'b.txt');
+    comp.files.set([item1, item2]);
 
-    const item = createMockItem('1', 'test.txt', 'error');
-    item.error = 'Failed';
+    const items = comp.files();
+    const event = {
+      previousIndex: 0,
+      currentIndex: 0,
+      item: {},
+      container: { data: items },
+      previousContainer: { data: items },
+      isPointerOverContainer: true,
+      distance: { x: 0, y: 0 },
+    } as CdkDragDrop<RuiFileItem[]>;
+    comp.onDropListDropped(event);
+    expect(comp.files()[0].id).toBe('1');
+    expect(comp.files()[1].id).toBe('2');
+  });
+
+  it('onItemMoveUp swaps items at index 0 and 1', () => {
+    const fixture = TestBed.createComponent(RuiFileManager);
+    const comp = fixture.componentInstance;
+    const item1 = createMockItem('1', 'a.txt');
+    const item2 = createMockItem('2', 'b.txt');
+    comp.files.set([item1, item2]);
+    comp.onItemMoveUp(1);
+    expect(comp.files()[0].id).toBe('2');
+    expect(comp.files()[1].id).toBe('1');
+  });
+
+  it('onItemMoveUp for first item is no-op', () => {
+    const fixture = TestBed.createComponent(RuiFileManager);
+    const comp = fixture.componentInstance;
+    const item1 = createMockItem('1', 'a.txt');
+    const item2 = createMockItem('2', 'b.txt');
+    comp.files.set([item1, item2]);
+    comp.onItemMoveUp(0);
+    expect(comp.files()[0].id).toBe('1');
+    expect(comp.files()[1].id).toBe('2');
+  });
+
+  it('onItemMoveDown swaps items at index 0 and 1', () => {
+    const fixture = TestBed.createComponent(RuiFileManager);
+    const comp = fixture.componentInstance;
+    const item1 = createMockItem('1', 'a.txt');
+    const item2 = createMockItem('2', 'b.txt');
+    comp.files.set([item1, item2]);
+    comp.onItemMoveDown(0);
+    expect(comp.files()[0].id).toBe('2');
+    expect(comp.files()[1].id).toBe('1');
+  });
+
+  it('onItemMoveDown for last item is no-op', () => {
+    const fixture = TestBed.createComponent(RuiFileManager);
+    const comp = fixture.componentInstance;
+    const item1 = createMockItem('1', 'a.txt');
+    const item2 = createMockItem('2', 'b.txt');
+    comp.files.set([item1, item2]);
+    comp.onItemMoveDown(1);
+    expect(comp.files()[0].id).toBe('1');
+    expect(comp.files()[1].id).toBe('2');
+  });
+
+  it('confirmRename with empty input does not update files or emit', () => {
+    const fixture = TestBed.createComponent(RuiFileManager);
+    const comp = fixture.componentInstance;
+    const renameSpy = vi.fn();
+    comp.rename.subscribe(renameSpy);
+    comp.files.set([createMockItem('1', 'old.txt')]);
+    comp.startRename('1');
+    comp.editInputValue.set('   ');
+    comp.confirmRename('1');
+    expect(comp.files()[0].editName).toBe('old.txt');
+    expect(renameSpy).not.toHaveBeenCalled();
+    expect(comp.editingItemId()).toBe('1');
+  });
+
+  it('confirmRename with unchanged value exits edit mode but does not emit', () => {
+    const fixture = TestBed.createComponent(RuiFileManager);
+    const comp = fixture.componentInstance;
+    const renameSpy = vi.fn();
+    comp.rename.subscribe(renameSpy);
+    comp.files.set([createMockItem('1', 'old.txt')]);
+    comp.startRename('1');
+    comp.confirmRename('1');
+    expect(comp.files()[0].editName).toBe('old.txt');
+    expect(renameSpy).not.toHaveBeenCalled();
+    expect(comp.editingItemId()).toBeNull();
+  });
+
+  it('confirmRename with changed value updates and emits', () => {
+    const fixture = TestBed.createComponent(RuiFileManager);
+    const comp = fixture.componentInstance;
+    const renameSpy = vi.fn();
+    comp.rename.subscribe(renameSpy);
+    comp.files.set([createMockItem('1', 'old.txt')]);
+    comp.startRename('1');
+    comp.editInputValue.set('new-name');
+    comp.confirmRename('1');
+    expect(comp.files()[0].editName).toBe('new-name');
+    expect(renameSpy).toHaveBeenCalledTimes(1);
+    expect(renameSpy).toHaveBeenCalledWith(expect.objectContaining({ editName: 'new-name' }));
+  });
+
+  it('startRename with editableExtension=false sets editInputValue to base name only', () => {
+    const fixture = TestBed.createComponent(RuiFileManager);
+    const comp = fixture.componentInstance;
+    fixture.componentRef.setInput('editableExtension', false);
+    comp.files.set([createMockItem('1', 'document.pdf')]);
+    comp.startRename('1');
+    expect(comp.editInputValue()).toBe('document');
+  });
+
+  it('startRename with editableExtension=true sets editInputValue to full name', () => {
+    const fixture = TestBed.createComponent(RuiFileManager);
+    const comp = fixture.componentInstance;
+    fixture.componentRef.setInput('editableExtension', true);
+    comp.files.set([createMockItem('1', 'document.pdf')]);
+    comp.startRename('1');
+    expect(comp.editInputValue()).toBe('document.pdf');
+  });
+
+  it('startRename with editableExtension=false and no extension uses full name', () => {
+    const fixture = TestBed.createComponent(RuiFileManager);
+    const comp = fixture.componentInstance;
+    fixture.componentRef.setInput('editableExtension', false);
+    const item = createMockItem('1', 'document');
     comp.files.set([item]);
-
-    await comp.retryFile('1');
-    expect(comp.files()[0].status).toBe('done');
+    comp.startRename('1');
+    expect(comp.editInputValue()).toBe('document');
   });
 
   it('shows clear-all button when fileManagement is true', () => {
@@ -159,5 +280,20 @@ describe('RuiFileManager', () => {
     const fixture = TestBed.createComponent(RuiFileManager);
     const el = fixture.nativeElement as HTMLElement;
     expect(el.classList.contains('block')).toBe(true);
+  });
+
+  it('confirmRename with editableExtension=false appends original extension', () => {
+    const fixture = TestBed.createComponent(RuiFileManager);
+    const comp = fixture.componentInstance;
+    fixture.componentRef.setInput('editableExtension', false);
+    const renameSpy = vi.fn();
+    comp.rename.subscribe(renameSpy);
+    comp.files.set([createMockItem('1', 'document.pdf')]);
+    comp.startRename('1');
+    expect(comp.editInputValue()).toBe('document');
+    comp.editInputValue.set('new-name');
+    comp.confirmRename('1');
+    expect(comp.files()[0].editName).toBe('new-name.pdf');
+    expect(renameSpy).toHaveBeenCalledWith(expect.objectContaining({ editName: 'new-name.pdf' }));
   });
 });

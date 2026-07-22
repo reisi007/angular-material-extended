@@ -7,7 +7,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { ReactiveFormsModule, FormControl } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { ShowcaseCode } from '../../shared/showcase-code';
 
 @Component({
@@ -16,11 +16,28 @@ import { ShowcaseCode } from '../../shared/showcase-code';
   imports: [
     RuiFileUpload, MatCardModule, MatSlideToggleModule,
     MatFormFieldModule, MatInputModule, MatButtonModule,
-    ReactiveFormsModule, ShowcaseCode,
+    FormsModule, ReactiveFormsModule, ShowcaseCode,
   ],
   template: `
 <div class="max-w-4xl mx-auto space-y-8 p-4">
   <h1 class="font-bold">File Upload Demo</h1>
+
+  <h2 id="template-driven" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Template-driven Form</h2>
+  <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using ngModel with the file upload. The model value is the array of RuiFileItem.</p>
+  <mat-card>
+    <mat-card-content class="pt-4">
+      <rui-file-upload
+        ngModel
+        name="fileUploadModel"
+        #fileUploadModelRef="ngModel"
+        [uploadHandler]="uploadHandler"
+      />
+      @if (fileUploadModelRef.value?.length) {
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ fileUploadModelRef.value.length }} file(s) selected</p>
+      }
+    </mat-card-content>
+  </mat-card>
+  <rui-showcase-code [html]="templateHtml" [ts]="templateTs" />
 
   <h2 id="basic">Basic Usage</h2>
 
@@ -95,6 +112,21 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 
   <rui-showcase-code [html]="formsHtml" [ts]="formsTs" />
 
+  <h2 id="signal-form" class="font-bold text-[var(--mat-sys-on-surface)] mb-1">Signal Form</h2>
+  <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Using model() signal directly — no FormsModule or ReactiveFormsModule needed.</p>
+  <mat-card>
+    <mat-card-content class="pt-4">
+      <rui-file-upload
+        [(files)]="signalFiles"
+        [uploadHandler]="uploadHandler"
+      />
+      @if (signalFiles().length > 0) {
+        <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mt-2">{{ signalFiles().length }} file(s) selected</p>
+      }
+    </mat-card-content>
+  </mat-card>
+  <rui-showcase-code [html]="signalHtml" [ts]="signalTs" />
+
   <h2 id="sortable-editable">Sortable &amp; Editable</h2>
 
   <rui-file-upload
@@ -116,6 +148,46 @@ export class FileUploadDemo {
   uploadedFiles = signal<RuiFileItem[]>([]);
 
   fileControl = new FormControl<RuiFileItem[]>([]);
+
+  protected signalFiles = signal<RuiFileItem[]>([]);
+
+  protected templateHtml = `<rui-file-upload
+  ngModel
+  name="fileUploadModel"
+  [uploadHandler]="handler"
+/>`;
+
+  protected templateTs = `import { FormsModule } from '@angular/forms';
+import { RuiFileUpload } from '@all-the.rest/mat-extended/file-upload';
+import type { RuiUploadHandler } from '@all-the.rest/mat-extended/file-upload';
+
+@Component({
+  imports: [FormsModule, RuiFileUpload],
+})
+export class MyComponent {
+  uploadHandler: RuiUploadHandler = async (file) => {
+    file.progress = 100;
+  };
+}`;
+
+  protected signalHtml = `<rui-file-upload
+  [(files)]="myFiles"
+  [uploadHandler]="handler"
+/>`;
+
+  protected signalTs = `import { signal } from '@angular/core';
+import { RuiFileUpload } from '@all-the.rest/mat-extended/file-upload';
+import type { RuiFileItem, RuiUploadHandler } from '@all-the.rest/mat-extended/file-upload';
+
+@Component({
+  imports: [RuiFileUpload],
+})
+export class MyComponent {
+  myFiles = signal<RuiFileItem[]>([]);
+  uploadHandler: RuiUploadHandler = async (file) => {
+    file.progress = 100;
+  };
+}`;
 
   uploadHandler: RuiUploadHandler = async (file: RuiFileItem) => {
     for (let i = 0; i <= 100; i += 10) {

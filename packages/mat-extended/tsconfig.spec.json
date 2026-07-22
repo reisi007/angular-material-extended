@@ -13,6 +13,8 @@
     "data-table/src/**/*.ts",
     "toast/src/**/*.ts",
     "dialog/src/**/*.ts",
-    "menu/src/**/*.ts"
+    "menu/src/**/*.ts",
+    "breadcrumb/src/**/*.ts",
+    "multi-select/src/**/*.ts"
   ]
 }

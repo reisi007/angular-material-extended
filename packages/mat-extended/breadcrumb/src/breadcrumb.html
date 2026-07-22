@@ -1,0 +1,26 @@
+<nav
+  aria-label="Breadcrumb"
+  class="flex items-center gap-1.5 text-sm flex-wrap"
+>
+  @for (crumb of breadcrumbs(); track crumb.url; let last = $last) {
+    @if (!last) {
+      <a
+        [routerLink]="crumb.url"
+        class="text-[var(--mat-sys-on-surface-variant)] hover:text-[var(--mat-sys-primary)] no-underline transition-colors flex items-center gap-1"
+      >
+        @if (crumb.icon) {
+          <mat-icon class="text-base">{{ crumb.icon }}</mat-icon>
+        }
+        <span>{{ crumb.label }}</span>
+      </a>
+      <mat-icon class="text-base text-[var(--mat-sys-outline)]">{{ separator() }}</mat-icon>
+    } @else {
+      <span class="font-medium text-[var(--mat-sys-on-surface)] flex items-center gap-1" aria-current="page">
+        @if (crumb.icon) {
+          <mat-icon class="text-base">{{ crumb.icon }}</mat-icon>
+        }
+        <span>{{ crumb.label }}</span>
+      </span>
+    }
+  }
+</nav>

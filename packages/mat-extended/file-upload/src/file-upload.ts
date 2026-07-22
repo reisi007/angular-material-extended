@@ -12,8 +12,9 @@ import {
   afterNextRender,
   viewChild,
   ElementRef,
+  forwardRef,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { RuiValueAccessor } from '@all-the.rest/mat-extended';
 import { RuiFileItem, RuiUploadStatus, RuiUploadHandler, RuiValidationError } from './file-upload.types';
@@ -40,6 +41,13 @@ import { RuiFileUploadProgress } from './file-upload-progress.component';
     'role': 'region',
     'aria-label': 'File upload drop zone',
   },
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => RuiFileUpload),
+      multi: true,
+    },
+  ],
 })
 export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
   readonly multiple = input<boolean>(true);
@@ -50,7 +58,7 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
   readonly autoUpload = input<boolean, boolean>(false, { transform: booleanAttribute });
   readonly initialFiles = input<RuiFileItem[]>([]);
   readonly sortable = input<boolean, boolean>(false, { transform: booleanAttribute });
-  readonly dragStartDelay = input<number>(0);
+  readonly dragStartDelay = input<number>(100);
   readonly editable = input<boolean, boolean>(false, { transform: booleanAttribute });
   readonly editableExtension = input<boolean, boolean>(true, { transform: booleanAttribute });
   readonly fileManagement = input<boolean, boolean>(true, { transform: booleanAttribute });

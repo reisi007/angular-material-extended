@@ -152,4 +152,114 @@ describe('RuiCropperCanvas', () => {
     expect(cropper.getDisplayWidth()).toBe(800);
     expect(cropper.getDisplayHeight()).toBe(600);
   });
+
+  it('getImageBoundsInView returns full viewport when no image', () => {
+    const cropper = new RuiCropperCanvas(createCanvasEl(800, 600));
+    cropper.displayWidth = 800;
+    cropper.displayHeight = 600;
+
+    const bounds = cropper.getImageBoundsInView();
+    expect(bounds.left).toBe(0);
+    expect(bounds.top).toBe(0);
+    expect(bounds.right).toBe(800);
+    expect(bounds.bottom).toBe(600);
+  });
+
+  it('getImageBoundsInView returns viewport-sized bounds at fit zoom with rotation 0', async () => {
+    const cropper = new RuiCropperCanvas(createCanvasEl(800, 600));
+    cropper.displayWidth = 800;
+    cropper.displayHeight = 600;
+    await cropper.loadImage(generateTestImageDataUrl(800, 600));
+
+    cropper.setZoom(1);
+    cropper.setRotation(0);
+
+    const bounds = cropper.getImageBoundsInView();
+    expect(bounds.left).toBe(0);
+    expect(bounds.top).toBe(0);
+    expect(bounds.right).toBe(800);
+    expect(bounds.bottom).toBe(600);
+  });
+
+  it('getImageBoundsInView returns centered bounds when image is smaller than viewport', async () => {
+    const cropper = new RuiCropperCanvas(createCanvasEl(800, 600));
+    cropper.displayWidth = 800;
+    cropper.displayHeight = 600;
+    await cropper.loadImage(generateTestImageDataUrl(400, 300));
+
+    cropper.setZoom(1);
+    cropper.setRotation(0);
+
+    const bounds = cropper.getImageBoundsInView();
+
+    expect(bounds.left).toBeGreaterThan(0);
+    expect(bounds.left).toBeLessThan(400);
+    expect(bounds.top).toBeGreaterThan(0);
+    expect(bounds.top).toBeLessThan(300);
+    expect(bounds.right).toBeLessThan(800);
+    expect(bounds.right).toBeGreaterThan(400);
+    expect(bounds.bottom).toBeLessThan(600);
+    expect(bounds.bottom).toBeGreaterThan(300);
+
+    const imw = bounds.right - bounds.left;
+    const imh = bounds.bottom - bounds.top;
+    expect(imw).toBeCloseTo(400, -1);
+    expect(imh).toBeCloseTo(300, -1);
+  });
+
+  it('getImageBoundsInView returns tighter inscribed bounds at 45° rotation (no empty corners)', async () => {
+    const cropper = new RuiCropperCanvas(createCanvasEl(800, 600));
+    cropper.displayWidth = 800;
+    cropper.displayHeight = 600;
+    await cropper.loadImage(generateTestImageDataUrl(800, 600));
+
+    cropper.setZoom(1);
+    cropper.setRotation(45);
+
+    const fitScale = cropper.getRotationFitScale();
+    expect(fitScale).toBeGreaterThan(1);
+
+    const bounds = cropper.getImageBoundsInView();
+
+    expect(bounds.left).toBe(0);
+    expect(bounds.top).toBe(0);
+    expect(bounds.right).toBe(800);
+    expect(bounds.bottom).toBe(600);
+  });
+
+  it('getImageBoundsInView clamps to viewport when inscribed bounds exceed it', async () => {
+    const cropper = new RuiCropperCanvas(createCanvasEl(800, 600));
+    cropper.displayWidth = 800;
+    cropper.displayHeight = 600;
+    await cropper.loadImage(generateTestImageDataUrl(800, 600));
+
+    cropper.setZoom(3);
+    cropper.setRotation(30);
+
+    const bounds = cropper.getImageBoundsInView();
+
+    expect(bounds.left).toBe(0);
+    expect(bounds.top).toBe(0);
+    expect(bounds.right).toBe(800);
+    expect(bounds.bottom).toBe(600);
+  });
+
+  it('getImageBoundsInView returns correct inscribed bounds at 10°', async () => {
+    const cropper = new RuiCropperCanvas(createCanvasEl(800, 600));
+    cropper.displayWidth = 800;
+    cropper.displayHeight = 600;
+    await cropper.loadImage(generateTestImageDataUrl(800, 600));
+
+    cropper.setZoom(1);
+    cropper.setRotation(10);
+
+    const bounds = cropper.getImageBoundsInView();
+    const insw = bounds.right - bounds.left;
+    const insh = bounds.bottom - bounds.top;
+
+    expect(insw).toBeGreaterThanOrEqual(750);
+    expect(insh).toBeGreaterThanOrEqual(550);
+    expect(insw).toBeLessThanOrEqual(800);
+    expect(insh).toBeLessThanOrEqual(600);
+  });
 });

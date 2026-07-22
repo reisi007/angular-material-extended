@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, signal, inject, DestroyRef, afterNe
 import { RouterModule, NavigationEnd, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { filter } from 'rxjs';
+import { RuiBreadcrumb } from '@all-the.rest/mat-extended/breadcrumb';
 
 interface NavGroup {
   label: string;
@@ -20,7 +21,7 @@ interface TocItem {
 }
 
 @Component({
-  imports: [RouterModule, MatIconModule],
+  imports: [RouterModule, MatIconModule, RuiBreadcrumb],
   selector: 'rui-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -35,11 +36,12 @@ export class App {
       items: [
         { label: 'Cropper', route: '/cropper', icon: 'crop' },
         { label: 'File Upload', route: '/file-upload', icon: 'upload_file' },
-        { label: 'File Management', route: '/file-upload-item', icon: 'file_present' },
+        { label: 'File Management', route: '/file-manager', icon: 'file_present' },
         { label: 'Toast', route: '/toast', icon: 'notifications' },
         { label: 'Data Table', route: '/data-table', icon: 'table_chart' },
         { label: 'Dialog', route: '/dialog', icon: 'open_in_new' },
         { label: 'Menu', route: '/menu', icon: 'menu' },
+        { label: 'Breadcrumb', route: '/breadcrumb', icon: 'arrow_right_alt' },
         { label: 'Multi-Select', route: '/multi-select', icon: 'playlist_add_check' },
       ],
     },
@@ -81,7 +83,6 @@ export class App {
     },
   ];
 
-  protected currentPage = signal('Home');
   protected tocItems = signal<TocItem[]>([]);
 
   private router = inject(Router);
@@ -90,12 +91,7 @@ export class App {
   constructor() {
     const sub = this.router.events
       .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
-      .subscribe((e) => {
-        const parts = e.urlAfterRedirects.replace(/^\//, '').split('/') || ['home'];
-        const segment = parts[parts.length - 1] ?? 'home';
-        this.currentPage.set(
-          segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
-        );
+      .subscribe(() => {
         if (typeof document !== 'undefined') {
           setTimeout(() => this.buildToc());
         }

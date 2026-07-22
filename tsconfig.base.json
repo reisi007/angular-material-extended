@@ -45,6 +45,12 @@
       ],
       "@all-the.rest/mat-extended/file-manager": [
         "./packages/mat-extended/file-manager/src/index.ts"
+      ],
+      "@all-the.rest/mat-extended/breadcrumb": [
+        "./packages/mat-extended/breadcrumb/src/index.ts"
+      ],
+      "@all-the.rest/mat-extended/multi-select": [
+        "./packages/mat-extended/multi-select/src/index.ts"
       ]
     }
   },

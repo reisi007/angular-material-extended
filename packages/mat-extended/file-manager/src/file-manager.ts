@@ -1,7 +1,6 @@
 import { Component, input, model, output, signal, booleanAttribute, ChangeDetectionStrategy } from '@angular/core';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { RuiFileItem, RuiUploadHandler } from '@all-the.rest/mat-extended/file-upload';
-import { formatSize } from '@all-the.rest/mat-extended/file-upload';
+import { RuiFileItem } from '@all-the.rest/mat-extended/file-upload';
 import { RuiFileManagerItem } from './file-manager-item.component';
 
 @Component({
@@ -13,22 +12,25 @@ import { RuiFileManagerItem } from './file-manager-item.component';
       <div class="flex flex-col gap-2"
         cdkDropList
         [cdkDropListDisabled]="!sortable()"
+        [cdkDropListOrientation]="'vertical'"
         (cdkDropListDropped)="onDropListDropped($event)">
-        @for (item of files(); track item.id) {
+        @for (item of files(); track item.id; let idx = $index) {
           <rui-file-manager-item
             [item]="item"
             [sortable]="sortable()"
+            [dragStartDelay]="dragStartDelay()"
             [editable]="editable()"
+            [editableExtension]="editableExtension()"
             [fileManagement]="fileManagement()"
             [editingItemId]="editingItemId()"
             [editInputValue]="editInputValue()"
             (remove)="removeFile(item.id)"
-            (cancelUpload)="cancelUpload.emit(item.id)"
-            (retry)="retryFile(item.id)"
             (startRename)="startRename(item.id)"
             (confirmRename)="confirmRename(item.id)"
             (cancelRename)="cancelRename()"
             (editInputChange)="editInputValue.set($event)"
+            (moveUp)="onItemMoveUp(idx)"
+            (moveDown)="onItemMoveDown(idx)"
           />
         }
       </div>
@@ -52,17 +54,15 @@ export class RuiFileManager {
   readonly files = model<RuiFileItem[]>([]);
   readonly sortable = input<boolean, boolean>(false, { transform: booleanAttribute });
   readonly editable = input<boolean, boolean>(false, { transform: booleanAttribute });
+  readonly editableExtension = input<boolean, boolean>(true, { transform: booleanAttribute });
+  readonly dragStartDelay = input(0);
   readonly fileManagement = input<boolean, boolean>(true, { transform: booleanAttribute });
-  readonly uploadHandler = input<RuiUploadHandler | undefined>(undefined);
 
-  readonly cancelUpload = output<string>();
   readonly deleteFile = output<RuiFileItem>();
   readonly rename = output<RuiFileItem>();
 
   readonly editingItemId = signal<string | null>(null);
   readonly editInputValue = signal('');
-
-  private abortControllers = new Map<string, AbortController>();
 
   removeFile(id: string): void {
     const currentFiles = this.files();
@@ -80,55 +80,73 @@ export class RuiFileManager {
     this.files.set([]);
   }
 
-  async retryFile(id: string): Promise<void> {
-    const handler = this.uploadHandler();
-    if (!handler) return;
-    const item = this.files().find(f => f.id === id);
-    if (!item) return;
-
-    this.files.update(files =>
-      files.map(f => f.id === id ? { ...f, status: 'uploading' as const, progress: 0, error: undefined } : f),
-    );
-
-    const controller = new AbortController();
-    this.abortControllers.set(id, controller);
-
-    try {
-      await handler(item, controller.signal);
-      if (!controller.signal.aborted) {
-        this.files.update(files =>
-          files.map(f => f.id === id ? { ...f, status: 'done' as const, progress: 100 } : f),
-        );
-      }
-    } catch (e: unknown) {
-      if (!controller.signal.aborted) {
-        this.files.update(files =>
-          files.map(f => f.id === id ? { ...f, status: 'error' as const, error: e instanceof Error ? e.message : 'Upload failed' } : f),
-        );
-      }
-    } finally {
-      this.abortControllers.delete(id);
-    }
-  }
-
   onDropListDropped(event: CdkDragDrop<RuiFileItem[]>): void {
+    if (event.previousIndex === event.currentIndex) return;
     const current = [...this.files()];
     moveItemInArray(current, event.previousIndex, event.currentIndex);
     this.files.set(current);
   }
 
+  onItemMoveUp(index: number): void {
+    if (index <= 0) return;
+    const current = [...this.files()];
+    const temp = current[index];
+    const prev = current[index - 1];
+    if (temp === undefined || prev === undefined) return;
+    current[index] = prev;
+    current[index - 1] = temp;
+    this.files.set(current);
+  }
+
+  onItemMoveDown(index: number): void {
+    const current = [...this.files()];
+    if (index >= current.length - 1) return;
+    const temp = current[index];
+    const next = current[index + 1];
+    if (temp === undefined || next === undefined) return;
+    current[index] = next;
+    current[index + 1] = temp;
+    this.files.set(current);
+  }
+
   startRename(id: string): void {
     const item = this.files().find(f => f.id === id);
-    if (item) {
-      this.editingItemId.set(id);
-      this.editInputValue.set(item.editName ?? item.file.name);
+    if (!item) return;
+    this.editingItemId.set(id);
+    const fullName = item.editName ?? item.file.name;
+    if (this.editableExtension()) {
+      this.editInputValue.set(fullName);
+    } else {
+      const lastDot = fullName.lastIndexOf('.');
+      this.editInputValue.set(lastDot > 0 ? fullName.slice(0, lastDot) : fullName);
     }
   }
 
   confirmRename(id: string): void {
-    const newName = this.editInputValue().trim() || this.files().find(f => f.id === id)?.file.name || '';
+    const item = this.files().find(f => f.id === id);
+    if (!item) return;
+
+    const newName = this.editInputValue().trim();
+
+    if (!newName) return;
+
+    const currentName = item.editName ?? item.file.name;
+
+    let finalName = newName;
+    if (!this.editableExtension()) {
+      const lastDot = currentName.lastIndexOf('.');
+      if (lastDot > 0) {
+        finalName = newName + currentName.slice(lastDot);
+      }
+    }
+
+    if (finalName === currentName) {
+      this.cancelRename();
+      return;
+    }
+
     this.files.update(files =>
-      files.map(f => f.id === id ? { ...f, editName: newName } : f),
+      files.map(f => f.id === id ? { ...f, editName: finalName } : f),
     );
     const updated = this.files().find(f => f.id === id);
     if (updated) this.rename.emit(updated);
@@ -140,6 +158,4 @@ export class RuiFileManager {
     this.editingItemId.set(null);
     this.editInputValue.set('');
   }
-
-  protected formatSize = formatSize;
 }

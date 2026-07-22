@@ -238,6 +238,48 @@ export class RuiCropperCanvas {
     };
   }
 
+  getImageBoundsInView(): { left: number; top: number; right: number; bottom: number } {
+    const vw = this.displayWidth || this.canvas.width;
+    const vh = this.displayHeight || this.canvas.height;
+
+    if (!this.image || this.imageWidth <= 0 || this.imageHeight <= 0) {
+      return { left: 0, top: 0, right: vw, bottom: vh };
+    }
+
+    const rotationFitScale = this._computeRotationFitScale(this.rotation);
+    const effectiveZoom = this.zoom * rotationFitScale;
+    const displayW = this.imageWidth * effectiveZoom;
+    const displayH = this.imageHeight * effectiveZoom;
+    const cx = vw / 2;
+    const cy = vh / 2;
+
+    const rad = (this.rotation * Math.PI) / 180;
+    let c = Math.abs(Math.cos(rad));
+    let s = Math.abs(Math.sin(rad));
+    let W = displayW;
+    let H = displayH;
+
+    if (c < s) {
+      [c, s] = [s, c];
+      [W, H] = [H, W];
+    }
+
+    const denom = c * c - s * s;
+    if (denom < 0.0001) {
+      return { left: 0, top: 0, right: vw, bottom: vh };
+    }
+
+    const inscribedW = (W * c - H * s) / denom;
+    const inscribedH = (H * c - W * s) / denom;
+
+    const left = Math.max(0, cx - inscribedW / 2);
+    const top = Math.max(0, cy - inscribedH / 2);
+    const right = Math.min(vw, cx + inscribedW / 2);
+    const bottom = Math.min(vh, cy + inscribedH / 2);
+
+    return { left, top, right, bottom };
+  }
+
   private _computeRotationFitScale(rotationDeg: number): number {
     if (rotationDeg === 0 || rotationDeg === 180 || rotationDeg === 360) return 1;
     const rad = (Math.abs(rotationDeg % 180) * Math.PI) / 180;

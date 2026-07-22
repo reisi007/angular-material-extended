@@ -15,6 +15,7 @@ export interface RuiCropperOptions {
   rotateStep?: number;
   rotationMin?: number;
   rotationMax?: number;
+  constrainToImage?: boolean;
 }
 
 export interface RuiCropRect {

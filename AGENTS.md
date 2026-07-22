@@ -188,6 +188,16 @@ Jede Demo-Seite folgt dem Muster `# heading` → `<ui example>` → `<demo code>
 
 Jedes Feature bekommt seine eigene Sektion mit Heading + UI + Code — nicht nur ein globales Code-Block am Ende.
 
+### Form-Integration in der Demo-App
+
+Jede Komponente, die in einem Formular verwendet werden kann (d.h. `ControlValueAccessor` implementiert oder eine `model()`-Signal-API bereitstellt), MUSS in der Demo-Seite Beispiele für alle drei Angular-Form-Paradigmen zeigen:
+
+1. **Template-driven Forms** (`ngModel` + `name`)
+2. **Reactive Forms** (`FormControl` / `FormGroup` via `formControlName`)
+3. **Signal Forms** (`model()` direkt im Template, kein `FormsModule`/`ReactiveFormsModule`)
+
+Jedes der drei Beispiele bekommt eine eigene Sektion mit `<h2 id="...">`, Live-UI und `<rui-showcase-code [html]="..." [ts]="...">` – analog zum Muster in §14.
+
 ## 15. CI/CD
 
 - `ci.yml`: Läuft auf PRs und `main` – lint, test, build.
