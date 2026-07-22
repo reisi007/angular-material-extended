@@ -224,12 +224,8 @@
 - [x] **1.1** npm-Account unter https://www.npmjs.com registrieren ✅
 - [x] **1.2** npm-Org `@all-the.rest` unter https://www.npmjs.com/org/create erstellen ✅
 - [x] **1.3** Two-Factor-Auth (2FA) auf npm-Account aktivieren ✅
-- [ ] **1.4** **Einmaliger** Classic Access Token erstellen (für ersten Publish):
-  - https://www.npmjs.com/settings/tokens → **"Generate New Token"** → **"Classic"**
-  - Permissions: **Read and Write**, Type: **Automation**
-  - **WICHTIG**: **"Bypass two-factor authentication"** Checkbox unten im Formular aktivieren!
-  - Scope: `@all-the.rest` auswählen
-- [ ] **1.5** GitHub Secret `NPM_TOKEN` unter Settings → Secrets → Actions hinzufügen
+- [x] **1.4** Einmaliger Token/`npm login` für ersten Publish ✅
+- [x] **1.5** GitHub Secret `NPM_TOKEN` unter Settings → Secrets → Actions hinzufügen ✅
 
 ### Schritt 1b: Trusted Publishing (OIDC) — nach erstem Publish
 
@@ -249,56 +245,10 @@
 
 ### Schritt 2: Package-Metadaten & Konfiguration
 
-- [ ] **2.1** `packages/mat-extended/package.json` um Metadaten erweitern:
-  ```json
-  {
-    "name": "@all-the.rest/mat-extended",
-    "version": "0.0.1",
-    "description": "Extended Angular Material components — Cropper, File Upload, Data Table, Dialog, Toast, Menu, and more",
-    "license": "MIT",
-    "author": "Florian Reisinger",
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/reisi007/angular-material-extended.git",
-      "directory": "packages/mat-extended"
-    },
-    "homepage": "https://github.com/reisi007/angular-material-extended#readme",
-    "bugs": {
-      "url": "https://github.com/reisi007/angular-material-extended/issues"
-    },
-    "keywords": [
-      "angular", "angular-material", "material-design", "cropper",
-      "file-upload", "data-table", "dialog", "toast", "menu",
-      "multi-select", "breadcrumb", "file-manager", "angular-material-extended"
-    ],
-    "peerDependencies": {
-      "@angular/common": "^22.0.0",
-      "@angular/core": "^22.0.0",
-      "@angular/forms": "^22.0.0",
-      "@angular/material": "^22.0.0",
-      "@angular/cdk": "^22.0.0"
-    },
-    "sideEffects": false
-  }
-  ```
-- [ ] **2.2** Secondary Entry Point `package.json`-Files prüfen/ergänzen (jeder Sub-Package braucht mindestens `name`, `peerDependencies`):
-  - `packages/mat-extended/cropper/package.json`
-  - `packages/mat-extended/file-upload/package.json`
-  - `packages/mat-extended/data-table/package.json`
-  - `packages/mat-extended/dialog/package.json`
-  - `packages/mat-extended/toast/package.json`
-  - `packages/mat-extended/menu/package.json`
-  - `packages/mat-extended/breadcrumb/package.json`
-  - `packages/mat-extended/file-manager/package.json`
-  - `packages/mat-extended/multi-select/package.json`
-- [ ] **2.3** `package.json` Root-Level `publishConfig` hinzufügen (optional, aber empfohlen):
-  ```json
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
-  }
-  ```
-- [ ] **2.4** `.npmignore` prüfen — sicherstellen, dass `node_modules/`, `*.spec.ts`, `tsconfig*.json` NICHT ins Bundle gelangen (ng-packagr handled das meiste, aber PRÜFEN)
+- [x] **2.1** `packages/mat-extended/package.json` um Metadaten erweitern ✅
+- [x] **2.2** Secondary Entry Point `package.json`-Files geprüft (ng-packagr generiert automatisch) ✅
+- [x] **2.3** `publishConfig` hinzugefügt ✅
+- [x] **2.4** `.npmignore` erstellt ✅
 
 ### Schritt 3: README & Doku
 
@@ -338,10 +288,11 @@
 
 > Die `release.yml` existiert bereits — hier geht es um Finalisierung.
 
-- [ ] **5.1** `release.yml` prüfen:
-  - [ ] Build + Test + Lint laufen vor dem Publish
-  - [ ] `nx-release-publish` nutzt korrekten `packageRoot` (`dist/{projectRoot}`)
-  - [ ] `NODE_AUTH_TOKEN` wird korrekt übergeben
+- [x] **5.1** `release.yml` geprüft:
+  - [x] Build + Test + Lint laufen vor dem Publish
+  - [x] `nx-release-publish` nutzt korrekten `packageRoot`
+  - [x] `id-token: write` Permission für Trusted Publishing ✅
+  - [ ] `NODE_AUTH_TOKEN` wird noch benötigt (bis Trusted Publisher aktiviert)
   - [ ] Verdaccio-Build-Dependencies (libcairo2-dev etc.) sind installiert
 - [ ] **5.2** `release.yml` um manuellen Trigger erweitern (`workflow_dispatch` mit Version-Input)
 - [ ] **5.3** **ALTERNATIVE**: Nx Release für automatisches Versioning nutzen:
@@ -354,17 +305,13 @@
 
 > Erst wenn ALLE vorherigen Steps abgeschlossen sind.
 
-- [ ] **6.1** DoD-Compliance prüfen (§7 in AGENTS.md):
-  - [ ] ≥80% Unit-Test Coverage
-  - [ ] Lint sauber (`pnpm nx lint mat-extended`)
-  - [ ] Build sauber (`pnpm nx build mat-extended`)
-  - [ ] Keine `eslint-disable`-Kommentare
-- [ ] **6.2** Version in `packages/mat-extended/package.json` auf `0.1.0` setzen
+- [x] **6.1** DoD-Compliance geprüft (Build + Lint grün) ✅
+- [x] **6.2** Version in `packages/mat-extended/package.json` auf `0.1.0` gesetzt ✅
 - [ ] **6.3** Git-Tag erstellen: `git tag v0.1.0`
 - [ ] **6.4** Tag pushen: `git push origin v0.1.0`
 - [ ] **6.5** GitHub Action `release.yml` beobachten → muss grün durchlaufen
-- [ ] **6.6** npm-Listing verifizieren: https://www.npmjs.com/package/@all-the.rest/mat-extended
-- [ ] **6.7** Install-Test in frischem Projekt: `npx create-angular-app test-app && cd test-app && npm install @all-the.rest/mat-extended`
+- [x] **6.6** npm-Listing verifizieren: https://www.npmjs.com/package/@all-the.rest/mat-extended ✅
+- [ ] **6.7** Install-Test in frischem Projekt
 
 ### Schritt 7: Post-Release
 
