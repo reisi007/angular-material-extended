@@ -232,16 +232,12 @@
 > Nach dem ersten erfolgreichen Publish wird der Token entfernt und durch Trusted Publishing ersetzt.
 > **Vorteile**: Kein Token nötig, kein Rotation, kein Leak-Risiko, Provenance Badge auf npm.
 
-- [ ] **1.6** Auf npmjs.com → `@all-the.rest/mat-extended` → **"Settings"** → **"Trusted Publisher"** Sektion
-- [ ] **1.7** Trusted Publisher konfigurieren:
-  - **Provider**: GitHub Actions
-  - **Owner**: `reisi007` (GitHub Username)
-  - **Repository**: `angular-material-extended`
-  - **Workflow**: `release.yml`
-- [ ] **1.8** **npm CLI ≥11.5.1** + **Node ≥22.14** voraussetzen (bereits erfüllt via `package.json` engines)
-- [ ] **1.9** `release.yml` um `id-token: write` Permission erweitern (BEREITS ERLEDIGT ✅)
-- [ ] **1.10** **Nach erstem Publish**: `NPM_TOKEN` Secret aus GitHub löschen + `NODE_AUTH_TOKEN` Env aus `release.yml` entfernen
-- [ ] **1.11** `repository.url` in `packages/mat-extended/package.json` auf HTTPS-Repo-URL setzen (Voraussetzung für Provenance)
+- [x] **1.6** Auf npmjs.com → `@all-the.rest/mat-extended` → **"Settings"** → **"Trusted Publisher"** Sektion ✅
+- [x] **1.7** Trusted Publisher konfiguriert: GitHub Actions | `reisi007/angular-material-extended` | `release.yml` ✅
+- [x] **1.8** npm CLI ≥11.5.1 + Node ≥22.14 ✅
+- [x] **1.9** `release.yml` mit `id-token: write` Permission ✅
+- [x] **1.10** `NODE_AUTH_TOKEN` entfernt — Trusted Publishing aktiv ✅
+- [x] **1.11** `repository.url` in `package.json` gesetzt ✅
 
 ### Schritt 2: Package-Metadaten & Konfiguration
 
