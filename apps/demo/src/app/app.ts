@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, signal, inject, DestroyRef, afterNextRender } from '@angular/core';
 import { RouterModule, NavigationEnd, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { filter } from 'rxjs';
 import { RuiBreadcrumb } from '@all-the.rest/mat-extended/breadcrumb';
 
@@ -21,7 +22,7 @@ interface TocItem {
 }
 
 @Component({
-  imports: [RouterModule, MatIconModule, RuiBreadcrumb],
+  imports: [RouterModule, MatIconModule, MatTooltipModule, RuiBreadcrumb],
   selector: 'rui-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',

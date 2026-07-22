@@ -6,13 +6,13 @@
 [![CI](https://github.com/reisi007/angular-material-extended/actions/workflows/ci.yml/badge.svg)](https://github.com/reisi007/angular-material-extended/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![npm](https://img.shields.io/npm/v/@all-the.rest/mat-extended.svg)](https://www.npmjs.com/package/@all-the.rest/mat-extended)
-[![Demo](https://img.shields.io/badge/demo-GitHub%20Pages-blue.svg)](https://reisi007.github.io/angular-material-extended/)
+[![Demo](https://img.shields.io/badge/demo-mat--extended.all--the.rest-blue.svg)](https://mat-extended.all-the.rest/)
 
 ## Demo
 
-Live demo hosted on GitHub Pages:
+Live demo:
 
-**[reisi007.github.io/angular-material-extended](https://reisi007.github.io/angular-material-extended/)**
+**[mat-extended.all-the.rest](https://mat-extended.all-the.rest/)**
 
 ## Components
 

@@ -21,7 +21,7 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install
       - run: sudo apt-get update && sudo apt-get install -y libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-      - run: pnpm nx build demo --base-href="/angular-material-extended/"
+      - run: pnpm nx build demo --base-href="/"
       - uses: actions/configure-pages@v5
         id: configure-pages
       - uses: actions/upload-pages-artifact@v4
