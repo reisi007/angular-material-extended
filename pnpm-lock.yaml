@@ -243,9 +243,6 @@ importers:
 
   packages/mat-extended:
     dependencies:
-      '@angular/cdk':
-        specifier: ^22.0.0
-        version: 22.0.5(@angular/common@22.0.6(@angular/core@22.0.6(@angular/compiler@22.0.6)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.0.6(@angular/compiler@22.0.6)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.0.6(@angular/animations@22.0.7(@angular/core@22.0.6(@angular/compiler@22.0.6)(rxjs@7.8.2)(zone.js@0.16.2)))(@angular/common@22.0.6(@angular/core@22.0.6(@angular/compiler@22.0.6)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.0.6(@angular/compiler@22.0.6)(rxjs@7.8.2)(zone.js@0.16.2)))(rxjs@7.8.2)
       '@angular/common':
         specifier: ^22.0.0
         version: 22.0.6(@angular/core@22.0.6(@angular/compiler@22.0.6)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)
@@ -258,9 +255,6 @@ importers:
       '@angular/material':
         specifier: ^22.0.0
         version: 22.0.5(df1d7570efc7f5fa32927bcdd46a7b73)
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
 
 packages:
 
