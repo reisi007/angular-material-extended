@@ -12,3 +12,15 @@ allowBuilds:
   msgpackr-extract: true
   nx: true
   unrs-resolver: true
+
+overrides:
+  axios: '>=1.18.0'
+  webpack-dev-server: '>=5.2.6'
+  http-proxy-middleware: '>=3.0.7'
+  js-yaml: '>=4.3.0'
+  brace-expansion: '>=5.0.7'
+  '@hono/node-server': '>=2.0.5'
+  '@babel/core': '>=7.29.6'
+  qs: '>=6.15.2'
+  uuid: '>=11.1.1'
+  esbuild: '>=0.28.1'
