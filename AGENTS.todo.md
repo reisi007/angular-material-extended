@@ -146,16 +146,6 @@
 
 - [ ] 7.1 GitHub Release mit Changelog an Tag `v0.1.0` erstellen
 - [ ] 7.4 `@all-the.rest` npm-Org 2FA für Collaborators erzwingen
-
-### Erledigt (verifiziert)
-
-- [x] npm-Org `@all-the.rest` erstellt
-- [x] Trusted Publishing (OIDC) aktiviert
-- [x] Package-Metadaten & `publishConfig` gesetzt
-- [x] Version `0.1.0` auf npm veröffentlicht
-- [x] `nx release` in `nx.json` konfiguriert
-- [x] i18n-Strategy — eigener `RuiI18nService` mit DE/EN-GB/EN-US Translations
-
 ---
 
 ## DoD Compliance: Offene Punkte
