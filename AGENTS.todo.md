@@ -186,3 +186,12 @@
 | Dialog | 16 (1 file) | 7 | Nein | Nein | Nein |
 
 > **Gesamt**: 383 Unit-Tests in 17 Spec-Dateien, 22 Source-Dateien ohne Tests, 93 E2E-Tests in 10 Spec-Dateien (alle 10 Features abgedeckt).
+
+---
+
+## Phase: CI/CD Workflows optimiert
+
+- [x] `ci.yml`: E2E-Tests aktiviert (Playwright startet Demo-Server selbst via `webServer`)
+- [x] `release.yml`: E2E-Tests + Unit-Tests + Lint laufen vor npm publish, Demo-Deploy als separater Job (nur nach erfolgreichem Publish)
+- [x] `deploy-demo.yml` gelöscht (ersetzt durch `release.yml` deploy-demo Job)
+- [ ] Commit & Push & GitHub Actions via `gh` beobachten
