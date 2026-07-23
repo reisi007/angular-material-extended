@@ -1,17 +1,17 @@
-<div>
+<div class="rui-data-table">
   <rui-data-table-filter [filterValue]="filterValue()" [filterable]="mergedConfig().filterable" (filterChange)="onFilterInput($event)" />
 
   <rui-data-table-loading [loading]="loading()" />
 
-  <div class="overflow-x-auto">
-    <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange($event)" class="w-full" [multiTemplateDataRows]="!!expandedRowTemplate()">
+  <div class="rui-data-table__wrapper">
+    <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange($event)" class="rui-data-table__table" [multiTemplateDataRows]="!!expandedRowTemplate()">
 
       @if (mergedConfig().selectable) {
         <ng-container matColumnDef="_select">
-          <th mat-header-cell *matHeaderCellDef class="w-[48px]">
+          <th mat-header-cell *matHeaderCellDef class="rui-data-table__cell-checkbox">
             <mat-checkbox (change)="toggleAllRows()" [checked]="isAllSelected()" [indeterminate]="selectedItems().length > 0 && !isAllSelected()" [aria-label]="checkboxLabel()"></mat-checkbox>
           </th>
-          <td mat-cell *matCellDef="let row" class="w-[48px]">
+          <td mat-cell *matCellDef="let row" class="rui-data-table__cell-checkbox">
             <mat-checkbox (click)="$event.stopPropagation()" (change)="toggleRow(row)" [checked]="selectedItems().includes(row)" [aria-label]="checkboxLabel(row)"></mat-checkbox>
           </td>
         </ng-container>
@@ -19,10 +19,10 @@
 
       @if (expandedRowTemplate()) {
         <ng-container matColumnDef="_expand">
-          <th mat-header-cell *matHeaderCellDef class="w-[48px]"></th>
-          <td mat-cell *matCellDef="let row" class="w-[48px]">
+          <th mat-header-cell *matHeaderCellDef class="rui-data-table__cell-expand"></th>
+          <td mat-cell *matCellDef="let row" class="rui-data-table__cell-expand">
             <button mat-icon-button (click)="toggleRowExpansion(row); $event.stopPropagation()" [attr.aria-label]="isRowExpanded(row) ? 'Collapse row' : 'Expand row'">
-              <mat-icon>{{ isRowExpanded(row) ? 'expand_less' : 'expand_more' }}</mat-icon>
+              <mat-icon aria-hidden="true">{{ isRowExpanded(row) ? 'expand_less' : 'expand_more' }}</mat-icon>
             </button>
           </td>
         </ng-container>
@@ -49,10 +49,10 @@
 
       @if (hasActions()) {
         <ng-container matColumnDef="_actions">
-          <th mat-header-cell *matHeaderCellDef class="w-[56px]"></th>
-          <td mat-cell *matCellDef="let row" class="w-[56px]">
+          <th mat-header-cell *matHeaderCellDef class="rui-data-table__cell-actions"></th>
+          <td mat-cell *matCellDef="let row" class="rui-data-table__cell-actions">
             <button mat-icon-button [matMenuTriggerFor]="rowMenu" (click)="$event.stopPropagation()" aria-label="Row actions">
-              <mat-icon>more_vert</mat-icon>
+              <mat-icon aria-hidden="true">more_vert</mat-icon>
             </button>
             <mat-menu #rowMenu="matMenu">
               @for (action of actions(); track action.label) {
@@ -61,7 +61,7 @@
                 } @else {
                   <button mat-menu-item (click)="action.action(row)" [disabled]="action.disabled?.(row)">
                     @if (action.icon) {
-                      <mat-icon>{{ action.icon }}</mat-icon>
+                      <mat-icon aria-hidden="true">{{ action.icon }}</mat-icon>
                     }
                     <span>{{ action.label }}</span>
                   </button>
@@ -76,7 +76,7 @@
         <ng-container matColumnDef="_expandedDetail">
           <td mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns().length">
             @if (isRowExpanded(row)) {
-              <div class="p-4">
+              <div class="rui-data-table__expanded-detail">
                 <ng-container *ngTemplateOutlet="expandedRowTemplate()!; context: { $implicit: row }" />
               </div>
             }
@@ -85,7 +85,7 @@
       }
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns();" [class.cursor-pointer]="!!expandedRowTemplate()" (click)="expandedRowTemplate() ? toggleRowExpansion(row) : undefined"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns();" [class.rui-data-table__row--expandable]="!!expandedRowTemplate()" (click)="expandedRowTemplate() ? toggleRowExpansion(row) : undefined"></tr>
 
       @if (expandedRowTemplate()) {
         <tr mat-row *matRowDef="let row; columns: ['_expandedDetail']"

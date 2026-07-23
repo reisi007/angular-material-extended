@@ -7,9 +7,9 @@ import type { RuiMenuItem } from './menu.types';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './menu-panel.html',
+  styleUrl: './menu-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    'class': 'block bg-[var(--mat-sys-surface-container)] rounded shadow-lg py-1 min-w-[200px]',
     'role': 'menu',
     '(keydown.arrowdown)': 'onArrowDown()',
     '(keydown.arrowup)': 'onArrowUp()',

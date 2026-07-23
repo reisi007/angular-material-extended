@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.rui-data-table__wrapper {
+  overflow-x: auto;
+}
+
+.rui-data-table__table {
+  width: 100%;
+}
+
+.rui-data-table__cell-checkbox {
+  width: 48px;
+}
+
+.rui-data-table__cell-expand {
+  width: 48px;
+}
+
+.rui-data-table__cell-actions {
+  width: 56px;
+}
+
+.rui-data-table__expanded-detail {
+  padding: 1rem;
+}
+
+.rui-data-table__row--expandable {
+  cursor: pointer;
+}

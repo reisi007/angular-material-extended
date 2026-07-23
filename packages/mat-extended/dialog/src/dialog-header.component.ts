@@ -7,23 +7,25 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     @if (header() || !disableClose()) {
-      <div class="flex items-center px-6 py-4 border-b border-[var(--mat-sys-outline-variant)] shrink-0">
+      <div class="rui-dialog-header">
         @if (header()) {
-          <h2 class="m-0 text-lg font-medium text-[var(--mat-sys-on-surface)]">{{ header() }}</h2>
+          <h2 class="rui-dialog-header__title" [id]="id()">{{ header() }}</h2>
         }
         @if (!disableClose()) {
-          <div class="flex-1"></div>
+          <div class="rui-dialog-header__spacer"></div>
           <button
-            class="flex items-center justify-center w-8 h-8 border-none bg-transparent cursor-pointer text-[var(--mat-sys-on-surface-variant)] rounded-full text-base hover:bg-[var(--mat-sys-surface-variant)]"
+            class="rui-dialog-header__close"
             (click)="dismiss.emit()"
             aria-label="Close dialog">&#x2715;</button>
         }
       </div>
     }
   `,
+  styleUrl: './dialog-header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RuiDialogHeaderComponent {
+  readonly id = input<string>('');
   readonly header = input<string>();
   readonly disableClose = input<boolean>(false);
   readonly dismiss = output<void>();

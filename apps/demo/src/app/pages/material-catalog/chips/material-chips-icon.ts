@@ -13,20 +13,23 @@ import { ShowcaseCode } from '../../../shared/showcase-code';
       <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-4">mat-chip with mat-icon avatar via matChipAvatar.</p>
 
       <div class="rounded-lg border border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface)] p-5">
-        <mat-chip-set>
-          <mat-chip>
-            <mat-icon matChipAvatar>home</mat-icon>
-            Home
-          </mat-chip>
-          <mat-chip>
-            <mat-icon matChipAvatar>settings</mat-icon>
-            Settings
-          </mat-chip>
-          <mat-chip>
-            <mat-icon matChipAvatar>info</mat-icon>
-            About
-          </mat-chip>
-        </mat-chip-set>
+        <fieldset>
+          <legend class="sr-only">Technologies with icons</legend>
+          <mat-chip-set>
+            <mat-chip>
+              <mat-icon matChipAvatar>home</mat-icon>
+              Home
+            </mat-chip>
+            <mat-chip>
+              <mat-icon matChipAvatar>settings</mat-icon>
+              Settings
+            </mat-chip>
+            <mat-chip>
+              <mat-icon matChipAvatar>info</mat-icon>
+              About
+            </mat-chip>
+          </mat-chip-set>
+        </fieldset>
       </div>
 
       <rui-showcase-code

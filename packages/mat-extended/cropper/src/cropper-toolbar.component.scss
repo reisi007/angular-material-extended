@@ -1,0 +1,99 @@
+.rui-cropper-toolbar {
+  display: flex;
+  background: var(--mat-sys-surface-container-lowest);
+}
+
+.rui-cropper-toolbar--horizontal {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.rui-cropper-toolbar--vertical {
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-left: 1px solid var(--mat-sys-outline-variant);
+  box-shadow: -1px 0 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.rui-cropper-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rui-cropper-toolbar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  transition: box-shadow 0.15s ease;
+  padding: 0;
+
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+}
+
+.rui-cropper-toolbar__btn--primary {
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+}
+
+.rui-cropper-toolbar__btn--tertiary {
+  background: var(--mat-sys-tertiary);
+  color: var(--mat-sys-on-tertiary);
+}
+
+.rui-cropper-toolbar__value {
+  min-width: 4ch;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+
+.rui-cropper-toolbar__value--narrow {
+  min-width: 3ch;
+}
+
+.rui-cropper-toolbar__slider {
+  width: 96px;
+  accent-color: var(--mat-sys-primary);
+}
+
+.rui-cropper-toolbar__select-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.rui-cropper-toolbar__select {
+  font-size: 12px;
+  border: 1px solid var(--mat-sys-outline);
+  border-radius: 6px;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  padding: 4px 8px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.rui-cropper-toolbar__rotation-info {
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+}

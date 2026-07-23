@@ -19,9 +19,13 @@ import { ShowcaseCode } from '../../shared/showcase-code';
   template: `
 <div class="max-w-4xl mx-auto p-4 md:p-6 space-y-8">
   <h1 class="font-bold">Menu / Hamburger</h1>
+  <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
+    Context menu with icons, separators, disabled items, keyboard navigation, and submenus.
+  </p>
 
   <section>
     <h2 id="menu-basic" class="!text-xl !font-semibold mb-1">Basic Hamburger Menu</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Simple menu with text-only items and click handlers.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <rui-menu-button [items]="menuItems" />
@@ -32,6 +36,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 
   <section>
     <h2 id="menu-icons" class="!text-xl !font-semibold mb-1">Menu with Icons</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Add leading Material icons to menu items.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <rui-menu-button [items]="iconMenuItems" />
@@ -42,6 +47,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 
   <section>
     <h2 id="menu-disabled" class="!text-xl !font-semibold mb-1">Menu with Disabled Items</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Mark items as disabled to prevent interaction.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <rui-menu-button [items]="disabledMenuItems" />
@@ -52,6 +58,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 
   <section>
     <h2 id="menu-divider" class="!text-xl !font-semibold mb-1">Menu with Divider / Separator</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Group related items with separators and nested submenus.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <rui-menu-button [items]="advancedMenuItems" />
@@ -62,6 +69,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 
   <section>
     <h2 id="menu-router-links" class="!text-xl !font-semibold mb-1">Menu with Router Links</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Use <code>routerLink</code> for navigation items instead of click handlers.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <rui-menu-button [items]="routerMenuItems" />

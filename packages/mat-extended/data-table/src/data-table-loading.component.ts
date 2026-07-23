@@ -5,11 +5,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   selector: 'rui-data-table-loading',
   standalone: true,
   imports: [MatProgressSpinnerModule],
+  styleUrl: './data-table-loading.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { 'class': 'block' },
   template: `
     @if (loading()) {
-      <div class="flex justify-center py-6">
+      <div class="rui-data-table-loading">
         <mat-spinner [diameter]="diameter()" />
       </div>
     }

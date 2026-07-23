@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+.rui-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.rui-empty-state__icon {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1rem;
+}
+
+.rui-empty-state__message {
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0;
+}

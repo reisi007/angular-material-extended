@@ -18,6 +18,7 @@ import { RuiArrayValueAccessor } from '@all-the.rest/mat-extended';
     DragDropModule,
   ],
   templateUrl: './multi-select.html',
+  styleUrl: './multi-select.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {

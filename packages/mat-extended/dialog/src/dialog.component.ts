@@ -11,26 +11,22 @@ import { RuiDialogFooterComponent } from './dialog-footer.component';
   standalone: true,
   imports: [CommonModule, FormsModule, RuiDialogHeaderComponent, RuiDialogFooterComponent],
   templateUrl: './dialog.html',
+  styleUrl: './dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    'class': 'block',
-  },
 })
 export class RuiDialogComponent implements AfterViewInit {
+  private static _nextDialogId = 0;
+  private readonly _dialogId = `rui-dialog-${++RuiDialogComponent._nextDialogId}`;
+
   readonly config = input.required<RuiDialogConfig>();
   readonly dismiss = output<void>();
 
-  readonly dialogClasses = computed(() => {
-    const base = 'flex flex-col bg-[var(--mat-sys-surface-container-high)] rounded-xl shadow-lg max-h-[90vh] overflow-hidden';
+  readonly headerId = computed(() => `${this._dialogId}-header`);
+  readonly contentId = computed(() => `${this._dialogId}-content`);
+
+  readonly dialogSizeClass = computed(() => {
     const size = this.config().size || 'md';
-    switch (size) {
-      case 'sm': return `${base} w-80`;
-      case 'md': return `${base} w-96`;
-      case 'lg': return `${base} w-[640px]`;
-      case 'xl': return `${base} w-[800px]`;
-      case 'fullscreen': return `${base} w-screen h-screen max-h-screen rounded-none`;
-      default: return `${base} w-96`;
-    }
+    return `rui-dialog--${size}`;
   });
 
   private _elementRef = inject(ElementRef);

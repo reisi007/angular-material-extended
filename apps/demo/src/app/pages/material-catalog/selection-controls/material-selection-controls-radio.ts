@@ -13,11 +13,14 @@ import { ShowcaseCode } from '../../../shared/showcase-code';
       <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-4">mat-radio-group with mat-radio-button items and a disabled state.</p>
 
       <div class="rounded-lg border border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface)] p-5 flex gap-4 flex-wrap items-center">
-        <mat-radio-group class="flex gap-4">
-          <mat-radio-button value="1">Option 1</mat-radio-button>
-          <mat-radio-button value="2">Option 2</mat-radio-button>
-          <mat-radio-button value="3" disabled>Disabled</mat-radio-button>
-        </mat-radio-group>
+        <fieldset>
+          <legend class="sr-only">Radio buttons</legend>
+          <mat-radio-group class="flex gap-4">
+            <mat-radio-button value="1">Option 1</mat-radio-button>
+            <mat-radio-button value="2">Option 2</mat-radio-button>
+            <mat-radio-button value="3" disabled>Disabled</mat-radio-button>
+          </mat-radio-group>
+        </fieldset>
       </div>
 
       <rui-showcase-code

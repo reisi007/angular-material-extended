@@ -7,9 +7,11 @@ import { RuiFileManagerItem } from './file-manager-item.component';
   selector: 'rui-file-manager',
   standalone: true,
   imports: [DragDropModule, RuiFileManagerItem],
+  styleUrl: './file-manager.component.scss',
   template: `
     @if (files().length > 0) {
-      <div class="flex flex-col gap-2"
+      <div class="rui-file-manager__list"
+        role="list"
         cdkDropList
         [cdkDropListDisabled]="!sortable()"
         [cdkDropListOrientation]="'vertical'"
@@ -35,9 +37,9 @@ import { RuiFileManagerItem } from './file-manager-item.component';
         }
       </div>
       @if (fileManagement()) {
-        <div class="mt-4 flex justify-center">
+        <div class="rui-file-manager__actions">
           <button type="button"
-            class="px-4 py-2 text-xs font-medium border border-[var(--mat-sys-outline)] rounded-full bg-transparent text-[var(--mat-sys-on-surface-variant)] cursor-pointer transition-background-color duration-200 hover:bg-[var(--mat-sys-surface-variant)]"
+            class="rui-file-manager__clear-btn"
             (click)="clearAll()">
             Clear all
           </button>
@@ -46,9 +48,6 @@ import { RuiFileManagerItem } from './file-manager-item.component';
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    'class': 'block',
-  },
 })
 export class RuiFileManager {
   readonly files = model<RuiFileItem[]>([]);

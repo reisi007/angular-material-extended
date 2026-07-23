@@ -13,9 +13,12 @@ import { ShowcaseCode } from '../../../shared/showcase-code';
       <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-4">mat-slide-toggle with off, on, and disabled states.</p>
 
       <div class="rounded-lg border border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface)] p-5 flex gap-4 flex-wrap items-center">
-        <mat-slide-toggle>Off</mat-slide-toggle>
-        <mat-slide-toggle checked>On</mat-slide-toggle>
-        <mat-slide-toggle disabled>Disabled</mat-slide-toggle>
+        <fieldset>
+          <legend class="sr-only">Toggles</legend>
+          <mat-slide-toggle>Off</mat-slide-toggle>
+          <mat-slide-toggle checked>On</mat-slide-toggle>
+          <mat-slide-toggle disabled>Disabled</mat-slide-toggle>
+        </fieldset>
       </div>
 
       <rui-showcase-code

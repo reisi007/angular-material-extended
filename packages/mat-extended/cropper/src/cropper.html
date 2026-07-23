@@ -1,7 +1,6 @@
 <div
-  class="relative overflow-hidden rounded-lg bg-[var(--mat-sys-surface-variant)]"
-  [class.flex]="toolbarPosition() === 'left' || toolbarPosition() === 'right'"
-  [class.flex-row]="toolbarPosition() === 'left' || toolbarPosition() === 'right'">
+  class="rui-cropper__wrapper"
+  [class.rui-cropper__wrapper--horizontal]="toolbarPosition() === 'left' || toolbarPosition() === 'right'">
   @if (toolbarPosition() === 'top' || toolbarPosition() === 'left') {
     <rui-cropper-toolbar
       [imageLoaded]="imageLoaded()"
@@ -25,21 +24,21 @@
   }
 
   <div
-    class="relative aspect-video overflow-hidden cursor-crosshair touch-none"
+    class="rui-cropper__viewport"
     [style.width]="widthStyle()"
     #viewport
     (pointerdown)="onPointerDown($event)"
     (pointermove)="onPointerMove($event)"
     (pointerup)="onPointerUp()"
   >
-    <canvas #canvas class="absolute inset-0 w-full h-full block"
+    <canvas #canvas class="rui-cropper__canvas"
       [style.transform]="canvasTransform()"
       [style.transform-origin]="'center center'"
-      [class.will-change-transform]="liveRotationDragging()"
+      [class.rui-cropper__canvas--transforming]="liveRotationDragging()"
     ></canvas>
 
     @if (imageLoaded()) {
-      <div class="absolute overflow-hidden z-10"
+      <div class="rui-cropper__crop-overlay"
         [style]="cropRectStyle()">
         <ng-content select="[ruiCropperOverlay]">
           <rui-cropper-grid-overlay />

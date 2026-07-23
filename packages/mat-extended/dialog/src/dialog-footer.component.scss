@@ -1,0 +1,9 @@
+.rui-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+}

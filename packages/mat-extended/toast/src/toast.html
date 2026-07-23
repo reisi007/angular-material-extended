@@ -1,5 +1,5 @@
 <div
-  class="flex items-center gap-3 px-4 py-3 rounded bg-[var(--mat-sys-surface-container-high)] shadow-lg min-w-[280px] max-w-[480px] animate-slide-in"
+  class="rui-toast"
   [style.border-left-width]="'4px'"
   [style.border-left-style]="'solid'"
   [style.border-left-color]="borderColor()"
@@ -7,11 +7,11 @@
   [attr.aria-live]="config().ariaLive || (config().kind === 'error' ? 'assertive' : 'polite')"
 >
   <rui-toast-icon [kind]="config().kind ?? 'info'" />
-  <span class="flex-1 text-sm">{{ config().message }}</span>
+  <span class="rui-toast__message">{{ config().message }}</span>
   @if (config().action) {
     <rui-toast-action [action]="config().action!" (actionClick)="config().action!.onClick()" />
   }
   @if (config().dismissible) {
-    <button class="flex items-center justify-center w-6 h-6 border-none bg-transparent cursor-pointer text-[var(--mat-sys-on-surface-variant)] rounded-full hover:bg-[var(--mat-sys-surface-container-high)]" (click)="dismiss.emit()" aria-label="Dismiss">&times;</button>
+    <button class="rui-toast__dismiss" (click)="dismiss.emit()" aria-label="Dismiss">&times;</button>
   }
 </div>

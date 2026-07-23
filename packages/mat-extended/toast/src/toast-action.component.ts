@@ -9,13 +9,11 @@ export interface RuiToastAction {
   selector: 'rui-toast-action',
   standalone: true,
   template: `
-    <button
-      class="px-3 py-1 border-none rounded bg-[var(--mat-sys-primary-container)] text-[var(--mat-sys-on-primary-container)] cursor-pointer text-xs font-medium"
-      (click)="actionClick.emit()"
-    >
+    <button class="rui-toast-action" (click)="actionClick.emit()">
       {{ action().label }}
     </button>
   `,
+  styleUrl: './toast-action.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RuiToastActionComponent {

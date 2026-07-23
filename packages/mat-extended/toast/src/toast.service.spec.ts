@@ -1,9 +1,9 @@
-import { PLATFORM_ID } from '@angular/core';
+import { PLATFORM_ID, ApplicationRef } from '@angular/core';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RuiToastService } from './toast.service';
-import { RuiToastPosition } from './toast.types';
+import { RuiToastPosition, RuiToastRef } from './toast.types';
 import { RUI_TOAST_DEFAULT_OPTIONS, RUI_TOAST_DEFAULTS } from './toast.config';
 
 describe('RuiToastService', () => {
@@ -159,5 +159,108 @@ describe('RuiToastService', () => {
     const ref = svc.show({ message: 'SSR', kind: 'info' });
     expect(ref.id).toContain('dummy');
     ref.dismiss();
+  });
+
+  describe('a11y', () => {
+    function getOverlayToastElement(): HTMLElement | null {
+      const overlayContainer = document.body.querySelector('.cdk-overlay-pane');
+      if (!overlayContainer) return null;
+      return overlayContainer.querySelector('.rui-toast');
+    }
+
+    function getOverlayDismissButton(): HTMLButtonElement | null {
+      const toast = getOverlayToastElement();
+      return toast?.querySelector('.rui-toast__dismiss') ?? null;
+    }
+
+    function getOverlayActionButton(): HTMLButtonElement | null {
+      const toast = getOverlayToastElement();
+      return toast?.querySelector('.rui-toast-action') ?? null;
+    }
+
+    let appRef: ApplicationRef;
+
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [OverlayModule, NoopAnimationsModule],
+      });
+      service = TestBed.inject(RuiToastService);
+      appRef = TestBed.inject(ApplicationRef);
+      document.body.querySelectorAll('.cdk-overlay-container').forEach(el => el.remove());
+    });
+
+    function showAndRender(config: Parameters<typeof service.show>[0]): RuiToastRef {
+      const ref = service.show(config);
+      appRef.tick();
+      return ref;
+    }
+
+    it('toast element should have role="alert" for error kind', () => {
+      showAndRender({ message: 'Error!', kind: 'error' });
+      const toast = getOverlayToastElement();
+      expect(toast?.getAttribute('role')).toBe('alert');
+    });
+
+    it('toast element should have role="status" for info kind', () => {
+      showAndRender({ message: 'Info!', kind: 'info' });
+      const toast = getOverlayToastElement();
+      expect(toast?.getAttribute('role')).toBe('status');
+    });
+
+    it('toast element should have aria-live="assertive" for error kind', () => {
+      showAndRender({ message: 'Error!', kind: 'error' });
+      const toast = getOverlayToastElement();
+      expect(toast?.getAttribute('aria-live')).toBe('assertive');
+    });
+
+    it('toast element should have aria-live="polite" for info kind', () => {
+      showAndRender({ message: 'Info!', kind: 'info' });
+      const toast = getOverlayToastElement();
+      expect(toast?.getAttribute('aria-live')).toBe('polite');
+    });
+
+    it('dismiss button should have aria-label', () => {
+      showAndRender({ message: 'Dismissible', kind: 'info', dismissible: true });
+      const btn = getOverlayDismissButton();
+      expect(btn?.getAttribute('aria-label')).toBe('Dismiss');
+    });
+
+    it('action button should be focusable via keyboard (button element)', () => {
+      showAndRender({ message: 'Action', kind: 'info', action: { label: 'Click', onClick: () => { /* noop */ } } });
+      const actionBtn = getOverlayActionButton();
+      expect(actionBtn?.tagName).toBe('BUTTON');
+      actionBtn?.focus();
+      expect(document.activeElement).toBe(actionBtn);
+    });
+
+    it('dismiss button should be focusable via keyboard', () => {
+      showAndRender({ message: 'Dismiss', kind: 'info', dismissible: true });
+      const dismissBtn = getOverlayDismissButton();
+      expect(dismissBtn?.tagName).toBe('BUTTON');
+      dismissBtn?.focus();
+      expect(document.activeElement).toBe(dismissBtn);
+    });
+
+    it('should dismiss toast when close button is clicked', () => {
+      showAndRender({ message: 'Enter dismiss', kind: 'info' });
+      const dismissBtn = getOverlayDismissButton();
+      expect(dismissBtn).toBeTruthy();
+      dismissBtn?.click();
+      expect(getOverlayToastElement()).toBeFalsy();
+    });
+
+    it('should call action onClick when action button is clicked', () => {
+      let actionCalled = false;
+      showAndRender({
+        message: 'Action test',
+        kind: 'info',
+        action: { label: 'Go', onClick: () => { actionCalled = true; } },
+      });
+      const actionBtn = getOverlayActionButton();
+      expect(actionBtn).toBeTruthy();
+      actionBtn?.click();
+      expect(actionCalled).toBe(true);
+    });
   });
 });

@@ -1,5 +1,5 @@
-<input #fileInput type="file" class="sr-only" [multiple]="multiple()" [attr.accept]="accept()" (change)="onFilesSelected($event)" />
-<div [class.opacity-50]="disabled()" [class.pointer-events-none]="disabled()">
+<input #fileInput type="file" class="rui-file-upload__input" [multiple]="multiple()" [attr.accept]="accept()" (change)="onFilesSelected($event)" />
+<div [class.rui-file-upload--disabled]="disabled()">
   <rui-file-upload-dropzone
     [isDragOver]="isDragOver()"
     [dropzoneText]="dropzoneText()"
@@ -14,7 +14,7 @@
   />
 
   @if (hasFiles()) {
-    <div class="mt-4 flex flex-col gap-2" cdkDropList [cdkDropListDisabled]="!sortable()" [cdkDropListOrientation]="'vertical'" (cdkDropListDropped)="onDropListDropped($event)">
+    <div class="rui-file-upload__list" role="list" cdkDropList [cdkDropListDisabled]="!sortable()" [cdkDropListOrientation]="'vertical'" (cdkDropListDropped)="onDropListDropped($event)">
       @for (item of files(); track item.id; let idx = $index) {
         <rui-file-upload-item
           [item]="item"
@@ -40,9 +40,9 @@
   }
 
   @if (hasFiles() && !isUploading() && !autoUpload()) {
-    <div class="mt-4 flex justify-center">
+    <div class="rui-file-upload__actions">
       <button type="button"
-        class="px-6 py-2.5 text-sm font-medium border-none rounded-full bg-[var(--mat-sys-primary)] text-[var(--mat-sys-on-primary)] cursor-pointer transition-[background-color,opacity] duration-200 hover:not-disabled:bg-[var(--mat-sys-primary-fixed-dim)] disabled:opacity-40 disabled:cursor-not-allowed"
+        class="rui-file-upload__upload-btn"
         (click)="startUpload()"
         [disabled]="!hasFiles()">
         {{ uploadButtonText() }} ({{ files().length }} Dateien)
@@ -51,10 +51,10 @@
   }
 
   @if (displayErrors().length > 0) {
-    <div class="mt-4 space-y-1">
+    <div class="rui-file-upload__errors" aria-live="polite">
       @for (err of displayErrors(); track err.message) {
-        <p class="text-xs text-[var(--mat-sys-error)] m-0 flex items-start gap-1">
-          <span class="shrink-0">⚠</span>
+        <p class="rui-file-upload__error">
+          <span>⚠</span>
           <span>{{ err.message }}</span>
         </p>
       }

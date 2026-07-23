@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, inject, computed } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RuiToastKind } from './toast.types';
 
 const ICONS: Record<RuiToastKind, string> = {
@@ -11,11 +12,17 @@ const ICONS: Record<RuiToastKind, string> = {
 @Component({
   selector: 'rui-toast-icon',
   standalone: true,
-  template: `<span class="shrink-0 text-xl" [innerHTML]="svg()"></span>`,
+  template: `<span class="rui-toast-icon" aria-hidden="true" [innerHTML]="safeSvg()"></span>`,
+  styleUrl: './toast-icon.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RuiToastIconComponent {
   readonly kind = input<RuiToastKind>('info');
 
-  readonly svg = (): string => ICONS[this.kind()];
+  private readonly _sanitizer = inject(DomSanitizer);
+
+  readonly safeSvg = computed<SafeHtml>(() => {
+    const icon = ICONS[this.kind()];
+    return this._sanitizer.bypassSecurityTrustHtml(icon);
+  });
 }

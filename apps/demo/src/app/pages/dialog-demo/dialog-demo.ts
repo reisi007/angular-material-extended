@@ -23,9 +23,13 @@ import { ShowcaseCode } from '../../shared/showcase-code';
   template: `
 <div class="max-w-4xl mx-auto p-4 md:p-6 space-y-8">
   <h1 class="font-bold mb-6">Dialog / Modal</h1>
+  <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">
+    Modal dialogs with overlay, FocusTrap, configurable sizes, and custom content templates.
+  </p>
 
   <section>
     <h2 id="dialog-sizes" class="!text-xl !font-semibold mb-1">Dialog Sizes</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Choose from sm, md, lg, xl, or fullscreen sizes.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <ng-template #sizeDialog let-dialogRef="dialogRef">
@@ -51,6 +55,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 
   <section>
     <h2 id="dialog-custom" class="!text-xl !font-semibold mb-1">Custom Content</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Pass custom content and footer templates for full control over layout.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <ng-template #customContent let-dialogRef="dialogRef">
@@ -81,6 +86,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 
   <section>
     <h2 id="dialog-options" class="!text-xl !font-semibold mb-1">Options</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Disable close, go fullscreen, or add confirmation flows.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <div class="flex gap-4 flex-wrap">
@@ -135,7 +141,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
   </section>
 
   @if (lastResult(); as result) {
-    <mat-card>
+    <mat-card aria-live="polite" role="status">
       <mat-card-content>Dialog closed with: {{ result | json }}</mat-card-content>
     </mat-card>
   }

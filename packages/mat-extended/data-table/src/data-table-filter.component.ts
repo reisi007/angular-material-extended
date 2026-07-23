@@ -7,11 +7,11 @@ import { FormsModule } from '@angular/forms';
   selector: 'rui-data-table-filter',
   standalone: true,
   imports: [FormsModule, MatFormFieldModule, MatInputModule],
+  styleUrl: './data-table-filter.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { 'class': 'block' },
   template: `
     @if (filterable()) {
-      <mat-form-field class="w-full mb-2">
+      <mat-form-field class="rui-data-table-filter">
         <mat-label>Filter</mat-label>
         <input matInput (input)="onInput($any($event).target.value)" [value]="filterValue()" placeholder="Search..." />
       </mat-form-field>

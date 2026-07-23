@@ -13,10 +13,13 @@ import { ShowcaseCode } from '../../../shared/showcase-code';
       <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-4">mat-checkbox with unchecked, checked, indeterminate, and disabled states.</p>
 
       <div class="rounded-lg border border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface)] p-5 flex gap-4 flex-wrap items-center">
-        <mat-checkbox>Unchecked</mat-checkbox>
-        <mat-checkbox checked>Checked</mat-checkbox>
-        <mat-checkbox indeterminate>Indeterminate</mat-checkbox>
-        <mat-checkbox disabled>Disabled</mat-checkbox>
+        <fieldset>
+          <legend class="sr-only">Checkboxes</legend>
+          <mat-checkbox>Unchecked</mat-checkbox>
+          <mat-checkbox checked>Checked</mat-checkbox>
+          <mat-checkbox indeterminate>Indeterminate</mat-checkbox>
+          <mat-checkbox disabled>Disabled</mat-checkbox>
+        </fieldset>
       </div>
 
       <rui-showcase-code

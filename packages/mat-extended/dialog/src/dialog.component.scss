@@ -1,0 +1,42 @@
+:host {
+  display: block;
+}
+
+.rui-dialog {
+  display: flex;
+  flex-direction: column;
+  background: var(--mat-sys-surface-container-high);
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.rui-dialog--sm {
+  width: 20rem;
+}
+
+.rui-dialog--md {
+  width: 24rem;
+}
+
+.rui-dialog--lg {
+  width: 640px;
+}
+
+.rui-dialog--xl {
+  width: 800px;
+}
+
+.rui-dialog--fullscreen {
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  border-radius: 0;
+}
+
+.rui-dialog__content {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}

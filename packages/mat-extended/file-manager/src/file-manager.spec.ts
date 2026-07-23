@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { RuiFileManager } from './file-manager';
+import { RuiFileManagerItem } from './file-manager-item.component';
 import { RuiFileItem } from '@all-the.rest/mat-extended/file-upload';
 import type { CdkDragDrop } from '@angular/cdk/drag-drop';
 
@@ -276,10 +277,10 @@ describe('RuiFileManager', () => {
     expect(clearBtn).toBeFalsy();
   });
 
-  it('has correct host class', () => {
+  it('has correct host display', () => {
     const fixture = TestBed.createComponent(RuiFileManager);
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.classList.contains('block')).toBe(true);
+    expect(getComputedStyle(el).display).toBe('block');
   });
 
   it('confirmRename with editableExtension=false appends original extension', () => {
@@ -295,5 +296,40 @@ describe('RuiFileManager', () => {
     comp.confirmRename('1');
     expect(comp.files()[0].editName).toBe('new-name.pdf');
     expect(renameSpy).toHaveBeenCalledWith(expect.objectContaining({ editName: 'new-name.pdf' }));
+  });
+
+  describe('A11y', () => {
+    it('has role="list" on the file list container', () => {
+      const fixture = TestBed.createComponent(RuiFileManager);
+      const comp = fixture.componentInstance;
+      comp.files.set([createMockItem('1', 'a.txt')]);
+      fixture.detectChanges();
+      const list = fixture.nativeElement.querySelector('.rui-file-manager__list');
+      expect(list.getAttribute('role')).toBe('list');
+    });
+
+    it('clear all button is a keyboard-accessible button', () => {
+      const fixture = TestBed.createComponent(RuiFileManager);
+      const comp = fixture.componentInstance;
+      comp.files.set([createMockItem('1', 'a.txt')]);
+      fixture.detectChanges();
+      const clearBtn = fixture.nativeElement.querySelector('.rui-file-manager__clear-btn');
+      expect(clearBtn).toBeTruthy();
+      expect(clearBtn.getAttribute('type')).toBe('button');
+    });
+
+    it('host element is display block for proper layout', () => {
+      const fixture = TestBed.createComponent(RuiFileManager);
+      const el = fixture.nativeElement as HTMLElement;
+      expect(getComputedStyle(el).display).toBe('block');
+    });
+
+    it('file manager items have role="listitem"', () => {
+      const fixture = TestBed.createComponent(RuiFileManagerItem);
+      fixture.componentRef.setInput('item', createMockItem('1', 'item.txt'));
+      fixture.detectChanges();
+      const row = fixture.nativeElement.querySelector('.rui-file-manager-item__row');
+      expect(row.getAttribute('role')).toBe('listitem');
+    });
   });
 });

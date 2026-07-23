@@ -9,6 +9,7 @@ import { RuiBreadcrumbService } from './breadcrumb.service';
   standalone: true,
   imports: [RouterModule, MatIconModule],
   templateUrl: './breadcrumb.html',
+  styleUrl: './breadcrumb.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RuiBreadcrumb {

@@ -13,17 +13,20 @@ import { ShowcaseCode } from '../../../shared/showcase-code';
       <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-4">Button toggle group with exclusive selection (single choice).</p>
 
       <div class="rounded-lg border border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface)] p-5">
-        <mat-button-toggle-group>
-          <mat-button-toggle value="bold" aria-label="Bold">
-            <mat-icon>format_bold</mat-icon>
-          </mat-button-toggle>
-          <mat-button-toggle value="italic" aria-label="Italic">
-            <mat-icon>format_italic</mat-icon>
-          </mat-button-toggle>
-          <mat-button-toggle value="underline" aria-label="Underline">
-            <mat-icon>format_underline</mat-icon>
-          </mat-button-toggle>
-        </mat-button-toggle-group>
+        <fieldset>
+          <legend class="sr-only">Selection mode</legend>
+          <mat-button-toggle-group>
+            <mat-button-toggle value="bold" aria-label="Bold">
+              <mat-icon>format_bold</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle value="italic" aria-label="Italic">
+              <mat-icon>format_italic</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle value="underline" aria-label="Underline">
+              <mat-icon>format_underline</mat-icon>
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+        </fieldset>
       </div>
 
       <rui-showcase-code

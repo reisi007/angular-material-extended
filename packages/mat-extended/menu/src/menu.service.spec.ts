@@ -64,7 +64,7 @@ describe('RuiMenuService', () => {
     expect(panel).toBeTruthy();
     const buttons = panel.querySelectorAll('button');
     expect(buttons.length).toBe(3);
-    const separators = panel.querySelectorAll('.h-px');
+    const separators = panel.querySelectorAll('.rui-menu-separator');
     expect(separators.length).toBe(1);
     document.body.removeChild(origin);
     service.close();
@@ -175,13 +175,13 @@ describe('RuiMenuService', () => {
     const origin = document.createElement('button');
     document.body.appendChild(origin);
     const router = TestBed.inject(Router);
-    const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    const navigateByUrlSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
     const items: RuiMenuItem[] = [{ label: 'Home', routerLink: '/home' }];
     service.open(items, { position: 'bottom-left' }, origin);
     const button = findMenuItems()[0];
     button?.click();
-    expect(navigateSpy).toHaveBeenCalledWith('/home');
-    navigateSpy.mockRestore();
+    expect(navigateByUrlSpy).toHaveBeenCalledWith('/home');
+    navigateByUrlSpy.mockRestore();
     document.body.removeChild(origin);
     service.close();
   });
@@ -219,15 +219,115 @@ describe('RuiMenuService', () => {
     document.body.appendChild(origin);
     const handler = vi.fn();
     const router = TestBed.inject(Router);
-    const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    const navigateByUrlSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
     const items: RuiMenuItem[] = [{ label: 'Home', routerLink: '/home', handler }];
     service.open(items, { position: 'bottom-left' }, origin);
     const button = findMenuItems()[0];
     button?.click();
-    expect(navigateSpy).toHaveBeenCalledWith('/home');
+    expect(navigateByUrlSpy).toHaveBeenCalledWith('/home');
     expect(handler).not.toHaveBeenCalled();
-    navigateSpy.mockRestore();
+    navigateByUrlSpy.mockRestore();
     document.body.removeChild(origin);
     service.close();
+  });
+
+  describe('a11y', () => {
+    let origin: HTMLButtonElement;
+
+    beforeEach(() => {
+      origin = document.createElement('button');
+      origin.textContent = 'Trigger';
+      document.body.appendChild(origin);
+    });
+
+    afterEach(() => {
+      document.body.removeChild(origin);
+      service.close();
+    });
+
+    it('Escape key dismisses menu overlay', () => {
+      const items: RuiMenuItem[] = [{ label: 'Test' }];
+      service.open(items, { position: 'bottom-left' }, origin);
+
+      const pane = document.querySelector('.cdk-overlay-pane');
+      expect(pane).toBeTruthy();
+
+      const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true });
+      pane?.dispatchEvent(event);
+
+      expect(document.querySelector('.cdk-overlay-pane')).toBeFalsy();
+    });
+
+    it('Enter key selects active item and closes menu', () => {
+      const handler = vi.fn();
+      const items: RuiMenuItem[] = [{ label: 'Click Me', handler }];
+      service.open(items, { position: 'bottom-left' }, origin);
+
+      const pane = document.querySelector('.cdk-overlay-pane');
+      const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
+      pane?.dispatchEvent(event);
+
+      expect(handler).toHaveBeenCalled();
+    });
+
+    it('ArrowDown key moves focus to next item', () => {
+      const items: RuiMenuItem[] = [
+        { label: 'First' },
+        { label: 'Second' },
+      ];
+      service.open(items, { position: 'bottom-left' }, origin);
+
+      const pane = document.querySelector('.cdk-overlay-pane');
+      const event = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true });
+      pane?.dispatchEvent(event);
+
+      const buttons = document.querySelectorAll('button[role="menuitem"]');
+      expect(buttons[1].getAttribute('tabindex')).toBe('0');
+    });
+
+    it('ArrowUp key moves focus to previous item', () => {
+      const items: RuiMenuItem[] = [
+        { label: 'First' },
+        { label: 'Second' },
+        { label: 'Third' },
+      ];
+      service.open(items, { position: 'bottom-left' }, origin);
+
+      const pane = document.querySelector('.cdk-overlay-pane');
+      const down = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true });
+      pane?.dispatchEvent(down);
+      pane?.dispatchEvent(down);
+
+      const up = new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true });
+      pane?.dispatchEvent(up);
+
+      const buttons = document.querySelectorAll('button[role="menuitem"]');
+      expect(buttons[1].getAttribute('tabindex')).toBe('0');
+    });
+
+    it('backdrop click dismisses menu when closeOnClickOutside is true', () => {
+      const items: RuiMenuItem[] = [{ label: 'Test' }];
+      service.open(items, { position: 'bottom-left', closeOnClickOutside: true }, origin);
+
+      const backdrop = document.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      expect(backdrop).toBeTruthy();
+      backdrop.click();
+
+      expect(document.querySelector('.cdk-overlay-pane')).toBeFalsy();
+    });
+
+    it('items have role="menuitem"', () => {
+      const items: RuiMenuItem[] = [
+        { label: 'A' },
+        { label: 'B', disabled: true },
+      ];
+      service.open(items, { position: 'bottom-left' }, origin);
+
+      const menuItems = findMenuItems();
+      expect(menuItems.length).toBe(2);
+      menuItems.forEach(item => {
+        expect(item.getAttribute('role')).toBe('menuitem');
+      });
+    });
   });
 });

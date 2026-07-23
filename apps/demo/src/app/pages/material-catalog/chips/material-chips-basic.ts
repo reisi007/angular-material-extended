@@ -13,12 +13,15 @@ import { ShowcaseCode } from '../../../shared/showcase-code';
       <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-4">mat-chip-set with mat-chip, including disabled state.</p>
 
       <div class="rounded-lg border border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface)] p-5">
-        <mat-chip-set>
-          <mat-chip>Angular</mat-chip>
-          <mat-chip>Material</mat-chip>
-          <mat-chip>TypeScript</mat-chip>
-          <mat-chip disabled>Deprecated</mat-chip>
-        </mat-chip-set>
+        <fieldset>
+          <legend class="sr-only">Technologies</legend>
+          <mat-chip-set>
+            <mat-chip>Angular</mat-chip>
+            <mat-chip>Material</mat-chip>
+            <mat-chip>TypeScript</mat-chip>
+            <mat-chip disabled>Deprecated</mat-chip>
+          </mat-chip-set>
+        </fieldset>
       </div>
 
       <rui-showcase-code

@@ -7,10 +7,10 @@ import type { RuiMenuItem, RuiMenuConfig } from './menu.types';
   selector: 'rui-menu-button',
   standalone: true,
   templateUrl: './menu-button.html',
+  styleUrl: './menu-button.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    'class': 'inline-block',
-    '[class.is-open]': 'isOpen()',
+    '[class.rui-menu-button--open]': 'isOpen()',
   },
 })
 export class RuiMenuButton {

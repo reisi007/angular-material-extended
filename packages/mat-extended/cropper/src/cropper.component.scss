@@ -1,0 +1,43 @@
+:host {
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+.rui-cropper__wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--mat-sys-surface-variant);
+}
+
+.rui-cropper__wrapper--horizontal {
+  display: flex;
+  flex-direction: row;
+}
+
+.rui-cropper__viewport {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.rui-cropper__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.rui-cropper__canvas--transforming {
+  will-change: transform;
+}
+
+.rui-cropper__crop-overlay {
+  position: absolute;
+  overflow: hidden;
+  z-index: 10;
+}

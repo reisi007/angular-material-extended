@@ -1,0 +1,37 @@
+.rui-dialog-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+}
+
+.rui-dialog-header__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.rui-dialog-header__spacer {
+  flex: 1;
+}
+
+.rui-dialog-header__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--mat-sys-on-surface-variant);
+  border-radius: 9999px;
+  font-size: 1rem;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--mat-sys-surface-variant);
+  }
+}

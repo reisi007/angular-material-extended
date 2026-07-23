@@ -26,6 +26,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 
   <section>
     <h2 id="toast-types" class="!text-xl !font-semibold mb-1">Toast Types</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Four built-in severity levels with distinct styling and icons.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <div class="flex gap-4 flex-wrap">
@@ -42,6 +43,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 
   <section>
     <h2 id="toast-custom-duration" class="!text-xl !font-semibold mb-1">Custom Duration</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Override the default auto-dismiss duration per toast.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <div class="flex gap-4 items-end">
@@ -73,6 +75,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 
   <section>
     <h2 id="toast-position" class="!text-xl !font-semibold mb-1">Position</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Place toasts at any corner or edge of the viewport.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <div class="flex gap-4 flex-wrap">

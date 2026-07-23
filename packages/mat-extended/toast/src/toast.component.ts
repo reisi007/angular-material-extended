@@ -8,10 +8,8 @@ import { RuiToastActionComponent } from './toast-action.component';
   standalone: true,
   imports: [RuiToastIconComponent, RuiToastActionComponent],
   templateUrl: './toast.html',
+  styleUrl: './toast.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    'class': 'block animate-slide-in',
-  },
 })
 export class RuiToastComponent {
   readonly config = input.required<RuiToastConfig>();

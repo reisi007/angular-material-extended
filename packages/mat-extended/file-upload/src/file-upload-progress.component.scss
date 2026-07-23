@@ -1,0 +1,28 @@
+:host {
+  display: block;
+}
+
+.rui-file-upload-progress__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rui-file-upload-progress__track {
+  flex: 1;
+  height: 0.25rem;
+  background: var(--mat-sys-surface-variant);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.rui-file-upload-progress__fill {
+  height: 100%;
+  background: var(--mat-sys-primary);
+  border-radius: 0.25rem;
+  transition: width 0.3s;
+}
+
+.rui-file-upload-progress__label {
+  font-size: 0.875rem;
+}

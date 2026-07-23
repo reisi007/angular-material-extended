@@ -203,4 +203,160 @@ describe('RuiFileUploadItem standalone', () => {
     moveDownBtn.click();
     expect(moveDownSpy).toHaveBeenCalledTimes(1);
   });
+
+  describe('A11y', () => {
+    it('has role="listitem" on the row element', () => {
+      const fixture = TestBed.createComponent(RuiFileUploadItem);
+      fixture.componentRef.setInput('item', {
+        id: '1',
+        file: new File([''], 'a.txt', { type: 'text/plain' }),
+        status: 'selected',
+        progress: 0,
+        editName: 'a.txt',
+      });
+      fixture.detectChanges();
+      const row = fixture.nativeElement.querySelector('.rui-file-upload-item__row');
+      expect(row.getAttribute('role')).toBe('listitem');
+    });
+
+    it('remove button has aria-label with file name', () => {
+      const fixture = TestBed.createComponent(RuiFileUploadItem);
+      fixture.componentRef.setInput('item', {
+        id: '1',
+        file: new File([''], 'test.txt', { type: 'text/plain' }),
+        status: 'selected',
+        progress: 0,
+        editName: 'test.txt',
+      });
+      fixture.componentRef.setInput('fileManagement', true);
+      fixture.detectChanges();
+      const removeBtn = fixture.nativeElement.querySelector('[aria-label="Remove test.txt"]');
+      expect(removeBtn).toBeTruthy();
+      expect(removeBtn.getAttribute('type')).toBe('button');
+    });
+
+    it('rename button has aria-label with file name', () => {
+      const fixture = TestBed.createComponent(RuiFileUploadItem);
+      fixture.componentRef.setInput('item', {
+        id: '1',
+        file: new File([''], 'document.pdf', { type: 'application/pdf' }),
+        status: 'selected',
+        progress: 0,
+        editName: 'document.pdf',
+      });
+      fixture.componentRef.setInput('editable', true);
+      fixture.componentRef.setInput('fileManagement', true);
+      fixture.detectChanges();
+      const renameBtn = fixture.nativeElement.querySelector('[aria-label="Rename document.pdf"]');
+      expect(renameBtn).toBeTruthy();
+    });
+
+    it('cancel upload button has aria-label with file name when uploading', () => {
+      const fixture = TestBed.createComponent(RuiFileUploadItem);
+      fixture.componentRef.setInput('item', {
+        id: '1',
+        file: new File([''], 'uploading.txt', { type: 'text/plain' }),
+        status: 'uploading',
+        progress: 50,
+        editName: 'uploading.txt',
+      });
+      fixture.componentRef.setInput('fileManagement', true);
+      fixture.detectChanges();
+      const cancelBtn = fixture.nativeElement.querySelector('[aria-label="Cancel upload for uploading.txt"]');
+      expect(cancelBtn).toBeTruthy();
+    });
+
+    it('retry button has aria-label with file name when in error state', () => {
+      const fixture = TestBed.createComponent(RuiFileUploadItem);
+      fixture.componentRef.setInput('item', {
+        id: '1',
+        file: new File([''], 'failed.txt', { type: 'text/plain' }),
+        status: 'error',
+        progress: 0,
+        error: 'Network error',
+        editName: 'failed.txt',
+      });
+      fixture.componentRef.setInput('fileManagement', true);
+      fixture.detectChanges();
+      const retryBtn = fixture.nativeElement.querySelector('[aria-label="Retry upload for failed.txt"]');
+      expect(retryBtn).toBeTruthy();
+    });
+
+    it('progress bar has role="progressbar" with proper ARIA attributes', () => {
+      const fixture = TestBed.createComponent(RuiFileUploadItem);
+      fixture.componentRef.setInput('item', {
+        id: '1',
+        file: new File([''], 'progress.txt', { type: 'text/plain' }),
+        status: 'uploading',
+        progress: 60,
+        editName: 'progress.txt',
+      });
+      fixture.detectChanges();
+      const fill = fixture.nativeElement.querySelector('.rui-file-upload-item__progress-fill');
+      expect(fill.getAttribute('role')).toBe('progressbar');
+      expect(fill.getAttribute('aria-valuenow')).toBe('60');
+      expect(fill.getAttribute('aria-valuemin')).toBe('0');
+      expect(fill.getAttribute('aria-valuemax')).toBe('100');
+    });
+
+    it('progress bar aria-valuenow reflects 0 progress', () => {
+      const fixture = TestBed.createComponent(RuiFileUploadItem);
+      fixture.componentRef.setInput('item', {
+        id: '1',
+        file: new File([''], 'empty.txt', { type: 'text/plain' }),
+        status: 'uploading',
+        progress: 0,
+        editName: 'empty.txt',
+      });
+      fixture.detectChanges();
+      const fill = fixture.nativeElement.querySelector('.rui-file-upload-item__progress-fill');
+      expect(fill.getAttribute('aria-valuenow')).toBe('0');
+    });
+
+    it('progress bar aria-valuenow reflects 100 progress', () => {
+      const fixture = TestBed.createComponent(RuiFileUploadItem);
+      fixture.componentRef.setInput('item', {
+        id: '1',
+        file: new File([''], 'done.txt', { type: 'text/plain' }),
+        status: 'uploading',
+        progress: 100,
+        editName: 'done.txt',
+      });
+      fixture.detectChanges();
+      const fill = fixture.nativeElement.querySelector('.rui-file-upload-item__progress-fill');
+      expect(fill.getAttribute('aria-valuenow')).toBe('100');
+    });
+
+    it('move up button is a keyboard-accessible button', () => {
+      const fixture = TestBed.createComponent(RuiFileUploadItem);
+      fixture.componentRef.setInput('item', {
+        id: '1',
+        file: new File([''], 'sort.txt', { type: 'text/plain' }),
+        status: 'selected',
+        progress: 0,
+        editName: 'sort.txt',
+      });
+      fixture.componentRef.setInput('sortable', true);
+      fixture.detectChanges();
+      const moveUpBtn = fixture.nativeElement.querySelector('[aria-label="Move up"]');
+      expect(moveUpBtn).toBeTruthy();
+      expect(moveUpBtn.getAttribute('type')).toBe('button');
+    });
+
+    it('move down button is a keyboard-accessible button', () => {
+      const fixture = TestBed.createComponent(RuiFileUploadItem);
+      fixture.componentRef.setInput('item', {
+        id: '1',
+        file: new File([''], 'sort.txt', { type: 'text/plain' }),
+        status: 'selected',
+        progress: 0,
+        editName: 'sort.txt',
+      });
+      fixture.componentRef.setInput('sortable', true);
+      fixture.detectChanges();
+      const moveDownBtn = fixture.nativeElement.querySelector('[aria-label="Move down"]');
+      expect(moveDownBtn).toBeTruthy();
+      expect(moveDownBtn.getAttribute('type')).toBe('button');
+    });
+  });
 });

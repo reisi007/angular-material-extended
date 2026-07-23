@@ -7,6 +7,7 @@ import { formatSize } from './file-upload-utils';
   selector: 'rui-file-upload-item',
   standalone: true,
   imports: [DragDropModule],
+  styleUrl: './file-upload-item.component.scss',
   viewProviders: [
     {
       provide: CDK_DROP_LIST,
@@ -14,18 +15,18 @@ import { formatSize } from './file-upload-utils';
     },
   ],
   template: `
-    <div class="flex items-center gap-3 p-2 px-3 border border-[var(--mat-sys-outline-variant)] rounded-lg bg-[var(--mat-sys-surface-container-low)] transition-shadow duration-200 group" cdkDrag [cdkDragDisabled]="!sortable()" [cdkDragStartDelay]="dragStartDelay()">
+    <div class="rui-file-upload-item__row" role="listitem" cdkDrag [cdkDragDisabled]="!sortable()" [cdkDragStartDelay]="dragStartDelay()">
       @if (sortable()) {
-        <div class="flex items-center gap-0.5 shrink-0">
-          <div class="flex flex-col gap-px">
-            <button type="button" class="flex items-center justify-center w-4 h-4 border-none bg-transparent text-[var(--mat-sys-on-surface-variant)] cursor-pointer rounded-sm transition-colors duration-150 hover:bg-[var(--mat-sys-surface-variant)] hover:text-[var(--mat-sys-on-surface)]" (pointerdown)="$event.stopPropagation()" (click)="onMoveUp()" aria-label="Move up">
+        <div class="rui-file-upload-item__sort">
+          <div class="rui-file-upload-item__sort-buttons">
+            <button type="button" class="rui-file-upload-item__sort-btn" (pointerdown)="$event.stopPropagation()" (click)="onMoveUp()" aria-label="Move up">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
             </button>
-            <button type="button" class="flex items-center justify-center w-4 h-4 border-none bg-transparent text-[var(--mat-sys-on-surface-variant)] cursor-pointer rounded-sm transition-colors duration-150 hover:bg-[var(--mat-sys-surface-variant)] hover:text-[var(--mat-sys-on-surface)]" (pointerdown)="$event.stopPropagation()" (click)="onMoveDown()" aria-label="Move down">
+            <button type="button" class="rui-file-upload-item__sort-btn" (pointerdown)="$event.stopPropagation()" (click)="onMoveDown()" aria-label="Move down">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
           </div>
-          <div class="flex items-center text-[var(--mat-sys-on-surface-variant)] opacity-60 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing" cdkDragHandle>
+          <div class="rui-file-upload-item__drag-handle" cdkDragHandle>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/>
               <circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
@@ -35,21 +36,21 @@ import { formatSize } from './file-upload-utils';
         </div>
       }
       @if (item().preview) {
-        <img [src]="item().preview" class="w-10 h-10 rounded object-cover shrink-0" [alt]="item().file.name" />
+        <img [src]="item().preview" class="rui-file-upload-item__preview" [alt]="item().file.name" />
       } @else {
-        <div class="w-10 h-10 flex items-center justify-center text-[var(--mat-sys-on-surface-variant)] shrink-0">
+        <div class="rui-file-upload-item__icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <polyline points="14 2 14 8 20 8"/>
           </svg>
         </div>
       }
-      <div class="flex-1 min-w-0 flex flex-col gap-0.5">
+      <div class="rui-file-upload-item__info">
         @if (editable() && editingItemId() === item().id) {
-          <div class="flex items-center gap-1">
+          <div class="rui-file-upload-item__edit-row">
             <input
               (pointerdown)="$event.stopPropagation()"
-              class="text-sm text-[var(--mat-sys-on-surface)] bg-[var(--mat-sys-surface-container-high)] border border-[var(--mat-sys-primary)] rounded p-0.5 px-1.5 outline-none w-full box-border"
+              class="rui-file-upload-item__edit-input"
               [value]="editInputValue()"
               (input)="onEditInputChange($event)"
               (keydown.enter)="onConfirmRename()"
@@ -57,76 +58,80 @@ import { formatSize } from './file-upload-utils';
               (blur)="onConfirmRename()"
             />
             @if (!editableExtension()) {
-              <span class="text-sm text-[var(--mat-sys-on-surface-variant)] shrink-0 whitespace-nowrap">{{ fileExtension() }}</span>
+              <span class="rui-file-upload-item__edit-ext">{{ fileExtension() }}</span>
             }
           </div>
         } @else {
-          <div class="flex items-center gap-1 min-w-0">
-            <span class="text-sm text-[var(--mat-sys-on-surface)] truncate">{{ fileBaseName() }}</span>
+          <div class="rui-file-upload-item__name-row">
+            <span class="rui-file-upload-item__name">{{ fileBaseName() }}</span>
             @if (fileExtension()) {
-              <span class="shrink-0 text-xs font-medium text-[var(--mat-sys-on-surface-variant)] bg-[var(--mat-sys-surface-container-high)] rounded px-1.5 py-px whitespace-nowrap">{{ fileExtension() }}</span>
+              <span class="rui-file-upload-item__ext">{{ fileExtension() }}</span>
             }
           </div>
         }
-        <span class="text-xs text-[var(--mat-sys-on-surface-variant)]">{{ formatSize(item().file.size) }}</span>
+        <span class="rui-file-upload-item__size">{{ formatSize(item().file.size) }}</span>
       </div>
-      <div class="flex items-center gap-2 min-w-[100px] justify-end">
+      <div class="rui-file-upload-item__actions">
         @if (item().status === 'uploading') {
-          <div class="w-24 h-1 bg-[var(--mat-sys-surface-variant)] rounded overflow-hidden shrink-0">
-            <div class="h-full bg-[var(--mat-sys-primary)] rounded transition-[width] duration-300" [style.width.%]="item().progress"></div>
+          <div class="rui-file-upload-item__progress-bar">
+            <div
+              class="rui-file-upload-item__progress-fill"
+              [style.width.%]="item().progress"
+              role="progressbar"
+              [attr.aria-valuenow]="item().progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            ></div>
           </div>
           @if (fileManagement()) {
-            <button type="button" class="flex items-center justify-center w-7 h-7 border-none bg-transparent text-[var(--mat-sys-error)] cursor-pointer rounded-full text-sm transition-background-color duration-200 shrink-0 hover:bg-[var(--mat-sys-error-container)]" (pointerdown)="$event.stopPropagation()" (click)="onCancelUpload()" [attr.aria-label]="'Cancel upload for ' + item().file.name">
+            <button type="button" class="rui-file-upload-item__cancel-btn" (pointerdown)="$event.stopPropagation()" (click)="onCancelUpload()" [attr.aria-label]="'Cancel upload for ' + item().file.name">
               ✕
             </button>
           }
         }
         @if (item().status === 'error') {
           @if (item().error) {
-            <span class="text-xs text-[var(--mat-sys-error)] whitespace-nowrap">{{ item().error }}</span>
+            <span class="rui-file-upload-item__error-msg">{{ item().error }}</span>
           }
           @if (fileManagement()) {
-            <button type="button" class="px-3 py-1 text-xs font-medium border border-[var(--mat-sys-primary)] rounded-full bg-transparent text-[var(--mat-sys-primary)] cursor-pointer transition-background-color duration-200 shrink-0 whitespace-nowrap hover:bg-[var(--mat-sys-primary-container)]" (pointerdown)="$event.stopPropagation()" (click)="onRetry()" [attr.aria-label]="'Retry upload for ' + item().file.name">
+            <button type="button" class="rui-file-upload-item__retry-btn" (pointerdown)="$event.stopPropagation()" (click)="onRetry()" [attr.aria-label]="'Retry upload for ' + item().file.name">
               Retry
             </button>
           }
         }
         @if (item().status === 'done') {
-          <span class="text-lg text-[var(--mat-sys-primary)] font-bold">✓</span>
+          <span class="rui-file-upload-item__checkmark">✓</span>
         }
         @if (item().status === 'selected' || item().status === 'error' || (item().status === 'done' && fileManagement())) {
           @if (editable() && fileManagement() && editingItemId() !== item().id) {
-            <button type="button" class="flex items-center justify-center w-7 h-7 border-none bg-transparent text-[var(--mat-sys-on-surface-variant)] cursor-pointer rounded-full text-sm transition-[background-color,color] duration-200 shrink-0 hover:bg-[var(--mat-sys-surface-variant)] hover:text-[var(--mat-sys-on-surface)]" (pointerdown)="$event.stopPropagation()" (click)="onStartRename()" [attr.aria-label]="'Rename ' + item().file.name">
+            <button type="button" class="rui-file-upload-item__rename-btn" (pointerdown)="$event.stopPropagation()" (click)="onStartRename()" [attr.aria-label]="'Rename ' + item().file.name">
               ✎
             </button>
           }
           @if (fileManagement() && editingItemId() !== item().id) {
-            <button type="button" class="flex items-center justify-center w-7 h-7 border-none bg-transparent text-[var(--mat-sys-on-surface-variant)] cursor-pointer rounded-full text-sm transition-[background-color,color] duration-200 shrink-0 hover:bg-[var(--mat-sys-error-container)] hover:text-[var(--mat-sys-error)]" (pointerdown)="$event.stopPropagation()" (click)="onRemove()" [attr.aria-label]="'Remove ' + item().file.name">
+            <button type="button" class="rui-file-upload-item__remove-btn" (pointerdown)="$event.stopPropagation()" (click)="onRemove()" [attr.aria-label]="'Remove ' + item().file.name">
               ✕
             </button>
           }
         }
       </div>
-      <div *cdkDragPreview class="flex items-center gap-2 p-2 px-3 border border-[var(--mat-sys-primary)] rounded-lg bg-[var(--mat-sys-surface-container)] opacity-90 shadow-lg">
+      <div *cdkDragPreview class="rui-file-upload-item__drag-preview">
         @if (item().preview) {
-          <img [src]="item().preview" class="w-8 h-8 rounded object-cover" alt="" />
+          <img [src]="item().preview" class="rui-file-upload-item__preview" style="width:2rem;height:2rem" alt="" />
         } @else {
-          <div class="w-8 h-8 flex items-center justify-center text-[var(--mat-sys-on-surface-variant)]">
+          <div class="rui-file-upload-item__icon" style="width:2rem;height:2rem">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <polyline points="14 2 14 8 20 8"/>
             </svg>
           </div>
         }
-        <span class="text-sm text-[var(--mat-sys-on-surface)]">{{ fileName() }}</span>
+        <span class="rui-file-upload-item__name">{{ fileName() }}</span>
       </div>
-      <div *cdkDragPlaceholder class="h-14 border-2 border-dashed border-[var(--mat-sys-primary)] rounded-lg bg-[var(--mat-sys-primary-container)] opacity-30 transition-all duration-200"></div>
+      <div *cdkDragPlaceholder class="rui-file-upload-item__drag-placeholder"></div>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    'class': 'block',
-  },
 })
 export class RuiFileUploadItem {
   readonly item = input.required<RuiFileItem>();

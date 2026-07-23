@@ -22,7 +22,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
     provideRuiDateAdapter(createDateFormats('dd.MM.YYYY')),
   ],
   template: `
-<div class="max-w-4xl mx-auto space-y-8 p-4">
+<div class="max-w-4xl mx-auto p-4 md:p-6 space-y-8">
   <h1 class="font-bold">Date Input Demo (MatDatepicker)</h1>
 
   <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">

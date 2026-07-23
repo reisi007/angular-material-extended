@@ -550,4 +550,58 @@ describe('RuiFileUpload', () => {
     expect(comp.files().length).toBe(1);
     expect(comp.displayErrors().length).toBe(0);
   });
+
+  describe('A11y', () => {
+    it('has region role on host element', () => {
+      const fixture = TestBed.createComponent(RuiFileUpload);
+      const el = fixture.nativeElement;
+      expect(el.getAttribute('role')).toBe('region');
+      expect(el.getAttribute('aria-label')).toBe('File upload drop zone');
+    });
+
+    it('has role="list" on the file list container', () => {
+      const fixture = TestBed.createComponent(RuiFileUpload);
+      const comp = fixture.componentInstance;
+      const file = createMockFile('test.txt', 100, 'text/plain');
+      comp.processFiles([file]);
+      fixture.detectChanges();
+      const list = fixture.nativeElement.querySelector('.rui-file-upload__list');
+      expect(list.getAttribute('role')).toBe('list');
+    });
+
+    it('host element has tabindex for keyboard focus', () => {
+      const fixture = TestBed.createComponent(RuiFileUpload);
+      const el = fixture.nativeElement;
+      expect(el.getAttribute('tabindex')).toBe('0');
+    });
+
+    it('error messages container has aria-live="polite"', () => {
+      const fixture = TestBed.createComponent(RuiFileUpload);
+      const comp = fixture.componentInstance;
+      fixture.componentRef.setInput('maxSize', 50);
+      comp.processFiles([createMockFile('test.txt', 100, 'text/plain')]);
+      fixture.detectChanges();
+      const errors = fixture.nativeElement.querySelector('.rui-file-upload__errors');
+      expect(errors.getAttribute('aria-live')).toBe('polite');
+    });
+
+    it('start upload button is keyboard accessible', () => {
+      const fixture = TestBed.createComponent(RuiFileUpload);
+      const comp = fixture.componentInstance;
+      comp.processFiles([createMockFile('test.txt', 100, 'text/plain')]);
+      fixture.detectChanges();
+      const uploadBtn = fixture.nativeElement.querySelector('.rui-file-upload__upload-btn');
+      expect(uploadBtn).toBeTruthy();
+      expect(uploadBtn.getAttribute('type')).toBe('button');
+    });
+
+    it('file input is accessible via openFilePicker method', () => {
+      const fixture = TestBed.createComponent(RuiFileUpload);
+      const comp = fixture.componentInstance;
+      const inputSpy = vi.spyOn(comp.fileInputRef()?.nativeElement ?? { click: vi.fn() }, 'click');
+      comp.openFilePicker();
+      expect(inputSpy).toHaveBeenCalled();
+    });
+  });
 });
+

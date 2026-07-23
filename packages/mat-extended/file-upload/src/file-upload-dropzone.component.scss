@@ -1,0 +1,43 @@
+:host {
+  display: block;
+}
+
+.rui-file-upload-dropzone__area {
+  border: 2px dashed var(--mat-sys-outline);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+
+  &:hover,
+  &.rui-file-upload-dropzone--dragover {
+    border-color: var(--mat-sys-primary);
+    background: var(--mat-sys-primary-container);
+  }
+}
+
+.rui-file-upload-dropzone--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.rui-file-upload-dropzone__icon {
+  color: var(--mat-sys-primary);
+  margin-bottom: 0.75rem;
+}
+
+.rui-file-upload-dropzone__text {
+  font-size: 1rem;
+  color: var(--mat-sys-on-surface);
+  margin: 0 0 0.5rem;
+}
+
+.rui-file-upload-dropzone__hint {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0;
+}

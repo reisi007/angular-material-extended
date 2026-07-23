@@ -5,8 +5,8 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
   selector: 'rui-data-table-paginator',
   standalone: true,
   imports: [MatPaginatorModule],
+  styleUrl: './data-table-paginator.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { 'class': 'block' },
   template: `
     <mat-paginator
       [pageSize]="pageSize()"

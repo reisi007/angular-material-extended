@@ -3,11 +3,12 @@ import { Component, input, computed, ChangeDetectionStrategy } from '@angular/co
 @Component({
   selector: 'rui-cropper-grid-overlay',
   standalone: true,
+  styleUrl: './cropper-grid-overlay.component.scss',
   host: {
     'ruiCropperOverlay': '',
   },
   template: `
-    <svg class="absolute inset-0 w-full h-full pointer-events-none">
+    <svg class="rui-cropper-grid-overlay">
       <defs>
         <pattern [id]="patternId()" [attr.width]="spacing()" [attr.height]="spacing()" patternUnits="userSpaceOnUse">
           <path [attr.d]="gridPath()" fill="none" [attr.stroke]="color()" stroke-width="0.5"/>

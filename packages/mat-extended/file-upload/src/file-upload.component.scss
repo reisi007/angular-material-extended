@@ -1,0 +1,70 @@
+:host {
+  display: block;
+}
+
+.rui-file-upload__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.rui-file-upload--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.rui-file-upload__list {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rui-file-upload__actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.rui-file-upload__upload-btn {
+  padding: 0.625rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 9999px;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+
+  &:hover:not(:disabled) {
+    background: var(--mat-sys-primary-fixed-dim);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.rui-file-upload__errors {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rui-file-upload__error {
+  font-size: 0.75rem;
+  color: var(--mat-sys-error);
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+}

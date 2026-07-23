@@ -1,7 +1,9 @@
 <div
-  [class]="dialogClasses()"
+  [class]="'rui-dialog ' + dialogSizeClass()"
   role="dialog"
   aria-modal="true"
+  [attr.aria-labelledby]="headerId()"
+  [attr.aria-describedby]="contentId()"
   cdkTrapFocus
 >
   @if (config().headerTemplate) {
@@ -10,13 +12,14 @@
     />
   } @else {
     <rui-dialog-header
+      [id]="headerId()"
       [header]="config().header"
       [disableClose]="config().disableClose ?? false"
       (dismiss)="dismiss.emit()"
     />
   }
 
-  <div class="px-6 py-6 overflow-y-auto flex-1">
+  <div class="rui-dialog__content" [id]="contentId()">
     @if (config().contentTemplate) {
       <ng-container
         *ngTemplateOutlet="config().contentTemplate!; context: config().context"

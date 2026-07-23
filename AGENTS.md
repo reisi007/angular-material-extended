@@ -60,16 +60,29 @@
 - **strict TS**: `strict: true`, `noUncheckedIndexedAccess` bevorzugt, keine `any` ohne Kommentar-Begründung.
 - **Change Detection**: Default-Strategie (v22 optimiert per-Component via Signals).
 
-## 5. Styling-Regeln
+## 5. Styling-Regeln (Library vs. Demo)
 
-- **KEIN Inline-CSS**: Weder `styles: [...]` Strings noch inline `<style>` in Templates.
-- **KEINE Custom-CSS-Klassen**: Eigen definierte Klassennamen (`rui-cropper__viewport`, `.rui-file-upload__item`, etc.) sind VERBOTEN. Ausschließlich Tailwind-Utility-Klassen im Template.
-- **KEINE SCSS-Dateien in der Library**: Alle Komponenten-Styles werden via Tailwind-Utilities im Template gesetzt. `styleUrl` entfällt komplett oder zeigt auf eine globale Theme-Datei. Komponenten-spezifische `.scss`-Dateien sind nicht erlaubt.
-- **Tailwind** ist der einzige erlaubte Styling-Ansatz:
-  - Tailwind-Utilities für ALLES: Layout (flex, grid, gap, p-, m-), Sizing (w-, h-, max-w-), Typografie (text-, font-), Farben (text-, bg-, border-), etc.
-  - M3-Tokens via `text-[var(--mat-sys-on-surface)]` oder `bg-[var(--mat-sys-surface)]` – NIEMALS hardcoded Hex-Farben.
-  - Animationen via Tailwind `animate-*` oder globale `@keyframes` in der Demo-App.
-- **Library-Build**: Tailwind wird **NICHT** als runtime dependency der publishten Library gebündelt. Es ist reine Workspace-DevDependency.
+Es gelten **unterschiedliche** Regeln für Library-Komponenten und die Demo-App:
+
+### Library-Komponenten (eigenständig, pure CSS)
+
+Komponenten-Styling ist **Teil der publizierten Library** – jeder Consumer erhält fertiges CSS ohne Tailwind-Zwang.
+
+- **Komponenteneigene SCSS via `styleUrl`**: Jede Komponente bekommt eine co-located `.component.scss` Datei, referenziert über `styleUrl`. Kein Inline-`styles: [...]` Array. Kein Inline-`<style>` in Templates.
+- **Semantische Klassennamen**: Verwendung von aussagekräftigen CSS-Klassen (z.B. `.rui-toast`, `.rui-toast__message`, `.rui-toast__action`). Die `rui-`-Prefixierung reduziert Kollisionsrisiko.
+- **Keine Tailwind-Utilities in Library-Templates**: Library-Komponenten verwenden **keine** Tailwind-Klassen (`flex`, `gap-*`, `p-*`, etc.) mehr. Das gesamte Styling erfolgt über die component.scss.
+- **M3-Tokens konsequent**: Alle Farben, Abstände, Schriften über CSS-Variablen (`var(--mat-sys-*)`). Keine hardcoded Hex-Farben oder absolute Pixel-Werte.
+- **ViewEncapsulation**: Standard `Emulated` (Angular v22 default). Kein `::ng-deep` oder ViewEncapsulation.None in Komponenten.
+- **CSS-Architektur**: Für einfache Layout-Aufgaben CSS-Features wie Flexbox/Grid/CSS-Custom-Properties direkt nutzen – kein Sass-Framework nötig. Animationen (`@keyframes`) lokal in der component.scss definieren.
+- **Library-Build**: Enthält keine Tailwind-Abhängigkeit. Die Styles werden via `@angular/build` (ng-packagr) automatisch in die FESM-Bundles eingebettet und sind bei Import der Komponente verfügbar.
+
+### Demo-App (Tailwind erlaubt)
+
+- **Tailwind CSS v4** ist der Styling-Ansatz für die Demo-App (PostCSS via `@tailwindcss/postcss`).
+- Tailwind-Utilities im Template der Demo-Seiten erlaubt (in `.ts` inline templates).
+- M3-Tokens via Tailwind-Arbitrary-Values (`bg-[var(--mat-sys-surface)]`, `text-[var(--mat-sys-on-surface)]`).
+- Demo-Tailwind-`content` scannt **ausschließlich** `apps/demo/src/` – die Library wird nicht mehr gescannt (Library hat eigenes CSS).
+- Keine Abhängigkeit der Demo-App zum Library-Styling – die Library-Styles kommen aus dem Library-Build.
 
 ## 6. Verbot von eslint-disable-Kommentaren
 
@@ -209,7 +222,8 @@ Jedes der drei Beispiele bekommt eine eigene Sektion mit `<h2 id="...">`, Live-U
 - **KEINE** Commits/Pushes ohne explizite Anweisung.
 - **KEINE** `pnpm add` von Packages, die nicht im Plan stehen, ohne Rückfrage.
 - Bei Unsicherheit: nachfragen statt raten.
-- VOR jedem Commit: `pnpm nx lint` + `pnpm nx test` laufen lassen.
+- VOR jedem Commit: `pnpm nx lint --fix` + `pnpm nx test` laufen lassen.
+- Lint immer mit `--fix` ausführen, um auto-fixbare Probleme direkt zu beheben.
 - Bei Fehlern: IMMER den vollen Output lesen und analysieren, nicht einfach retry.
 - Tasks in `AGENTS.todo.md` sofort aktualisieren, nicht erst am Ende.
 - Tab-Größe: 2 Spaces (in TS/SCSS/HTML/MD).

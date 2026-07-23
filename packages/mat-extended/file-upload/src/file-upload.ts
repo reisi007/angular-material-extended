@@ -22,15 +22,16 @@ import { RUI_FILE_UPLOAD_DEFAULT_OPTIONS } from './file-upload.config';
 import { RuiFileUploadDropzone } from './file-upload-dropzone.component';
 import { RuiFileUploadItem } from './file-upload-item.component';
 import { RuiFileUploadProgress } from './file-upload-progress.component';
+import { formatSize } from './file-upload-utils';
 
 @Component({
   selector: 'rui-file-upload',
   standalone: true,
   imports: [FormsModule, DragDropModule, RuiFileUploadDropzone, RuiFileUploadItem, RuiFileUploadProgress],
   templateUrl: './file-upload.html',
+  styleUrl: './file-upload.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    'class': 'block',
     '(dragenter)': 'onDragEnter($event)',
     '(dragover)': 'onDragOver($event)',
     '(dragleave)': 'onDragLeave($event)',
@@ -180,7 +181,7 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
       if (file.size > maxSize) {
         validationErrors.push({
           type: 'size',
-          message: `File "${file.name}" exceeds the maximum size of ${this.formatSize(maxSize)}`,
+          message: `File "${file.name}" exceeds the maximum size of ${formatSize(maxSize)}`,
           file,
         });
         continue;
@@ -318,15 +319,6 @@ export class RuiFileUpload extends RuiValueAccessor<RuiFileItem[]> {
           : f,
       ),
     );
-  }
-
-  formatSize(bytes: number): string {
-    if (bytes === 0) return '0 B';
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    const k = 1024;
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    const size = parseFloat((bytes / Math.pow(k, i)).toFixed(1));
-    return `${size} ${units[i]}`;
   }
 
   onDropListDropped(event: CdkDragDrop<RuiFileItem[]>): void {

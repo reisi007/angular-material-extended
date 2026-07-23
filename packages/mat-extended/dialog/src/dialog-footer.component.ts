@@ -6,10 +6,11 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="flex justify-end items-center gap-2 px-6 py-4 border-t border-[var(--mat-sys-outline-variant)] shrink-0">
+    <div class="rui-dialog-footer">
       <ng-content select="[ruiDialogActions]"></ng-content>
     </div>
   `,
+  styleUrl: './dialog-footer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RuiDialogFooterComponent {}

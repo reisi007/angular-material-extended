@@ -3,20 +3,25 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 @Component({
   selector: 'rui-file-upload-progress',
   standalone: true,
+  styleUrl: './file-upload-progress.component.scss',
   template: `
     @if (isUploading()) {
-      <div class="flex items-center gap-3">
-        <div class="flex-1 h-1 bg-[var(--mat-sys-surface-variant)] rounded overflow-hidden">
-          <div class="h-full bg-[var(--mat-sys-primary)] rounded transition-[width] duration-300" [style.width.%]="totalProgress()"></div>
+      <div class="rui-file-upload-progress__bar" role="region" aria-label="Upload progress">
+        <div class="rui-file-upload-progress__track">
+          <div
+            class="rui-file-upload-progress__fill"
+            [style.width.%]="totalProgress()"
+            role="progressbar"
+            [attr.aria-valuenow]="totalProgress()"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          ></div>
         </div>
-        <span>{{ totalProgress() }}% – Uploading...</span>
+        <span class="rui-file-upload-progress__label">{{ totalProgress() }}% – Uploading...</span>
       </div>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    'class': 'block',
-  },
 })
 export class RuiFileUploadProgress {
   readonly totalProgress = input(0);

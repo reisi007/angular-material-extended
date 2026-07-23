@@ -46,6 +46,7 @@ Thumbs.db
 .angular
 .claude/settings.local.json
 .claude/worktrees
+.mimocode
 .playwright-mcp
 
 vite.config.*.timestamp*
@@ -59,3 +60,9 @@ __screenshots__/
 # Playwright
 playwright-report/
 test-results/
+
+# AI tool folders
+.opencode
+.agents
+.codex
+.claude

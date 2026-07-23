@@ -19,11 +19,15 @@ import { ShowcaseCode } from '../../shared/showcase-code';
     FormsModule, ReactiveFormsModule, ShowcaseCode,
   ],
   template: `
-<div class="max-w-4xl mx-auto space-y-8 p-4">
+<div class="max-w-4xl mx-auto p-4 md:p-6 space-y-8">
   <h1 class="font-bold">File Upload Demo</h1>
+  <p class="text-sm text-[var(--mat-sys-on-surface-variant)]">
+    Drag &amp; Drop Upload mit Validierung, Progress-Tracking und Form-Integration.
+  </p>
 
   <section>
     <h2 id="basic" class="!text-xl !font-semibold mb-1">Basic Usage</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Configure multiple files, max size, and auto-upload behavior.</p>
     <mat-card>
       <mat-card-content class="pt-4 flex flex-col gap-4">
         <div class="flex gap-4 items-center flex-wrap">
@@ -62,6 +66,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 
   <section>
     <h2 id="accept" class="!text-xl !font-semibold mb-1">File Type Filtering</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Restrict accepted file types using the <code>accept</code> attribute.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <rui-file-upload
@@ -78,6 +83,7 @@ import { ShowcaseCode } from '../../shared/showcase-code';
 
   <section>
     <h2 id="sortable-editable" class="!text-xl !font-semibold mb-1">Sortable &amp; Editable</h2>
+    <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-3">Enable drag-to-reorder and inline rename on double-click.</p>
     <mat-card>
       <mat-card-content class="pt-4">
         <rui-file-upload

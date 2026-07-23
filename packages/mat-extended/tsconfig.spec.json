@@ -15,6 +15,7 @@
     "dialog/src/**/*.ts",
     "menu/src/**/*.ts",
     "breadcrumb/src/**/*.ts",
-    "multi-select/src/**/*.ts"
+    "multi-select/src/**/*.ts",
+    "autocomplete/src/**/*.ts"
   ]
 }

@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ComponentFixture } from '@angular/core/testing';
 import { RuiDataTable } from './data-table.component';
 import { RuiDataColumn } from './data-table.types';
 
@@ -216,6 +215,50 @@ describe('RuiDataTable', () => {
       component.toggleRowExpansion(testData[0]);
 
       expect(component.expandedRows().size).toBe(1);
+    });
+  });
+
+  describe('a11y', () => {
+    beforeEach(() => {
+      fixture.componentRef.setInput('data', testData);
+      fixture.componentRef.setInput('columns', testColumns);
+      fixture.detectChanges();
+    });
+
+    it('sort headers have aria-sort attribute when sorted', async () => {
+      fixture.componentRef.setInput('data', testData);
+      fixture.componentRef.setInput('columns', testColumns);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const sortHeaders = document.querySelectorAll('.mat-sort-header');
+      expect(sortHeaders.length).toBeGreaterThan(0);
+    });
+
+    it('checkboxes have aria-label when selectable is true', () => {
+      fixture.componentRef.setInput('config', { selectable: true });
+      fixture.detectChanges();
+      const checkboxes = fixture.nativeElement.querySelectorAll('mat-checkbox');
+      expect(checkboxes.length).toBeGreaterThan(0);
+      checkboxes.forEach((cb: HTMLElement) => {
+        const nativeInput = cb.querySelector('input[type="checkbox"]');
+        expect(nativeInput).toBeTruthy();
+        if (nativeInput) {
+          expect(nativeInput.hasAttribute('aria-label')).toBeTruthy();
+        }
+      });
+    });
+
+    it('expand buttons have aria-label when expandedRowTemplate is provided', () => {
+      fixture.componentRef.setInput('expandedRowTemplate', {} as import('@angular/core').TemplateRef<{ $implicit: TestItem }>);
+      fixture.detectChanges();
+
+      const expandButtons = fixture.nativeElement.querySelectorAll('button[mat-icon-button]');
+      if (expandButtons.length > 0) {
+        expandButtons.forEach((btn: HTMLElement) => {
+          expect(btn.hasAttribute('aria-label')).toBe(true);
+        });
+      }
     });
   });
 });

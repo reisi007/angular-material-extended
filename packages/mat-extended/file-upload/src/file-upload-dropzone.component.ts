@@ -4,38 +4,37 @@ import { formatSize } from './file-upload-utils';
 @Component({
   selector: 'rui-file-upload-dropzone',
   standalone: true,
+  styleUrl: './file-upload-dropzone.component.scss',
   template: `
     <div
-      class="border-2 border-dashed border-[var(--mat-sys-outline)] rounded-lg p-8 flex flex-col items-center justify-center cursor-pointer transition-[border-color,background-color] duration-200 hover:border-[var(--mat-sys-primary)] hover:bg-[var(--mat-sys-primary-container)]"
-      [class.opacity-50]="disabled()"
-      [class.pointer-events-none]="disabled()"
-      [style.border-color]="!disabled() && isDragOver() ? 'var(--mat-sys-primary)' : undefined"
-      [style.background-color]="!disabled() && isDragOver() ? 'var(--mat-sys-primary-container)' : undefined"
+      class="rui-file-upload-dropzone__area"
+      [class.rui-file-upload-dropzone--disabled]="disabled()"
+      [class.rui-file-upload-dropzone--dragover]="!disabled() && isDragOver()"
       tabindex="0"
       role="button"
       [attr.aria-label]="browseText()"
       (click)="onClick()"
       (keydown.enter)="onClick()"
       (keydown.space)="onClick()">
-      <div class="text-[var(--mat-sys-primary)] mb-3">
+      <div class="rui-file-upload-dropzone__icon">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
           <polyline points="17 8 12 3 7 8"/>
           <line x1="12" y1="3" x2="12" y2="15"/>
         </svg>
       </div>
-      <p class="text-base text-[var(--mat-sys-on-surface)] m-0 mb-2">
+      <p class="rui-file-upload-dropzone__text">
         {{ isDragOver() ? dragOverText() : dropzoneText() }}
       </p>
-      <p class="text-xs text-[var(--mat-sys-on-surface-variant)] m-0">
+      <p class="rui-file-upload-dropzone__hint">
         @if (multiple()) {
-          @if (isFinite(maxSize())) {
+          @if (maxSize() > 0 && isFinite(maxSize())) {
             Accepted: {{ accept() }} · Max {{ maxFiles() }} files · Max {{ formatSize(maxSize()) }} each
           } @else {
             Accepted: {{ accept() }} · Max {{ maxFiles() }} files
           }
         } @else {
-          @if (isFinite(maxSize())) {
+          @if (maxSize() > 0 && isFinite(maxSize())) {
             Accepted: {{ accept() }} · Max {{ formatSize(maxSize()) }}
           } @else {
             Accepted: {{ accept() }}
@@ -45,9 +44,6 @@ import { formatSize } from './file-upload-utils';
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    'class': 'block',
-  },
 })
 export class RuiFileUploadDropzone {
   readonly isDragOver = input(false);

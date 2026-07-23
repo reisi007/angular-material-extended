@@ -221,13 +221,13 @@ describe('RuiCropperCanvas', () => {
 
     const bounds = cropper.getImageBoundsInView();
 
-    expect(bounds.left).toBe(0);
-    expect(bounds.top).toBe(0);
-    expect(bounds.right).toBe(800);
-    expect(bounds.bottom).toBe(600);
+    expect(bounds.left).toBeCloseTo(-300, 0);
+    expect(bounds.top).toBeCloseTo(-400, 0);
+    expect(bounds.right).toBeCloseTo(1100, 0);
+    expect(bounds.bottom).toBeCloseTo(1000, 0);
   });
 
-  it('getImageBoundsInView clamps to viewport when inscribed bounds exceed it', async () => {
+  it('getImageBoundsInView reports inscribed bounds exceeding viewport at high zoom', async () => {
     const cropper = new RuiCropperCanvas(createCanvasEl(800, 600));
     cropper.displayWidth = 800;
     cropper.displayHeight = 600;
@@ -238,10 +238,10 @@ describe('RuiCropperCanvas', () => {
 
     const bounds = cropper.getImageBoundsInView();
 
-    expect(bounds.left).toBe(0);
-    expect(bounds.top).toBe(0);
-    expect(bounds.right).toBe(800);
-    expect(bounds.bottom).toBe(600);
+    expect(bounds.left).toBeLessThan(0);
+    expect(bounds.top).toBeLessThan(0);
+    expect(bounds.right).toBeGreaterThan(800);
+    expect(bounds.bottom).toBeGreaterThan(600);
   });
 
   it('getImageBoundsInView returns correct inscribed bounds at 10°', async () => {
@@ -257,9 +257,9 @@ describe('RuiCropperCanvas', () => {
     const insw = bounds.right - bounds.left;
     const insh = bounds.bottom - bounds.top;
 
-    expect(insw).toBeGreaterThanOrEqual(750);
-    expect(insh).toBeGreaterThanOrEqual(550);
-    expect(insw).toBeLessThanOrEqual(800);
-    expect(insh).toBeLessThanOrEqual(600);
+    expect(insw).toBeGreaterThanOrEqual(1000);
+    expect(insh).toBeGreaterThanOrEqual(800);
+    expect(insw).toBeLessThanOrEqual(1050);
+    expect(insh).toBeLessThanOrEqual(900);
   });
 });

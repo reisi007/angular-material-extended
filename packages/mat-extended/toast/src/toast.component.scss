@@ -1,0 +1,51 @@
+:host {
+  display: block;
+}
+
+.rui-toast {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+  background: var(--mat-sys-surface-container-high);
+  box-shadow: 0 4px 6px -2px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+  min-width: 280px;
+  max-width: 480px;
+  animation: rui-slide-in 0.2s ease-out;
+}
+
+.rui-toast__message {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface);
+}
+
+.rui-toast__dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--mat-sys-on-surface-variant);
+  border-radius: 9999px;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high);
+  }
+}
+
+@keyframes rui-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

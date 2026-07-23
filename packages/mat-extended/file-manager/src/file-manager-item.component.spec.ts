@@ -175,7 +175,7 @@ describe('RuiFileManagerItem standalone', () => {
     fixture.componentRef.setInput('editingItemId', '1');
     fixture.detectChanges();
 
-    const extSpan = fixture.nativeElement.querySelector('.whitespace-nowrap');
+    const extSpan = fixture.nativeElement.querySelector('.rui-file-manager-item__edit-ext');
     expect(extSpan).toBeTruthy();
     expect(extSpan.textContent).toContain('.pdf');
   });
@@ -187,9 +187,8 @@ describe('RuiFileManagerItem standalone', () => {
     fixture.componentRef.setInput('editingItemId', '1');
     fixture.detectChanges();
 
-    const extSpans = fixture.nativeElement.querySelectorAll('.whitespace-nowrap');
-    const inputExtSpan = Array.from<Element>(extSpans).find((s) => s.textContent?.trim().startsWith('.'));
-    expect(inputExtSpan).toBeFalsy();
+    const extSpan = fixture.nativeElement.querySelector('.rui-file-manager-item__edit-ext');
+    expect(extSpan).toBeFalsy();
   });
 
   it('does not render remove button when editingItemId matches item id', () => {
@@ -255,9 +254,9 @@ describe('RuiFileManagerItem standalone', () => {
     const fixture = createFixture();
     fixture.detectChanges();
 
-    const extSpans = fixture.nativeElement.querySelectorAll('.whitespace-nowrap');
-    const badge = Array.from<Element>(extSpans).find((s) => s.textContent?.trim() === '.pdf');
-    expect(badge).toBeTruthy();
+    const extBadge = fixture.nativeElement.querySelector('.rui-file-manager-item__ext');
+    expect(extBadge).toBeTruthy();
+    expect(extBadge.textContent?.trim()).toBe('.pdf');
   });
 
   it('binds dragStartDelay to cdkDragStartDelay', () => {
@@ -266,5 +265,72 @@ describe('RuiFileManagerItem standalone', () => {
     fixture.detectChanges();
     const cdkDrag = fixture.nativeElement.querySelector('[cdkdrag]');
     expect(cdkDrag).toBeTruthy();
+  });
+
+  describe('A11y', () => {
+    it('remove button has aria-label with file name', () => {
+      const fixture = createFixture();
+      fixture.componentRef.setInput('fileManagement', true);
+      fixture.detectChanges();
+      const removeBtn = fixture.nativeElement.querySelector('[aria-label="Remove photo.pdf"]');
+      expect(removeBtn).toBeTruthy();
+      expect(removeBtn.getAttribute('type')).toBe('button');
+    });
+
+    it('rename button has aria-label with file name when editable', () => {
+      const fixture = createFixture();
+      fixture.componentRef.setInput('editable', true);
+      fixture.componentRef.setInput('fileManagement', true);
+      fixture.detectChanges();
+      const renameBtn = fixture.nativeElement.querySelector('[aria-label="Rename photo.pdf"]');
+      expect(renameBtn).toBeTruthy();
+    });
+
+    it('drag handle has role="button" and aria-label', () => {
+      const fixture = createFixture();
+      fixture.componentRef.setInput('sortable', true);
+      fixture.detectChanges();
+      const dragHandle = fixture.nativeElement.querySelector('.rui-file-manager-item__drag-handle');
+      expect(dragHandle).toBeTruthy();
+      expect(dragHandle.getAttribute('role')).toBe('button');
+      expect(dragHandle.getAttribute('aria-label')).toBe('Drag to reorder');
+      expect(dragHandle.getAttribute('tabindex')).toBe('0');
+    });
+
+    it('confirm rename button has aria-label', () => {
+      const fixture = createFixture();
+      fixture.componentRef.setInput('editable', true);
+      fixture.componentRef.setInput('editingItemId', '1');
+      fixture.detectChanges();
+      const confirmBtn = fixture.nativeElement.querySelector('[aria-label="Confirm rename"]');
+      expect(confirmBtn).toBeTruthy();
+    });
+
+    it('cancel rename button has aria-label', () => {
+      const fixture = createFixture();
+      fixture.componentRef.setInput('editable', true);
+      fixture.componentRef.setInput('editingItemId', '1');
+      fixture.detectChanges();
+      const cancelRenameBtn = fixture.nativeElement.querySelector('[aria-label="Cancel rename"]');
+      expect(cancelRenameBtn).toBeTruthy();
+    });
+
+    it('move up button has aria-label', () => {
+      const fixture = createFixture();
+      fixture.componentRef.setInput('sortable', true);
+      fixture.detectChanges();
+      const moveUpBtn = fixture.nativeElement.querySelector('[aria-label="Move up"]');
+      expect(moveUpBtn).toBeTruthy();
+      expect(moveUpBtn.getAttribute('type')).toBe('button');
+    });
+
+    it('move down button has aria-label', () => {
+      const fixture = createFixture();
+      fixture.componentRef.setInput('sortable', true);
+      fixture.detectChanges();
+      const moveDownBtn = fixture.nativeElement.querySelector('[aria-label="Move down"]');
+      expect(moveDownBtn).toBeTruthy();
+      expect(moveDownBtn.getAttribute('type')).toBe('button');
+    });
   });
 });

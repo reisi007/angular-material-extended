@@ -7,6 +7,7 @@ import { formatSize } from '@all-the.rest/mat-extended/file-upload';
   selector: 'rui-file-manager-item',
   standalone: true,
   imports: [DragDropModule],
+  styleUrl: './file-manager-item.component.scss',
   viewProviders: [
     {
       provide: CDK_DROP_LIST,
@@ -14,18 +15,18 @@ import { formatSize } from '@all-the.rest/mat-extended/file-upload';
     },
   ],
   template: `
-    <div class="flex items-center gap-3 p-2 px-3 border border-[var(--mat-sys-outline-variant)] rounded-lg bg-[var(--mat-sys-surface-container-low)] transition-shadow duration-200 group" cdkDrag [cdkDragDisabled]="!sortable()" [cdkDragStartDelay]="dragStartDelay()">
+    <div class="rui-file-manager-item__row" role="listitem" cdkDrag [cdkDragDisabled]="!sortable()" [cdkDragStartDelay]="dragStartDelay()">
       @if (sortable()) {
-        <div class="flex items-center gap-0.5 shrink-0">
-          <div class="flex flex-col gap-px">
-            <button type="button" class="flex items-center justify-center w-4 h-4 border-none bg-transparent text-[var(--mat-sys-on-surface-variant)] cursor-pointer rounded-sm transition-colors duration-150 hover:bg-[var(--mat-sys-surface-variant)] hover:text-[var(--mat-sys-on-surface)]" (pointerdown)="$event.stopPropagation()" (click)="onMoveUp()" aria-label="Move up">
+        <div class="rui-file-manager-item__sort">
+          <div class="rui-file-manager-item__sort-buttons">
+            <button type="button" class="rui-file-manager-item__sort-btn" (pointerdown)="$event.stopPropagation()" (click)="onMoveUp()" aria-label="Move up">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
             </button>
-            <button type="button" class="flex items-center justify-center w-4 h-4 border-none bg-transparent text-[var(--mat-sys-on-surface-variant)] cursor-pointer rounded-sm transition-colors duration-150 hover:bg-[var(--mat-sys-surface-variant)] hover:text-[var(--mat-sys-on-surface)]" (pointerdown)="$event.stopPropagation()" (click)="onMoveDown()" aria-label="Move down">
+            <button type="button" class="rui-file-manager-item__sort-btn" (pointerdown)="$event.stopPropagation()" (click)="onMoveDown()" aria-label="Move down">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
           </div>
-          <div class="flex items-center text-[var(--mat-sys-on-surface-variant)] opacity-60 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing" cdkDragHandle>
+          <div class="rui-file-manager-item__drag-handle" cdkDragHandle role="button" aria-label="Drag to reorder" tabindex="0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/>
               <circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
@@ -35,21 +36,21 @@ import { formatSize } from '@all-the.rest/mat-extended/file-upload';
         </div>
       }
       @if (item().preview) {
-        <img [src]="item().preview" class="w-10 h-10 rounded object-cover shrink-0" [alt]="item().file.name" />
+        <img [src]="item().preview" class="rui-file-manager-item__preview" [alt]="item().file.name" />
       } @else {
-        <div class="w-10 h-10 flex items-center justify-center text-[var(--mat-sys-on-surface-variant)] shrink-0">
+        <div class="rui-file-manager-item__icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <polyline points="14 2 14 8 20 8"/>
           </svg>
         </div>
       }
-      <div class="flex-1 min-w-0 flex flex-col gap-0.5">
+      <div class="rui-file-manager-item__info">
         @if (editable() && editingItemId() === item().id) {
-          <div class="flex items-center gap-1">
+          <div class="rui-file-manager-item__edit-row">
             <input
               (pointerdown)="$event.stopPropagation()"
-              class="text-sm text-[var(--mat-sys-on-surface)] bg-[var(--mat-sys-surface-container-high)] border rounded p-0.5 px-1.5 outline-none w-full box-border"
+              class="rui-file-manager-item__edit-input"
               [style.border-color]="editInputValue().trim() === '' ? 'var(--mat-sys-error)' : 'var(--mat-sys-primary)'"
               [value]="editInputValue()"
               (input)="onEditInputChange($event)"
@@ -57,41 +58,41 @@ import { formatSize } from '@all-the.rest/mat-extended/file-upload';
               (keydown.escape)="onCancelRename()"
             />
             @if (!editableExtension()) {
-              <span class="text-sm text-[var(--mat-sys-on-surface-variant)] shrink-0 whitespace-nowrap">{{ fileExtension() }}</span>
+              <span class="rui-file-manager-item__edit-ext">{{ fileExtension() }}</span>
             }
             <button type="button"
               (pointerdown)="$event.stopPropagation()"
               (click)="onConfirmRename()"
-              class="flex items-center justify-center w-7 h-7 border-none bg-transparent text-[var(--mat-sys-primary)] cursor-pointer rounded-full text-base transition-[background-color,color] duration-200 shrink-0 hover:bg-[var(--mat-sys-primary-container)]"
+              class="rui-file-manager-item__confirm-btn"
               aria-label="Confirm rename">
               ✓
             </button>
             <button type="button"
               (pointerdown)="$event.stopPropagation()"
               (click)="onCancelRename()"
-              class="flex items-center justify-center w-7 h-7 border-none bg-transparent text-[var(--mat-sys-error)] cursor-pointer rounded-full text-base transition-[background-color,color] duration-200 shrink-0 hover:bg-[var(--mat-sys-error-container)]"
+              class="rui-file-manager-item__cancel-btn"
               aria-label="Cancel rename">
               ✕
             </button>
           </div>
         } @else {
-          <div class="flex items-center gap-1 min-w-0">
-            <span class="text-sm text-[var(--mat-sys-on-surface)] truncate">{{ fileBaseName() }}</span>
+          <div class="rui-file-manager-item__name-row">
+            <span class="rui-file-manager-item__name">{{ fileBaseName() }}</span>
             @if (fileExtension()) {
-              <span class="shrink-0 text-xs font-medium text-[var(--mat-sys-on-surface-variant)] bg-[var(--mat-sys-surface-container-high)] rounded px-1.5 py-px whitespace-nowrap">{{ fileExtension() }}</span>
+              <span class="rui-file-manager-item__ext">{{ fileExtension() }}</span>
             }
           </div>
         }
-        <span class="text-xs text-[var(--mat-sys-on-surface-variant)]">{{ formatSize(item().file.size) }}</span>
+        <span class="rui-file-manager-item__size">{{ formatSize(item().file.size) }}</span>
       </div>
-      <div class="flex items-center gap-2 shrink-0 justify-end">
+      <div class="rui-file-manager-item__actions">
         @if (editable() && fileManagement() && editingItemId() !== item().id) {
-          <button type="button" class="flex items-center justify-center w-7 h-7 border-none bg-transparent text-[var(--mat-sys-on-surface-variant)] cursor-pointer rounded-full text-sm transition-[background-color,color] duration-200 shrink-0 hover:bg-[var(--mat-sys-surface-variant)] hover:text-[var(--mat-sys-on-surface)]" (pointerdown)="$event.stopPropagation()" (click)="onStartRename()" [attr.aria-label]="'Rename ' + item().file.name">
+          <button type="button" class="rui-file-manager-item__rename-btn" (pointerdown)="$event.stopPropagation()" (click)="onStartRename()" [attr.aria-label]="'Rename ' + item().file.name">
             ✎
           </button>
         }
         @if (fileManagement() && editingItemId() !== item().id) {
-          <button type="button" class="flex items-center justify-center w-7 h-7 border-none bg-transparent text-[var(--mat-sys-on-surface-variant)] cursor-pointer rounded-full text-sm transition-[background-color,color] duration-200 shrink-0 hover:bg-[var(--mat-sys-error-container)] hover:text-[var(--mat-sys-error)]" (pointerdown)="$event.stopPropagation()" (click)="onRemove()" [attr.aria-label]="'Remove ' + item().file.name">
+          <button type="button" class="rui-file-manager-item__remove-btn" (pointerdown)="$event.stopPropagation()" (click)="onRemove()" [attr.aria-label]="'Remove ' + item().file.name">
             ✕
           </button>
         }
@@ -99,9 +100,6 @@ import { formatSize } from '@all-the.rest/mat-extended/file-upload';
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    'class': 'block',
-  },
 })
 export class RuiFileManagerItem {
   readonly item = input.required<RuiFileItem>();

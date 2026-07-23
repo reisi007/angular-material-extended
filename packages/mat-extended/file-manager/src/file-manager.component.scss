@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.rui-file-manager__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rui-file-manager__actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.rui-file-manager__clear-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--mat-sys-outline);
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: var(--mat-sys-surface-variant);
+  }
+}

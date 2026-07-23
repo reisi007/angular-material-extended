@@ -13,12 +13,15 @@ import { ShowcaseCode } from '../../../shared/showcase-code';
       <p class="text-sm text-[var(--mat-sys-on-surface-variant)] mb-4">Button toggle group with multiple selection enabled.</p>
 
       <div class="rounded-lg border border-[var(--mat-sys-outline-variant)] bg-[var(--mat-sys-surface)] p-5">
-        <mat-button-toggle-group [multiple]="true">
-          <mat-button-toggle value="fluent" aria-label="Fluent">Fluent</mat-button-toggle>
-          <mat-button-toggle value="angular" aria-label="Angular">Angular</mat-button-toggle>
-          <mat-button-toggle value="vue" aria-label="Vue">Vue</mat-button-toggle>
-          <mat-button-toggle value="react" aria-label="React">React</mat-button-toggle>
-        </mat-button-toggle-group>
+        <fieldset>
+          <legend class="sr-only">Selection modes</legend>
+          <mat-button-toggle-group [multiple]="true">
+            <mat-button-toggle value="fluent" aria-label="Fluent">Fluent</mat-button-toggle>
+            <mat-button-toggle value="angular" aria-label="Angular">Angular</mat-button-toggle>
+            <mat-button-toggle value="vue" aria-label="Vue">Vue</mat-button-toggle>
+            <mat-button-toggle value="react" aria-label="React">React</mat-button-toggle>
+          </mat-button-toggle-group>
+        </fieldset>
       </div>
 
       <rui-showcase-code

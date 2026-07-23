@@ -788,4 +788,79 @@ describe('RuiCropper', () => {
     expect(mockCanvas.render).toHaveBeenCalled();
     expect(mockCanvas.setCropRect).toHaveBeenCalled();
   });
+
+  describe('A11y', () => {
+    it('supports keyboard zoom via + key', () => {
+      const fixture = TestBed.createComponent(RuiCropper);
+      const comp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      asCropper(comp)._initCanvas();
+      asCropper(comp)._canvasReady.set(true);
+      comp.imageLoaded.set(true);
+      fixture.detectChanges();
+
+      comp.onKeydown(new KeyboardEvent('keydown', { key: '+' }));
+      expect(comp.zoomLevel()).toBe(110);
+    });
+
+    it('supports keyboard zoom via - key', () => {
+      const fixture = TestBed.createComponent(RuiCropper);
+      const comp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      asCropper(comp)._initCanvas();
+      asCropper(comp)._canvasReady.set(true);
+      comp.imageLoaded.set(true);
+      fixture.detectChanges();
+
+      comp.onKeydown(new KeyboardEvent('keydown', { key: '-' }));
+      expect(comp.zoomLevel()).toBe(90);
+    });
+
+    it('supports keyboard rotation via r key (left)', () => {
+      const fixture = TestBed.createComponent(RuiCropper);
+      const comp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      comp.onKeydown(new KeyboardEvent('keydown', { key: 'r' }));
+      expect(comp.rotationOffset()).toBe(-90);
+    });
+
+    it('supports keyboard rotation via R key (right)', () => {
+      const fixture = TestBed.createComponent(RuiCropper);
+      const comp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      comp.onKeydown(new KeyboardEvent('keydown', { key: 'R' }));
+      expect(comp.rotationOffset()).toBe(90);
+    });
+
+    it('has correct aria-labels on toolbar buttons when image loaded', () => {
+      const fixture = TestBed.createComponent(RuiCropper);
+      const comp = fixture.componentInstance;
+      fixture.detectChanges();
+      comp.imageLoaded.set(true);
+      fixture.detectChanges();
+
+      const buttons = fixture.nativeElement.querySelectorAll('.rui-cropper-toolbar__btn');
+      const labels = Array.from(buttons).map((b) => (b as HTMLElement).getAttribute('aria-label'));
+      expect(labels).toContain('Zoom in');
+      expect(labels).toContain('Zoom out');
+      expect(labels).toContain('Rotate left 90°');
+      expect(labels).toContain('Rotate right 90°');
+    });
+
+    it('rotation slider is accessible with aria-label', () => {
+      const fixture = TestBed.createComponent(RuiCropper);
+      const comp = fixture.componentInstance;
+      fixture.detectChanges();
+      comp.imageLoaded.set(true);
+      fixture.detectChanges();
+
+      const slider = fixture.nativeElement.querySelector('.rui-cropper-toolbar__slider') as HTMLInputElement;
+      expect(slider).toBeTruthy();
+      expect(slider.getAttribute('aria-label')).toBe('Fine rotation');
+    });
+  });
 });

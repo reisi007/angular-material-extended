@@ -18,11 +18,11 @@ import { RUI_CROPPER_DEFAULT_OPTIONS } from './cropper.config';
   standalone: true,
   imports: [FormsModule, RuiCropperToolbar, RuiCropperGridOverlay],
   templateUrl: './cropper.html',
+  styleUrl: './cropper.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     tabindex: '0',
     '(keydown)': 'onKeydown($event)',
-    'class': 'block relative w-full',
   },
   providers: [
     {
@@ -112,10 +112,10 @@ export class RuiCropper extends RuiValueAccessor<string> {
       this._canvasEngine.setRotation(rot);
       if (!this.liveRotationDragging()) {
         this._canvasEngine.render();
+        const constrained = this._constrainCropToImage(this._canvasEngine.getCropRect());
+        this._canvasEngine.setCropRect(constrained);
+        this._cropRect.set(constrained);
       }
-      const constrained = this._constrainCropToImage(this._canvasEngine.getCropRect());
-      this._canvasEngine.setCropRect(constrained);
-      this._cropRect.set(constrained);
     });
 
     effect(() => {

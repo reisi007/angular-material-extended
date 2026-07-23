@@ -170,4 +170,67 @@ describe('RuiDialogService', () => {
     tick();
     expect(resolved).toBe(true);
   }));
+
+  describe('A11y & focus management', () => {
+    it('should set aria-labelledby and aria-describedby on dialog overlay', fakeAsync(() => {
+      const ref = service.open({ header: 'Aria Test' });
+      tick();
+
+      const dialogEl = document.querySelector('[role="dialog"]') as HTMLElement;
+      expect(dialogEl).toBeTruthy();
+      expect(dialogEl.getAttribute('aria-labelledby')).toBeTruthy();
+      expect(dialogEl.getAttribute('aria-describedby')).toBeTruthy();
+
+      const headerTitle = dialogEl.querySelector('.rui-dialog-header__title');
+      expect(headerTitle?.getAttribute('id')).toBe(dialogEl.getAttribute('aria-labelledby'));
+
+      ref.close();
+    }));
+
+    it('should dismiss dialog on Escape key when disableClose is false', fakeAsync(() => {
+      const ref = service.open({ header: 'Esc Test' });
+      tick();
+
+      let dismissed = false;
+      ref.afterDismissed.then(() => { dismissed = true; });
+
+      const dialogEl = document.querySelector('[role="dialog"]') as HTMLElement;
+      dialogEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+      tick();
+
+      expect(dismissed).toBe(true);
+    }));
+
+    it('should NOT dismiss dialog on Escape when disableClose is true', fakeAsync(() => {
+      const ref = service.open({ header: 'No Esc', disableClose: true });
+      tick();
+
+      let dismissed = false;
+      ref.afterDismissed.then(() => { dismissed = true; });
+
+      const dialogEl = document.querySelector('[role="dialog"]') as HTMLElement;
+      dialogEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+      tick();
+
+      expect(dismissed).toBe(false);
+      ref.close();
+    }));
+
+    it('should NOT dismiss dialog on backdrop click when disableClose is true', fakeAsync(() => {
+      const ref = service.open({ header: 'No backdrop close', disableClose: true });
+      tick();
+
+      let dismissed = false;
+      ref.afterDismissed.then(() => { dismissed = true; });
+
+      const backdrop = document.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      if (backdrop) {
+        backdrop.click();
+      }
+      tick();
+
+      expect(dismissed).toBe(false);
+      ref.close();
+    }));
+  });
 });

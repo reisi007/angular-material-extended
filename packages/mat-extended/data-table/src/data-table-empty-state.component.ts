@@ -5,12 +5,12 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'rui-data-table-empty-state',
   standalone: true,
   imports: [MatIconModule],
+  styleUrl: './data-table-empty-state.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { 'class': 'block' },
   template: `
-    <div class="flex flex-col items-center justify-center py-8">
-      <mat-icon class="text-[var(--mat-sys-on-surface-variant)] !text-5xl mb-4">inbox</mat-icon>
-      <p class="text-[var(--mat-sys-on-surface-variant)] m-0">{{ message() }}</p>
+    <div class="rui-empty-state">
+      <mat-icon class="rui-empty-state__icon" aria-hidden="true">inbox</mat-icon>
+      <p class="rui-empty-state__message">{{ message() }}</p>
     </div>
   `,
 })

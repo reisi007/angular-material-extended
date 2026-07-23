@@ -44,6 +44,7 @@ export class App {
         { label: 'Menu', route: '/menu', icon: 'menu' },
         { label: 'Breadcrumb', route: '/breadcrumb', icon: 'arrow_right_alt' },
         { label: 'Multi-Select', route: '/multi-select', icon: 'playlist_add_check' },
+        { label: 'Autocomplete', route: '/autocomplete', icon: 'search' },
         { label: 'Date Input', route: '/date-input', icon: 'calendar_today' },
       ],
     },
@@ -86,6 +87,7 @@ export class App {
   ];
 
   protected tocItems = signal<TocItem[]>([]);
+  protected activeTocId = signal('');
 
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
@@ -107,6 +109,30 @@ export class App {
         const observer = new MutationObserver(() => this.buildToc());
         observer.observe(main, { childList: true, subtree: true });
         this.destroyRef.onDestroy(() => observer.disconnect());
+
+        const tocObserver = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                this.activeTocId.set(entry.target.id);
+              }
+            }
+          },
+          { root: main, rootMargin: '-20% 0px -60% 0px', threshold: 0 },
+        );
+
+        const observeHeadings = (): void => {
+          tocObserver.disconnect();
+          main.querySelectorAll('main h2[id], h2[id]').forEach((h) => tocObserver.observe(h));
+        };
+
+        observeHeadings();
+        const reObserve = new MutationObserver(observeHeadings);
+        reObserve.observe(main, { childList: true, subtree: true });
+        this.destroyRef.onDestroy(() => {
+          tocObserver.disconnect();
+          reObserve.disconnect();
+        });
       }
     });
   }

@@ -23,10 +23,8 @@ import { RUI_DATA_TABLE_DEFAULT_OPTIONS, RUI_DATA_TABLE_DEFAULTS } from './data-
   standalone: true,
   imports: [CommonModule, FormsModule, MatTableModule, MatSortModule, MatPaginatorModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatIconModule, MatMenuModule, MatDividerModule, RuiDataTableFilter, RuiDataTableLoading, RuiDataTableEmptyState, RuiDataTablePaginator],
   templateUrl: './data-table.html',
+  styleUrl: './data-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    'class': 'block',
-  },
 })
 export class RuiDataTable<T extends object> implements AfterViewInit {
   readonly data = input<T[]>([]);
