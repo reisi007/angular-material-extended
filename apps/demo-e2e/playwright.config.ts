@@ -8,9 +8,7 @@ export default defineConfig({
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
   workers: isCI ? 2 : 8,
-  reporter: isCI
-    ? [['blob', { outputFolder: 'blob-report' }]]
-    : [['html', { outputFolder: 'playwright-report' }]],
+  reporter: [['html', { outputFolder: 'playwright-report' }]],
   use: {
     baseURL: 'http://localhost:4200',
     trace: 'on-first-retry',
