@@ -7,20 +7,22 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
-  workers: isCI ? 1 : 8,
-  reporter: [['html', { outputFolder: 'playwright-report' }]],
+  workers: isCI ? 2 : 8,
+  reporter: isCI
+    ? [['blob', { outputFolder: 'blob-report' }]]
+    : [['html', { outputFolder: 'playwright-report' }]],
   use: {
     baseURL: 'http://localhost:4200',
     trace: 'on-first-retry',
   },
   projects: [
     {
-      name: 'chromium-mobile',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
       name: 'chromium-desktop',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'chromium-mobile',
+      use: { ...devices['Pixel 5'] },
     },
   ],
   ...(isCI ? {
