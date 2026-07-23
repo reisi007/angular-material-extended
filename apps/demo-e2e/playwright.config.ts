@@ -25,7 +25,7 @@ export default defineConfig({
   ],
   ...(isCI ? {
     webServer: {
-      command: 'node apps/demo-e2e/src/serve-spa.mjs',
+      command: 'node src/serve-spa.mjs',
       url: 'http://localhost:4200',
       reuseExistingServer: false,
       timeout: 30000,
