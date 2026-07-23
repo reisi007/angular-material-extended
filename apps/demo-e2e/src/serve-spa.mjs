@@ -19,10 +19,17 @@ const MIME = {
 };
 
 http.createServer((req, res) => {
-  let p = new URL(req.url, `http://localhost:${port}`).pathname;
-  let fp = path.join(root, p === '/' ? 'index.html' : p);
-  if (!fs.existsSync(fp)) fp = path.join(root, 'index.html');
-  let ext = path.extname(fp);
-  res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
-  res.end(fs.readFileSync(fp));
+  try {
+    let p = new URL(req.url, `http://localhost:${port}`).pathname;
+    let fp = path.join(root, p === '/' ? 'index.html' : p);
+    let st;
+    try { st = fs.statSync(fp); } catch { st = null; }
+    if (!st || st.isDirectory()) fp = path.join(root, 'index.html');
+    let ext = path.extname(fp);
+    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
+    res.end(fs.readFileSync(fp));
+  } catch (e) {
+    res.writeHead(500);
+    res.end(e.message);
+  }
 }).listen(port);
