@@ -25,7 +25,7 @@ export default defineConfig({
   ],
   ...(isCI ? {
     webServer: {
-      command: 'pnpm nx serve demo',
+      command: 'npx serve dist/apps/demo/browser -p 4200 -s --no-clipboard',
       url: 'http://localhost:4200',
       reuseExistingServer: false,
       timeout: 120000,
