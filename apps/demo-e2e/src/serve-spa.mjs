@@ -4,7 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(dir, '../../dist/apps/demo/browser');
+const root = path.resolve(dir, '../../../dist/apps/demo/browser');
 const port = 4200;
 
 const MIME = {
