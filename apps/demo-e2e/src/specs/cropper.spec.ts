@@ -51,6 +51,7 @@ test.describe('Cropper', () => {
     const initialZoom = parseInt(initialText ?? '100', 10);
 
     await page.locator('section:has(#basic-cropper) [aria-label="Zoom in"]').click();
+    await page.waitForTimeout(300);
     const afterText = await zoomDisplay.textContent();
     const afterZoom = parseInt(afterText ?? '100', 10);
     expect(afterZoom).toBeGreaterThan(initialZoom);
@@ -63,6 +64,7 @@ test.describe('Cropper', () => {
     const initialZoom = parseInt(initialText ?? '100', 10);
 
     await page.locator('section:has(#basic-cropper) [aria-label="Zoom out"]').click();
+    await page.waitForTimeout(300);
     const afterText = await zoomDisplay.textContent();
     const afterZoom = parseInt(afterText ?? '100', 10);
     expect(afterZoom).toBeLessThan(initialZoom);

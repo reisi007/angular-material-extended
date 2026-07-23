@@ -85,7 +85,7 @@ test.describe('Data Table', () => {
 
     test('should expand and collapse by clicking row body', async ({ page }) => {
       const card = expandCard(page);
-      const firstRow = card.locator('tr[cursor-pointer], tr.cursor-pointer').first();
+      const firstRow = card.locator('tr.rui-data-table__row--expandable').first();
       await firstRow.locator('td').nth(1).click();
       await expect(card).toContainText('Department:', { timeout: 5000 });
       await firstRow.locator('td').nth(1).click();

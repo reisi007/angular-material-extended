@@ -20,7 +20,7 @@ test.describe('File Upload', () => {
 
   test('should show multiple toggle', async ({ page }) => {
     const basicSection = page.locator('section').filter({ has: page.locator('h2#basic') });
-    await expect(basicSection.getByText('Multiple files')).toBeVisible();
+    await expect(basicSection.locator('mat-slide-toggle').filter({ hasText: 'Multiple files' })).toBeVisible();
   });
 
   test('should open file picker on click', async ({ page }) => {

@@ -29,7 +29,8 @@ test.describe('Menu', () => {
   });
 
   test('should show icon menu items when second menu opened', async ({ page }) => {
-    await page.locator('rui-menu-button').nth(1).click();
+    const section = page.locator('section:has(#menu-icons)');
+    await section.locator('rui-menu-button button').click();
     const menu = page.getByRole('menu');
     await expect(menu.getByRole('menuitem', { name: /edit/i })).toBeVisible();
     await expect(menu.getByRole('menuitem', { name: /copy/i })).toBeVisible();
@@ -37,8 +38,10 @@ test.describe('Menu', () => {
   });
 
   test('should show advanced menu items with separator and disabled', async ({ page }) => {
-    await page.locator('rui-menu-button').nth(3).click();
+    const section = page.locator('section:has(#menu-divider)');
+    await section.locator('rui-menu-button button').click();
     const menu = page.getByRole('menu');
+    await expect(menu).toBeVisible();
     await expect(menu).toContainText('New File');
     await expect(menu).toContainText('Open');
     await expect(menu).toContainText('Save');

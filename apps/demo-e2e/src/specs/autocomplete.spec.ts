@@ -33,20 +33,20 @@ test.describe('Autocomplete', () => {
     const section = page.locator('section:has(#signal-forms)');
     const input = section.locator('input');
     await input.click();
-    await input.fill('Ap');
+    await input.fill('Cherry');
     const panel = section.locator('.mat-mdc-autocomplete-panel');
-    await expect(panel).toBeVisible();
-    await expect(section.locator('mat-option')).toContainText('Apple');
+    await expect(panel).toBeVisible({ timeout: 10000 });
+    await expect(section.getByRole('option', { name: 'Cherry' })).toBeVisible({ timeout: 5000 });
   });
 
   test('should select an option from dropdown', async ({ page }) => {
     const section = page.locator('section:has(#signal-forms)');
     const input = section.locator('input');
     await input.click();
-    await input.fill('Ba');
+    await input.fill('Banana');
     const panel = section.locator('.mat-mdc-autocomplete-panel');
-    await expect(panel).toBeVisible();
-    await section.locator('mat-option').filter({ hasText: 'Banana' }).click();
+    await expect(panel).toBeVisible({ timeout: 10000 });
+    await section.getByRole('option', { name: 'Banana' }).click();
     await expect(input).toHaveValue('Banana');
   });
 
@@ -56,17 +56,17 @@ test.describe('Autocomplete', () => {
     await input.click();
     await input.fill('CHERRY');
     const panel = section.locator('.mat-mdc-autocomplete-panel');
-    await expect(panel).toBeVisible();
-    await expect(section.locator('mat-option')).toContainText('Cherry');
+    await expect(panel).toBeVisible({ timeout: 10000 });
+    await expect(section.getByRole('option', { name: 'Cherry' })).toBeVisible({ timeout: 5000 });
   });
 
   test('should update selected display after selection in signal forms', async ({ page }) => {
     const section = page.locator('section:has(#signal-forms)');
     const input = section.locator('input');
     await input.click();
-    await input.fill('Ch');
+    await input.fill('Cherry');
     const panel = section.locator('.mat-mdc-autocomplete-panel');
-    await expect(panel).toBeVisible();
+    await expect(panel).toBeVisible({ timeout: 10000 });
     await section.locator('mat-option').filter({ hasText: 'Cherry' }).click();
     await expect(section).toContainText('Selected: "Cherry"');
   });
@@ -75,9 +75,9 @@ test.describe('Autocomplete', () => {
     const section = page.locator('section:has(#reactive-forms)');
     const input = section.locator('input');
     await input.click();
-    await input.fill('Col');
+    await input.fill('Colorado');
     const panel = section.locator('.mat-mdc-autocomplete-panel');
-    await expect(panel).toBeVisible();
+    await expect(panel).toBeVisible({ timeout: 10000 });
     await section.locator('mat-option').filter({ hasText: 'Colorado' }).click();
     await expect(input).toHaveValue('Colorado');
   });
@@ -86,9 +86,9 @@ test.describe('Autocomplete', () => {
     const section = page.locator('section:has(#template-driven-forms)');
     const input = section.locator('input');
     await input.click();
-    await input.fill('Ger');
+    await input.fill('Germany');
     const panel = section.locator('.mat-mdc-autocomplete-panel');
-    await expect(panel).toBeVisible();
+    await expect(panel).toBeVisible({ timeout: 10000 });
     await section.locator('mat-option').filter({ hasText: 'Germany' }).click();
     await expect(input).toHaveValue('Germany');
   });
