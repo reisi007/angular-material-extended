@@ -1,5 +1,6 @@
 {
   "name": "@all-the.rest/mat-extended/cropper",
+  "nx": { "name": "mat-ext-cropper" },
   "ngPackage": {},
   "peerDependencies": {
     "@angular/core": "^22.0.0",

@@ -1,5 +1,6 @@
 {
   "name": "@all-the.rest/mat-extended/breadcrumb",
+  "nx": { "name": "mat-ext-breadcrumb" },
   "ngPackage": {},
   "peerDependencies": {
     "@angular/core": "^22.0.0",

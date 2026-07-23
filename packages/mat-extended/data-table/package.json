@@ -1,5 +1,6 @@
 {
   "name": "@all-the.rest/mat-extended/data-table",
+  "nx": { "name": "mat-ext-data-table" },
   "ngPackage": {},
   "peerDependencies": {
     "@angular/core": "^22.0.0",

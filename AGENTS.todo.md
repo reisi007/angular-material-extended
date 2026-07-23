@@ -194,4 +194,5 @@
 - [x] `ci.yml`: E2E-Tests aktiviert (Playwright startet Demo-Server selbst via `webServer`)
 - [x] `release.yml`: E2E-Tests + Unit-Tests + Lint laufen vor npm publish, Demo-Deploy als separater Job (nur nach erfolgreichem Publish)
 - [x] `deploy-demo.yml` gelöscht (ersetzt durch `release.yml` deploy-demo Job)
-- [ ] Commit & Push & GitHub Actions via `gh` beobachten
+- [x] Playwright webServer geändert: `nx serve demo` → `npx serve` (Nx Graph-Resolution schlug in CI wegen SEPs fehl)
+- [~] Commit & Push & GitHub Actions via `gh` beobachten

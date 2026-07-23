@@ -1,5 +1,6 @@
 {
   "name": "@all-the.rest/mat-extended/menu",
+  "nx": { "name": "mat-ext-menu" },
   "ngPackage": {},
   "peerDependencies": {
     "@angular/core": "^22.0.0",

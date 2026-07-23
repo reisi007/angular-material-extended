@@ -1,5 +1,6 @@
 {
   "name": "@all-the.rest/mat-extended/file-upload",
+  "nx": { "name": "mat-ext-file-upload" },
   "ngPackage": {},
   "peerDependencies": {
     "@angular/core": "^22.0.0",

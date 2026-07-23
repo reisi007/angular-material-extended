@@ -1,5 +1,6 @@
 {
   "name": "@all-the.rest/mat-extended/dialog",
+  "nx": { "name": "mat-ext-dialog" },
   "ngPackage": {},
   "peerDependencies": {
     "@angular/core": "^22.0.0",

@@ -1,5 +1,6 @@
 {
   "name": "@all-the.rest/mat-extended/file-manager",
+  "nx": { "name": "mat-ext-file-manager" },
   "ngPackage": {},
   "peerDependencies": {
     "@angular/core": "^22.0.0",
