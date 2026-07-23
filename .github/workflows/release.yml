@@ -23,6 +23,7 @@ jobs:
       - run: pnpm nx test mat-extended
       - run: pnpm nx lint mat-extended
       - run: pnpm nx build demo
+      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm nx e2e demo-e2e
       - uses: actions/upload-artifact@v4
         if: always()
