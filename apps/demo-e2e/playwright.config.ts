@@ -25,10 +25,10 @@ export default defineConfig({
   ],
   ...(isCI ? {
     webServer: {
-      command: 'pnpm nx serve demo',
+      command: 'node apps/demo-e2e/src/serve-spa.mjs',
       url: 'http://localhost:4200',
       reuseExistingServer: false,
-      timeout: 120000,
+      timeout: 30000,
     },
   } : {}),
 });
